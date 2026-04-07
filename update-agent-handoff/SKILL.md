@@ -30,6 +30,10 @@ Use `writing-plans` for implementation plans, test plans, file-by-file execution
 6. Prefer incremental edits; do not rewrite unrelated sections.
 7. Link to a `writing-plans` document when detailed planning exists or is needed.
 
+## Reference Loading
+
+- If update shape is uncertain, read `references/handoff-example.md` for a minimal before/after example.
+
 ## Handoff Section Schema
 
 - `Last updated`: date.
@@ -53,3 +57,25 @@ Use `writing-plans` for implementation plans, test plans, file-by-file execution
 Update dependency notes only when work revealed new manifests, lockfiles, package-manager evidence, verified/unverified commands, missing packages, unclear runtime versions, conflicts, or risky/outdated deps.
 
 Update module guidance only for touched modules or newly discovered module-specific risk: local active task, one-line next pointer, dependency notes, generated files, schemas, migrations, external contracts, or safety boundaries.
+
+## Maintenance Policy
+
+- Rewrite the handoff section only when its current shape is stale, contradictory, or too noisy to update safely.
+- Append a new fact only when it is next-session-relevant and not already captured elsewhere.
+- Replace stale facts instead of preserving historical notes.
+- Prune completed tasks, resolved blockers, outdated next steps, and chronological logs after verification.
+- Keep stable repo-map content in the map sections; keep temporary state in the handoff section.
+- If a handoff grows into multiple ordered tasks, link to a planning document or use `writing-plans` instead.
+
+## Quality Checklist
+
+Before finishing, verify:
+
+- The canonical root guidance filename was preserved.
+- No parallel full-content root guidance file was created.
+- The handoff is shorter than the repo map.
+- The handoff contains only next-session-relevant state.
+- `Verified:`, `Inferred:`, and `TODO:` labels were preserved and not promoted without evidence.
+- Detailed implementation plans, code snippets, commit sequences, and test plans were not added.
+- `Read first next session` contains paths only.
+- `Next recommended step` is one short pointer, not a multi-step plan.

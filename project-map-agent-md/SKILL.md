@@ -16,6 +16,23 @@ Create initial canonical repo guidance for fast onboarding. Do not maintain sess
 5. Add module guidance only when it prevents root bloat or risky rediscovery.
 6. Do not install or update packages unless the user asks.
 
+## Reference Loading
+
+- If output shape is uncertain, read `references/examples.md` for a minimal `agent.md` shape.
+- If the repo is a monorepo, backend/frontend split, or infra-heavy project, read `references/scenarios.md` and use only the matching snippet.
+
+## Scan Heuristics
+
+Scan in this order and stop when you have enough evidence for a compact map:
+
+1. Root docs and guidance: `README*`, existing `agent.md` / `AGENTS.md` / `CLAUDE.md`, contribution docs.
+2. Manifests and lockfiles: `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `pom.xml`, `build.gradle`, lockfiles, workspace configs.
+3. Entry points and apps: `src/`, `app/`, `pages/`, `cmd/`, `main.*`, server/bootstrap files, CLI entry points.
+4. Tests and quality gates: `test/`, `tests/`, `spec/`, `e2e/`, CI configs, lint/format configs.
+5. Infra and deploy: `Dockerfile`, `docker-compose*`, `infra/`, `terraform/`, `k8s/`, `.github/workflows/`, deployment configs.
+6. Schemas and migrations: `schema/`, `prisma/`, `migrations/`, `db/`, OpenAPI/GraphQL/protobuf contracts.
+7. Risk areas: auth, billing, secrets, permissions, migrations, external integrations, generated code boundaries.
+
 ## Evidence Labels
 
 - `Verified:` confirmed by files or command output.
@@ -50,3 +67,16 @@ Never write inferred or unknown facts as verified.
 Create module guidance only for directories with one or more triggers: independent runtime/entrypoint, external contract or schema ownership, migrations/deploy risk, auth/billing/security/infra risk, frequent task entrypoint, or local complexity that would make the root doc noisy.
 
 Do not create module guidance for simple helpers, thin wrappers, small folders with obvious names, generated/vendor/build output, or rarely edited code with no local risk.
+
+## Quality Checklist
+
+Before finishing, verify:
+
+- There is only one full-content canonical root guidance file.
+- Any secondary root guidance filename is a short pointer only.
+- `Verified:`, `Inferred:`, and `TODO:` facts are not mixed.
+- The output lists 3-7 useful read-first paths unless the repo is too small.
+- The map points to entry points, manifests, tests, infra, schemas, and risky areas when present.
+- Boilerplate, generated files, caches, build output, and vendor directories are skipped or marked expand-later.
+- The guidance does not contain implementation plans, commit sequences, or chronological reasoning logs.
+- Any handoff/session state is omitted or delegated to `$update-agent-handoff`.

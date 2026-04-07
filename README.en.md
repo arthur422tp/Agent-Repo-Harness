@@ -67,18 +67,21 @@ project-agent-docs/
 project-map-agent-md/
   SKILL.md
   agents/openai.yaml
+  references/examples.md
+  references/scenarios.md
 update-agent-handoff/
   SKILL.md
   agents/openai.yaml
+  references/handoff-example.md
 ```
 
-Each `SKILL.md` contains the main skill instructions. Each `agents/openai.yaml` provides display metadata for OpenAI / Codex interfaces, including the display name, short description, and default prompt.
+Each `SKILL.md` contains the main skill instructions. Each `agents/openai.yaml` provides display metadata for OpenAI / Codex interfaces, including the display name, short description, and default prompt. Files in `references/` are loaded only when needed; they provide examples and scenario hints that reduce output drift without making the main skill too long.
 
 ## Notes For Maintainers
 
 Keep the boundaries between these three skills clear:
 
 - `project-agent-docs` should only route requests; do not copy the full schema from the target skills into it.
-- `project-map-agent-md` should only create repo maps / onboarding guidance; it should not maintain session state.
-- `update-agent-handoff` should only update short state; it should not write detailed implementation plans.
+- `project-map-agent-md` should only create repo maps / onboarding guidance; it should not maintain session state. Keep detailed templates in `project-map-agent-md/references/`.
+- `update-agent-handoff` should only update short state; it should not write detailed implementation plans. Keep handoff examples in `update-agent-handoff/references/`.
 - If the content starts needing multi-step implementation, a testing strategy, or file-level tasks, link to a planning document or planning skill instead of putting those details into the guidance map.

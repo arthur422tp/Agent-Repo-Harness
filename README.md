@@ -67,18 +67,21 @@ project-agent-docs/
 project-map-agent-md/
   SKILL.md
   agents/openai.yaml
+  references/examples.md
+  references/scenarios.md
 update-agent-handoff/
   SKILL.md
   agents/openai.yaml
+  references/handoff-example.md
 ```
 
-每個 `SKILL.md` 是 skill 的主要指令；`agents/openai.yaml` 提供在 OpenAI / Codex 介面中顯示用的名稱、簡介與預設 prompt。
+每個 `SKILL.md` 是 skill 的主要指令；`agents/openai.yaml` 提供在 OpenAI / Codex 介面中顯示用的名稱、簡介與預設 prompt。`references/` 裡放的是按需讀取的範例與場景提示，用來降低輸出漂移，但避免把主 skill 寫得太長。
 
 ## Notes For Maintainers
 
 維護時建議保持這三個 skills 的界線清楚：
 
 - `project-agent-docs` 只負責路由，不要塞入目標 skill 的完整 schema。
-- `project-map-agent-md` 只做 repo map / onboarding，不維護 session state。
-- `update-agent-handoff` 只更新短狀態，不寫詳細 implementation plan。
+- `project-map-agent-md` 只做 repo map / onboarding，不維護 session state；詳細樣板放在 `project-map-agent-md/references/`。
+- `update-agent-handoff` 只更新短狀態，不寫詳細 implementation plan；handoff 示例放在 `update-agent-handoff/references/`。
 - 如果內容開始需要多步驟實作、測試策略或檔案級任務，應該連到 planning 文件或 planning skill，而不是把細節塞進 guidance map。
