@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Map Agent.md"
+  short_description: "Bootstrap canonical repo maps."
+  default_prompt: "Use $project-map-agent-md to create a compact canonical repo guidance map."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Agent Docs"
+  short_description: "Route agent/Claude guidance docs."
+  default_prompt: "Use $project-agent-docs to choose the right canonical repo guidance workflow."

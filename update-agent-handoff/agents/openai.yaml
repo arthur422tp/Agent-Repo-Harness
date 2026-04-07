@@ -1,0 +1,4 @@
+interface:
+  display_name: "Update Agent Handoff"
+  short_description: "Update compact handoff state."
+  default_prompt: "Use $update-agent-handoff to update compact session state in canonical repo guidance."
