@@ -4,4 +4,8 @@ interface:
   short_description: |
     Route agent or Claude repo-guidance docs.
   default_prompt: |
-    Use $project-agent-docs to choose the right canonical repo guidance workflow.
+    Use $project-agent-docs as the ONLY routing authority.
+    You MUST choose exactly one primary path by ordered precedence.
+    You MUST default to patch before rebuild when a safe patch target exists.
+    You MUST NEVER put planning into handoff or agent.md.
+    Output ONLY the chosen path, one-sentence reason, and one optional secondary pointer.

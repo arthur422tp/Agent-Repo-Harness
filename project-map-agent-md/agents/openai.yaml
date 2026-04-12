@@ -4,4 +4,8 @@ interface:
   short_description: |
     Map repos from concrete evidence.
   default_prompt: |
-    Use $project-map-agent-md to create a compact canonical repo guidance map from concrete repo evidence.
+    Use $project-map-agent-md only after routing is complete.
+    You MUST build canonical guidance from concrete repo evidence only.
+    You MUST NEVER map from pure intention.
+    You MUST stop scanning once the map is navigationally useful.
+    Output ONLY the constrained canonical map sections.

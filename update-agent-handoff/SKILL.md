@@ -2,99 +2,83 @@
 name: |
   update-agent-handoff
 description: |
-  Use when syncing compact current-state notes and assessing whether
-  changed files require canonical guidance updates.
+  Update compact handoff state and patch canonical
+  guidance only when architecture-significant facts changed.
 ---
 
 # Update Agent Handoff
 
-Update only current-state guidance and patch `agent.md` only when architecture-significant facts changed.
+Update current-state guidance only after routing is complete.
 
-## Core Principle
+## Core Model
 
 - `agent.md` is the map.
 - Planning docs are navigation.
 - Handoff is the current position.
-- Do not mix them.
+- NEVER mix them.
 
-## Boundary
+## Preconditions
 
-Use this skill for:
-
-- session wrap-up or resume state
-- current focus
-- concise progress delta
-- one-line next pointer
-- blockers
-- linking to the relevant planning doc
-- deciding whether changed files require a minimal `agent.md` patch
-
-Do not use this skill for:
-
-- initial repo mapping
-- full repo rescans
-- implementation plans
-- test plans
-- chronological logs
+- You MUST assume routing is already decided.
+- You MUST read the canonical root guidance first.
+- You MUST preserve the canonical filename.
+- You MUST inspect changed files before touching canonical guidance.
 
 ## Workflow
 
-1. Read the canonical root guidance file first. Supported names: `agent.md`, `AGENT.md`, `AGENTS.md`, `claude.md`, `CLAUDE.md`.
-2. Preserve the canonical filename. Do not create a parallel full-content root guidance file.
-3. Inspect changed files first.
-4. Check for high-priority global triggers before narrowing to local modules.
-5. From changed files, identify impacted modules.
-6. Assess architecture significance.
-7. If architecture significance is `yes`, patch `agent.md` minimally.
-8. If architecture significance is `no`, update only the handoff section or do nothing.
-9. Read module guidance only if the changed files or impacted modules require it.
-10. Remove stale or completed handoff state after verification.
-11. Link to a planning document when details exist elsewhere.
+1. Read canonical root guidance.
+2. Inspect changed files.
+3. Check high-priority global triggers.
+4. Identify impacted modules and contracts.
+5. Run the architecture significance decision block.
+6. Patch `agent.md` ONLY if the decision block returns `YES`.
+7. Otherwise update handoff only, or remove it if no useful state remains.
+8. Link to planning instead of copying detailed next steps.
 
-## Architecture Significance Gate
+## Architecture Significance Decision Block
 
-Update `agent.md` only when one or more of these changed:
+Return `YES` ONLY if one or more are true:
 
-1. repository tree or module boundaries
-2. entry points or startup path
-3. cross-module dependencies or data flow
-4. external contracts such as APIs, schemas, migrations, integrations
-5. tooling commands or package-manager evidence
-6. risk map or skip zones
-7. an important `TODO:` or `Inferred:` fact that is now verified and belongs in canonical guidance
+- repository tree or module boundaries changed
+- entrypoint or startup path changed
+- runtime dependency edge or data flow changed
+- external contract changed
+- tooling command changed with executable repo evidence
+- risk map or skip zone changed
+- an important `TODO:` or `Inferred:` fact is now `Verified:`
 
-If none of the above changed:
+Return `NO` when changes are limited to:
 
-- do not update `agent.md`
-- update only handoff if next-session state matters
-- otherwise do nothing
+- function internals
+- local helpers
+- renaming
+- copy text
+- test coverage only
+- internal refactor without ownership, contract, or runtime boundary change
+- new files that do not create a new module, boundary, or contract
 
-## Architecture Significance Calibration
+## Architecture Evidence Rules
 
-Use these rules to avoid over-updating canonical guidance:
+- Code-level dependency change is NOT architecture-level dependency change by itself.
+- Internal refactor is NOT module ownership change by itself.
+- Import paths are NOT runtime dependencies by themselves.
+- Docs command mentions are NOT verified commands.
+- New tests are NOT architecture evidence unless they reveal a new entrypoint, runtime boundary, external contract, or previously unknown structure.
+- Shared type, DTO, schema, or contract changes MUST trigger elevated review.
 
-- Code-level dependency change does not automatically mean architecture-level dependency change.
-- Internal refactor does not automatically mean module ownership change.
-- A new file does not automatically mean a new module.
-- New tests usually do not require `agent.md` updates unless they reveal a new entry point, runtime boundary, external contract, or previously unknown structure.
-- A command mentioned in docs is not a verified command.
-- Import relationships do not automatically equal runtime dependencies.
-- Prioritize runtime evidence such as config wiring, DI wiring, router registration, startup path, schema ownership, and external integrations over file adjacency.
-- Shared type, DTO, schema, or contract changes require elevated review and should not be judged only by the touched directory.
-- If the change only affects function internals, local helpers, naming, test coverage, or copy text, usually do not update `agent.md`.
-
-Treat the following as stronger architecture evidence than ordinary code edits:
+Treat these as strong architecture evidence:
 
 - bootstrap or startup registration
-- router or plugin registration
+- router registration
+- DI wiring
 - manifest or workspace linkage
-- schema ownership or migrations
-- external integration wiring
-- command definitions in executable repo config
+- schema or migration ownership
+- generated client regeneration tied to contract changes
+- auth, billing, permissions, secrets, deploy, or external integration wiring
 
 ## High-Priority Global Triggers
 
-Escalate to architecture-sensitive review when changed files hit any of these areas:
+You MUST escalate to architecture-sensitive review when changed files include:
 
 - workspace config
 - package manifests or lockfiles
@@ -102,43 +86,22 @@ Escalate to architecture-sensitive review when changed files hit any of these ar
 - Docker, compose, or infra config
 - env example or env schema
 - migrations, schema, OpenAPI, GraphQL, protobuf, or generated client
-- shared packages, common contracts, core app bootstrap, or router registration
+- shared packages, common contracts, core bootstrap, or router registration
 - auth, billing, permissions, secrets, or external integrations
 
 These files may imply architecture, runtime, contract, or command changes even when the local directory diff looks small.
 
-Do not stop at the nearest touched folder when one of these triggers is present. Review the related runtime boundary, ownership edge, or contract surface before deciding whether `agent.md` changes.
+## Evidence Rules
 
-## Evidence Thresholds
+- `Verified command` ONLY from package scripts, Makefile, task config, CI invocation, or direct execution.
+- `Inferred command` ONLY from docs or conventional tooling guesses.
+- `Verified dependency edge` ONLY from runtime wiring, manifest linkage, schema ownership, external contract reference, or runtime config.
+- `Inferred dependency edge` ONLY from imports, naming, or directory convention.
+- You MUST mention the verification source when possible.
 
-Use evidence labels as a method, not formatting:
+## Handoff Schema
 
-- `Verified command`: only if observed in executable repo evidence such as package scripts, Makefile, task runner config, CI invocation, or directly executed and confirmed. Mention the source of verification when possible.
-- `Inferred command`: docs mention only, or a conventional guess from framework or tooling.
-- `Verified dependency edge`: runtime evidence such as router wiring, bootstrap registration, DI config, manifest or workspace linkage, schema ownership, external contract reference, or runtime config.
-- `Inferred dependency edge`: import path, naming convention, directory convention, or weak structural hints only.
-- `Verified contract change`: concrete schema, migration, generated client, API spec, config, or runtime registration evidence confirms the contract moved.
-- `Inferred contract change`: naming or colocated files suggest a contract edge, but ownership or runtime usage is not yet proven.
-
-## Repo Not Ready For Mapping
-
-If the repo is still a bare folder, only contains vague idea text, or lacks concrete evidence such as manifests, README, entry points, tests, config, or schema files:
-
-- do not rebuild or fabricate a full canonical map from pure intention
-- limit updates to handoff or explicit TODO notes
-- route full mapping work back to concrete repo evidence first
-
-## Minimal Patch Rules
-
-- Do not do a full repo scan by default.
-- Prioritize changed files, adjacent impacted modules, and the existing canonical guidance.
-- Patch only the affected lines or sections.
-- Do not rewrite the entire `agent.md` unless the current file is unusable.
-- Keep stable project-map content stable.
-
-## Handoff Section Schema
-
-Keep the handoff short and state-only:
+Keep ONLY:
 
 - `Last updated`
 - `Current focus`
@@ -147,53 +110,37 @@ Keep the handoff short and state-only:
 - `Blockers`
 - `Related plan`
 
-### Handoff Rules
+## Handoff Rules
 
-- `Current focus`: the current main work item
-- `Progress`: only the most important delta since the related plan or prior session
-- `Next pointer`: one short pointer, not a multi-step plan
-- `Blockers`: unresolved blockers or `None`
-- `Related plan`: planning doc path or `None`
+- `Progress` MUST capture only the most important delta since the related plan or prior session.
+- `Next pointer` MUST be one short pointer only.
+- `Related plan` MUST be a planning-doc path or `None`.
+- You MUST NEVER keep logs, execution narratives, chronological notes, or multi-step plans.
+- You MUST link to planning docs instead of copying detailed steps.
 
-Do not include:
+## Remove Handoff Rule
 
-- long background explanation
-- historical logs
-- detailed ordered steps
-- commit-style chronological notes
-- execution narratives
-- copied planning detail when a plan document already exists
+You MUST remove the handoff section entirely when:
 
-## Anti-Bloat Rules
+- no meaningful current focus remains
+- no useful progress delta remains
+- no blocker remains
+- no next-session pointer remains
+- the remaining content is only stale plan text or history
 
-- Keep only next-session-relevant state.
-- Do not restate stable repo-map content unless it changed.
-- Replace stale facts instead of appending history.
-- Keep handoff shorter than the map.
-- Preserve `Verified:`, `Inferred:`, and `TODO:` labels when touching canonical facts.
-- If a handoff needs more than one short next pointer, move the detail to planning and link it.
-- If detailed next steps already exist, link to the planning doc instead of copying them into handoff.
+## Output Constraints
 
-## When To Remove The Handoff Section Entirely
+- Patch ONLY affected lines or sections.
+- NEVER rescan the full repo by default.
+- NEVER rewrite the whole `agent.md` unless the file is unusable.
+- Handoff output MUST stay under 12 lines of content.
+- Handoff MUST contain at most one short pointer and one related-plan link.
+- Canonical patch notes MUST stay under 40 lines unless multiple architecture edges changed at once.
 
-Remove the handoff section instead of updating it when one or more of these is true:
+## Final Checks
 
-- there is no meaningful current focus, progress delta, blocker, or next-session pointer left
-- the last session is complete and no handoff state would help the next model
-- the remaining content is only history log, execution narrative, or stale planning detail
-- every useful next step already lives in a planning doc and no current-state delta remains
-
-If only one line remains useful, keep the section but prune everything else.
-
-## Quality Checklist
-
-Before finishing, verify:
-
-- the canonical root guidance filename was preserved
-- no parallel full-content guidance file was created
-- changed files were assessed before any canonical update
-- `agent.md` was updated only if the architecture-significance gate passed
-- any `agent.md` edit was a minimal patch
-- the handoff follows the minimal schema above
-- the handoff contains no detailed plan
-- `Related plan` points to a planning doc or `None`
+- canonical filename preserved
+- no parallel full-content root guidance file
+- `agent.md` patched only when decision block returned `YES`
+- handoff contains no plan
+- handoff removed if no useful state remains

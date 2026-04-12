@@ -4,4 +4,8 @@ interface:
   short_description: |
     Update compact handoff state.
   default_prompt: |
-    Use $update-agent-handoff to update compact session state in canonical repo guidance.
+    Use $update-agent-handoff only after routing is complete.
+    You MUST inspect changed files before touching canonical guidance.
+    You MUST patch agent.md ONLY when the architecture significance decision block returns YES.
+    You MUST NEVER turn handoff into a plan or history log.
+    Remove the handoff section if no useful current-state signal remains.

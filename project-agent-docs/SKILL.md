@@ -2,113 +2,72 @@
 name: |
   project-agent-docs
 description: |
-  Use when routing repo guidance work between canonical maps,
+  Route repo-guidance requests between canonical maps,
   planning docs, and handoff state.
 ---
 
 # Project Agent Docs
 
-Route repo-guidance requests to the narrowest workflow.
+Act as the ONLY routing authority for repo-guidance work.
 
-## Core Principle
+## Core Model
 
 - `agent.md` is the map.
 - Planning docs are navigation.
 - Handoff is the current position.
-- Do not mix them.
+- NEVER mix them.
 
-## Intent Routing
+## Router Contract
 
-Use `$project-map-agent-md` for:
+- You MUST choose exactly one primary path first.
+- You MUST route before any mapping or handoff work starts.
+- You MUST keep routing logic here only.
+- Other repo-guidance skills MUST execute, not re-route.
+- If the request is ambiguous, you MUST apply the ordered rules below and pick the first match.
 
-- first-time canonical guidance creation
-- repo scan or onboarding after concrete repo evidence exists
-- stable project-map updates when the current guidance is missing, unusable, or too wrong to patch safely
+## Ordered Routing Precedence
 
-Use `$update-agent-handoff` for:
+1. If the request asks for implementation steps, test plan, execution order, or file-by-file work, route to planning. Do NOT use repo-guidance skills as the primary path.
+2. If the repo lacks concrete evidence such as README, manifests, entrypoints, tests, config, infra, or schema files, route to planning or evidence gathering. Do NOT build a canonical map.
+3. If no canonical root guidance exists, route to `$project-map-agent-md`.
+4. If canonical guidance exists and the request is about current status, blockers, resume context, or concise next-session state, route to `$update-agent-handoff`.
+5. If canonical guidance exists and the request is about refreshing architecture understanding, route to `$update-agent-handoff` first.
+6. If canonical guidance exists but is clearly broken, contradictory, mapped to the wrong repo shape, or too incomplete to trust, route to `$project-map-agent-md`.
+7. If the request mixes repo guidance and next steps, route repo guidance first. Keep the next-step output to a short pointer or plan link only.
+8. If changed files are few but touch shared contracts, workspace config, CI, schema, migrations, env templates, generated clients, bootstrap, router registration, auth, billing, permissions, secrets, deploy, or external integrations, route to `$update-agent-handoff` for architecture-sensitive review.
+9. If the request combines initial mapping and end-of-session state, route to `$project-map-agent-md` first, then allow a minimal handoff only if current-state capture is still necessary.
 
-- session wrap-up or resume state
-- compact current-focus updates
-- checking whether changed files require a minimal `agent.md` patch
-- pruning stale handoff state
-- refreshing existing canonical guidance when it mostly exists but may be stale
+## Patch vs Rebuild Table
 
-Use `writing-plans` or another planning workflow for:
-
-- implementation plans
-- detailed next steps
-- execution order
-- file-by-file task breakdowns
-- test plans
-
-Use a planning or scaffolding workflow before repo-guidance skills when:
-
-- the repo is still mostly an idea
-- architecture or scope is still being decided
-- there is no concrete evidence such as README, manifests, entry points, tests, infra, or schemas
-
-## Decision Rules
-
-- Choose one primary path by default.
-- Prefer the narrowest path that answers the request.
-- Repo guidance should link to plans, not absorb them.
-- Handoff should point to a related plan, not restate it.
-- Do not put session state into the stable `agent.md` body.
-- Do not use handoff for multi-step planning.
-- Do not duplicate target-skill schemas here.
-- Default to patching existing canonical guidance before considering rebuild.
-- Rebuild only when the current canonical guidance is missing, clearly broken, or so stale that patching is less reliable than remapping.
-
-## Mixed Requests
-
-- If the request is "create guidance for this repo", use `$project-map-agent-md`.
-- If the request is "what are we doing now / update resume context", use `$update-agent-handoff`.
-- If the request combines status plus detailed next steps, keep status in handoff and route the detailed steps to planning.
-- If the request combines initial mapping plus end-of-session state, create the canonical map first, then add a minimal handoff only if current-state capture is actually needed.
-
-## Conflict Resolution / Mixed Request Rules
-
-When canonical guidance already exists but may be outdated:
-
-- If the main need is to refresh architecture understanding, route to `$update-agent-handoff` first.
-- Prefer patching over rebuilding by default.
-- Escalate to `$project-map-agent-md` only when the existing canonical guidance is missing, clearly unusable, or materially misleading enough that targeted patching is not trustworthy.
-
-When the request mixes "organize or refresh repo guidance" with "tell me what to do next":
-
-- Handle repo guidance first.
-- Keep the "next" part to a short pointer or link.
-- Route detailed execution steps to planning.
-- Do not absorb a detailed plan into `agent.md` or handoff.
-
-When a planning doc already exists but handoff may be out of sync with real progress:
-
-- Keep the planning doc as the source of future steps.
-- Use handoff only for current focus, progress delta, blockers, and related-plan linkage.
-- Do not overwrite handoff by copying planning content verbatim.
-- Do not reinterpret unfinished planning steps as completed without fresh progress evidence.
-
-When only a few files changed but they include high-impact files:
-
-- Treat shared contracts, workspace config, CI, schema, migration, env template, generated client, bootstrap files, router registration, and infra config as architecture-sensitive.
-- Prefer `$update-agent-handoff` for deeper significance assessment instead of assuming the change is local.
-- Do not route purely by touched-file count.
-
-When the repo has only vague idea text or insufficient evidence:
-
-- Do not force `$project-map-agent-md` to build a full canonical map.
-- Prefer planning or ask for concrete repo evidence first.
-
-## Patch vs Rebuild Decision Table
-
-Use this table when existing canonical guidance is present:
-
-| Situation | Default action | Why |
+| Condition | Route | Action |
 | --- | --- | --- |
-| Canonical guidance exists and is mostly accurate but stale in a few architecture areas | Patch via `$update-agent-handoff` | Preserve stable map structure and avoid unnecessary rewrite churn |
-| Canonical guidance exists but handoff is stale or bloated | Patch or prune via `$update-agent-handoff` | This is a state-sync problem, not a remapping problem |
-| Canonical guidance exists, but only commands or dependency labels are weak or outdated | Patch via `$update-agent-handoff` | Evidence can be tightened without rebuilding the map |
-| Canonical guidance is missing entirely | Build via `$project-map-agent-md` | No patch target exists |
-| Canonical guidance exists but is clearly broken, contradictory, or mapped to the wrong repo shape | Rebuild via `$project-map-agent-md` | Patch would preserve incorrect structure |
-| Canonical guidance is so incomplete that key runtime boundaries, entrypoints, or ownership edges are absent | Rebuild via `$project-map-agent-md` | The file is not trustworthy as a canonical base |
-| The repo itself still lacks concrete evidence | Do not rebuild yet | Planning or evidence gathering should happen first |
+| Canonical guidance is missing | `$project-map-agent-md` | Build |
+| Canonical guidance exists and is mostly right but stale | `$update-agent-handoff` | Patch |
+| Canonical guidance exists and only handoff is stale or bloated | `$update-agent-handoff` | Patch or prune |
+| Canonical guidance exists and only commands, edges, or labels need stronger evidence | `$update-agent-handoff` | Patch |
+| Canonical guidance exists but is structurally wrong or misleading | `$project-map-agent-md` | Rebuild |
+| Canonical guidance exists but key runtime boundaries or ownership edges are absent | `$project-map-agent-md` | Rebuild |
+
+## Mixed-Request Rules
+
+- Planning docs MUST remain the source of future steps.
+- Handoff MUST record only current focus, progress delta, blockers, and related plan.
+- `agent.md` MUST stay stable and MUST NOT absorb planning or session logs.
+- If detailed next steps already exist, you MUST link to planning instead of copying them.
+- If handoff and planning disagree, planning remains future intent and handoff records only current delta.
+
+## Fail-Safe Rules
+
+- You MUST default to patch before rebuild when a safe patch target exists.
+- You MUST NEVER route by touched-file count alone.
+- You MUST NEVER use handoff as a planning document.
+- You MUST NEVER use `project-map-agent-md` to map a repo from pure intention.
+- You MUST NEVER let detailed plan content enter `agent.md`.
+
+## Output
+
+- Output ONLY:
+  - chosen primary path
+  - one-sentence reason
+  - optional secondary pointer only if the request is mixed
+- Output MUST stay under 8 lines.
