@@ -10,12 +10,10 @@ description: |
 
 Update current-state guidance only after routing is complete.
 
-## Core Model
+## Shared Spec
 
-- `agent.md` is the map.
-- Planning docs are navigation.
-- Handoff is the current position.
-- NEVER mix them.
+- You MUST follow [../references/shared-spec.md](../references/shared-spec.md).
+- You MUST treat handoff as current position only.
 
 ## Preconditions
 
@@ -93,10 +91,7 @@ These files may imply architecture, runtime, contract, or command changes even w
 
 ## Evidence Rules
 
-- `Verified command` ONLY from package scripts, Makefile, task config, CI invocation, or direct execution.
-- `Inferred command` ONLY from docs or conventional tooling guesses.
-- `Verified dependency edge` ONLY from runtime wiring, manifest linkage, schema ownership, external contract reference, or runtime config.
-- `Inferred dependency edge` ONLY from imports, naming, or directory convention.
+- You MUST use the shared labels and promotion rules from [../references/shared-spec.md](../references/shared-spec.md).
 - You MUST mention the verification source when possible.
 
 ## Handoff Schema

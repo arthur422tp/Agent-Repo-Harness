@@ -10,12 +10,10 @@ description: |
 
 Build the stable repo map only after routing is complete.
 
-## Core Model
+## Shared Spec
 
-- `agent.md` is the map.
-- Planning docs are navigation.
-- Handoff is the current position.
-- NEVER store planning or session state here.
+- You MUST follow [../references/shared-spec.md](../references/shared-spec.md).
+- You MUST treat `agent.md` as stable map output only.
 
 ## Preconditions
 
@@ -56,11 +54,7 @@ You MUST stop scanning once all of these are true:
 
 ## Evidence Rules
 
-- `Verified:` ONLY for facts confirmed by files, executable repo config, or command output.
-- `Inferred:` ONLY for facts suggested by names, imports, conventions, or framework patterns.
-- `TODO:` ONLY for facts still worth confirming.
-- `Verified command` MUST come from package scripts, Makefile, task config, CI invocation, or direct execution.
-- `Verified dependency edge` MUST come from bootstrap wiring, router wiring, DI config, manifest linkage, schema ownership, external contract reference, or runtime config.
+- You MUST use the shared labels and promotion rules from [../references/shared-spec.md](../references/shared-spec.md).
 - You MUST NEVER promote `Inferred:` or `TODO:` to `Verified:` without stronger evidence.
 
 ## Output Constraints

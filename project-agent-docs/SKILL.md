@@ -10,12 +10,10 @@ description: |
 
 Act as the ONLY routing authority for repo-guidance work.
 
-## Core Model
+## Shared Spec
 
-- `agent.md` is the map.
-- Planning docs are navigation.
-- Handoff is the current position.
-- NEVER mix them.
+- You MUST follow [../references/shared-spec.md](../references/shared-spec.md).
+- Routing rules MUST live here only.
 
 ## Router Contract
 
