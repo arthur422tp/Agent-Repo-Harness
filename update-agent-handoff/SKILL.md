@@ -1,6 +1,9 @@
 ---
-name: update-agent-handoff
-description: Use when syncing compact current-state notes and assessing whether changed files require canonical guidance updates.
+name: |
+  update-agent-handoff
+description: |
+  Use when syncing compact current-state notes and assessing whether
+  changed files require canonical guidance updates.
 ---
 
 # Update Agent Handoff
@@ -170,6 +173,17 @@ Do not include:
 - Preserve `Verified:`, `Inferred:`, and `TODO:` labels when touching canonical facts.
 - If a handoff needs more than one short next pointer, move the detail to planning and link it.
 - If detailed next steps already exist, link to the planning doc instead of copying them into handoff.
+
+## When To Remove The Handoff Section Entirely
+
+Remove the handoff section instead of updating it when one or more of these is true:
+
+- there is no meaningful current focus, progress delta, blocker, or next-session pointer left
+- the last session is complete and no handoff state would help the next model
+- the remaining content is only history log, execution narrative, or stale planning detail
+- every useful next step already lives in a planning doc and no current-state delta remains
+
+If only one line remains useful, keep the section but prune everything else.
 
 ## Quality Checklist
 

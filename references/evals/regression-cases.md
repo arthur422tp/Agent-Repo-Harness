@@ -1,6 +1,6 @@
 # Repo Guidance Regression Cases
 
-Use these cases to manually or semi-manually evaluate routing stability, `agent.md` update discipline, and handoff scope control.
+Use these cases as a manual or semi-manual release checklist for routing stability, `agent.md` update discipline, and handoff scope control.
 
 ## How To Use
 
@@ -11,6 +11,18 @@ For each case, evaluate:
 - whether `agent.md` should update
 - whether handoff should update
 - whether `Verified:`, `Inferred:`, and `TODO:` were applied with the intended threshold
+
+## Release Checklist
+
+Before release, confirm all of the following:
+
+- every case still routes to the expected primary skill
+- patch-first vs rebuild-first behavior is unchanged unless intentionally revised
+- small local code changes do not trigger noisy `agent.md` updates
+- shared contracts, schema, CI, workspace, infra, and bootstrap changes still trigger deeper review
+- handoff output stays within the six-field schema and is removed when no useful state remains
+- `Verified:`, `Inferred:`, and `TODO:` labels still follow the documented evidence thresholds
+- bad-output patterns in the reference examples are still rejected by the current wording
 
 ## Case 1: Small Monolith Repo
 

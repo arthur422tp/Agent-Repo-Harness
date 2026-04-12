@@ -1,4 +1,7 @@
 interface:
-  display_name: "Project Map Agent.md"
-  short_description: "Map repos from concrete evidence."
-  default_prompt: "Use $project-map-agent-md to create a compact canonical repo guidance map from concrete repo evidence."
+  display_name: |
+    Project Map Agent.md
+  short_description: |
+    Map repos from concrete evidence.
+  default_prompt: |
+    Use $project-map-agent-md to create a compact canonical repo guidance map from concrete repo evidence.

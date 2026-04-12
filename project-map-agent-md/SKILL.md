@@ -1,6 +1,9 @@
 ---
-name: project-map-agent-md
-description: Use when initializing canonical repo guidance from concrete repository evidence.
+name: |
+  project-map-agent-md
+description: |
+  Use when initializing canonical repo guidance from concrete
+  repository evidence.
 ---
 
 # Project Map Agent.md
@@ -65,6 +68,18 @@ Scan in this order and stop when you have enough evidence:
 5. Infra and deploy: `Dockerfile`, `docker-compose*`, `infra/`, `terraform/`, `k8s/`, `.github/workflows/`, deployment configs.
 6. Schemas and migrations: `schema/`, `prisma/`, `migrations/`, `db/`, OpenAPI, GraphQL, protobuf, shared contracts.
 7. Risk areas: auth, billing, secrets, permissions, migrations, external integrations, generated code boundaries.
+
+## Stop Criteria
+
+Stop scanning when all of these are true:
+
+- you can name the main entry point or startup path, or explicitly mark it `TODO:`
+- you can identify the main runtime boundary, app boundary, or workspace boundary
+- you can list the most important modules, contracts, or risk areas with evidence labels
+- you can produce a useful `Fast-Start Map` with concrete read-first paths
+- additional scanning would mostly add low-value detail rather than better navigation
+
+Do not continue scanning only to make every section look fuller.
 
 ## Canonical agent.md Schema
 
@@ -166,6 +181,16 @@ Never promote `Inferred:` or `TODO:` to `Verified:` without proof.
 - `Module Index`, `Pseudo-DSL`, and `Adjacency List` should emphasize runtime boundaries, ownership, and contract edges over cosmetic completeness.
 - If the repo evidence is sparse, leave sections smaller and mark uncertainty explicitly.
 - Do not fill sections with generic statements that would fit almost any repo.
+
+## Low-Evidence Fallbacks
+
+When evidence is present but still weak:
+
+- prefer a small map with `TODO:` and `Inferred:` labels over a broad speculative map
+- reduce `Module Index` to only the few modules you can defend
+- keep `Pseudo-DSL` and `Adjacency List` limited to the strongest edges
+- point `Fast-Start Map` to manifests, README, entrypoints, tests, or schema files that would resolve the uncertainty
+- if needed, reference [references/examples.md](references/examples.md) for compact good shape and [references/bad-output-examples.md](references/bad-output-examples.md) for anti-patterns
 
 ## Quality Checklist
 

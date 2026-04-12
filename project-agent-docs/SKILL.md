@@ -1,6 +1,9 @@
 ---
-name: project-agent-docs
-description: Use when routing repo guidance work between canonical maps, planning docs, and handoff state.
+name: |
+  project-agent-docs
+description: |
+  Use when routing repo guidance work between canonical maps,
+  planning docs, and handoff state.
 ---
 
 # Project Agent Docs
@@ -95,3 +98,17 @@ When the repo has only vague idea text or insufficient evidence:
 
 - Do not force `$project-map-agent-md` to build a full canonical map.
 - Prefer planning or ask for concrete repo evidence first.
+
+## Patch vs Rebuild Decision Table
+
+Use this table when existing canonical guidance is present:
+
+| Situation | Default action | Why |
+| --- | --- | --- |
+| Canonical guidance exists and is mostly accurate but stale in a few architecture areas | Patch via `$update-agent-handoff` | Preserve stable map structure and avoid unnecessary rewrite churn |
+| Canonical guidance exists but handoff is stale or bloated | Patch or prune via `$update-agent-handoff` | This is a state-sync problem, not a remapping problem |
+| Canonical guidance exists, but only commands or dependency labels are weak or outdated | Patch via `$update-agent-handoff` | Evidence can be tightened without rebuilding the map |
+| Canonical guidance is missing entirely | Build via `$project-map-agent-md` | No patch target exists |
+| Canonical guidance exists but is clearly broken, contradictory, or mapped to the wrong repo shape | Rebuild via `$project-map-agent-md` | Patch would preserve incorrect structure |
+| Canonical guidance is so incomplete that key runtime boundaries, entrypoints, or ownership edges are absent | Rebuild via `$project-map-agent-md` | The file is not trustworthy as a canonical base |
+| The repo itself still lacks concrete evidence | Do not rebuild yet | Planning or evidence gathering should happen first |

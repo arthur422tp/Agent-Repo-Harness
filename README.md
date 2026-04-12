@@ -24,8 +24,8 @@ English version: [README.en.md](README.en.md)
 | --- | --- |
 | 不確定該走哪個 repo-guidance workflow | `$project-agent-docs` |
 | 第一次從 concrete repo evidence 建立 canonical map | `$project-map-agent-md` |
-| repo 已有 canonical guidance，但可能過時，需要刷新 | `$update-agent-handoff` |
-| 只想同步目前 focus / blockers / resume context | `$update-agent-handoff` |
+| repo 已有 canonical guidance，但可能過時，需要 patch-level 刷新 | `$update-agent-handoff` |
+| 只想同步目前 focus、blockers 或 resume context | `$update-agent-handoff` |
 | 需要 detailed implementation plan、test plan、file-by-file breakdown | 不用這三個 repo-guidance skills，改走 planning workflow，例如 `writing-plans` |
 | repo 仍只是 idea 或 bare folder | 先補 concrete repo evidence，不要硬建完整 canonical map |
 
@@ -51,6 +51,8 @@ English version: [README.en.md](README.en.md)
 
 These files may imply architecture, runtime, contract, or command changes even when the local directory diff looks small.
 
+patch 與 rebuild 的更細決策表請看 [project-agent-docs/SKILL.md](project-agent-docs/SKILL.md)。
+
 ## Canonical `agent.md` 形狀
 
 `project-map-agent-md` 應維持根文件精簡、可導航、且有證據：
@@ -72,6 +74,8 @@ These files may imply architecture, runtime, contract, or command changes even w
 - `Pseudo-DSL` 與 `Adjacency List` 應表達 runtime / ownership / contract edges，而不是把目錄樹重寫一次。
 - 若 evidence 不足，寧可輸出更小但高訊號的 map。
 - Do not optimize for section completeness at the cost of navigational usefulness.
+- 當地圖已具導航價值時就應停止掃描，不要只是為了把 section 補滿而繼續掃。
+- 證據不足時，應使用 low-evidence fallback，而不是靠推測補完整。
 
 ## Handoff 形狀
 
@@ -90,6 +94,7 @@ These files may imply architecture, runtime, contract, or command changes even w
 - `Progress` 只記錄相對於 related plan 或前一個 session 最重要的 delta。
 - 不保留 history logs、長篇說明或 execution narratives。
 - 若詳細下一步已存在，應 link 到 planning doc，不要複製進 handoff。
+- 若已沒有有用的 current-state signal，應直接移除 handoff section。
 
 ## 何時該更新 `agent.md`
 
@@ -128,7 +133,7 @@ These files may imply architecture, runtime, contract, or command changes even w
 
 ## 評估與回歸案例
 
-回歸樣本放在 [references/evals/regression-cases.md](references/evals/regression-cases.md)，涵蓋：
+回歸樣本放在 [references/evals/regression-cases.md](references/evals/regression-cases.md)。它現在同時扮演 release checklist，涵蓋：
 
 - 小型單體 repo
 - frontend/backend split repo
@@ -145,6 +150,11 @@ These files may imply architecture, runtime, contract, or command changes even w
 - whether `agent.md` should update
 - whether handoff should update
 - common failure mode to avoid
+
+bad-output examples 放在：
+
+- [project-map-agent-md/references/bad-output-examples.md](project-map-agent-md/references/bad-output-examples.md)
+- [update-agent-handoff/references/bad-output-examples.md](update-agent-handoff/references/bad-output-examples.md)
 
 ## Install
 
@@ -182,10 +192,12 @@ project-map-agent-md/
   agents/openai.yaml
   references/examples.md
   references/scenarios.md
+  references/bad-output-examples.md
 update-agent-handoff/
   SKILL.md
   agents/openai.yaml
   references/handoff-example.md
+  references/bad-output-examples.md
 references/
   evals/
     regression-cases.md
@@ -198,3 +210,4 @@ references/
 - `update-agent-handoff` 應維持 compact state sync 與 significance assessment，不承擔 multi-step planning。
 - 優先寫結構化 decision rules，不要把 prompt 拉長成更模糊的 prose。
 - 不要預設 full-repo rescan；先做最小、可驗證的 patch 判斷。
+- regression cases 與 bad-output examples 應視為 release-gating references，而不是可有可無的樣本。

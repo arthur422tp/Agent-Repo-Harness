@@ -51,6 +51,8 @@ High-impact files include:
 
 These files may imply architecture, runtime, contract, or command changes even when the local directory diff looks small.
 
+For router-level patch vs rebuild decisions, see [project-agent-docs/SKILL.md](project-agent-docs/SKILL.md).
+
 ## Canonical agent.md Shape
 
 `project-map-agent-md` keeps the root guidance compact, navigable, and evidence-based:
@@ -72,6 +74,8 @@ Constraints:
 - `Pseudo-DSL` and `Adjacency List` should show runtime, ownership, and contract edges, not rephrase the directory tree.
 - If evidence is thin, produce a smaller high-signal map.
 - Do not optimize for section completeness at the cost of navigational usefulness.
+- Stop scanning once the map is navigationally useful; do not keep scanning only to fill sections.
+- Use low-evidence fallbacks instead of speculative completeness.
 
 ## Handoff Shape
 
@@ -90,6 +94,7 @@ Rules:
 - `Progress` should capture only the most important delta since the related plan or prior session.
 - Do not preserve history logs, long explanations, or execution narratives.
 - If detailed next steps exist, link to the planning doc instead of copying them into handoff.
+- Remove the handoff section entirely when no meaningful current-state signal remains.
 
 ## When agent.md Should Change
 
@@ -146,6 +151,11 @@ Each case records:
 - whether handoff should update
 - failure mode to avoid
 
+Bad-output examples live in:
+
+- [project-map-agent-md/references/bad-output-examples.md](project-map-agent-md/references/bad-output-examples.md)
+- [update-agent-handoff/references/bad-output-examples.md](update-agent-handoff/references/bad-output-examples.md)
+
 ## Install
 
 Copy the three skill directories into your Codex skills directory. For example, on Windows PowerShell:
@@ -182,10 +192,12 @@ project-map-agent-md/
   agents/openai.yaml
   references/examples.md
   references/scenarios.md
+  references/bad-output-examples.md
 update-agent-handoff/
   SKILL.md
   agents/openai.yaml
   references/handoff-example.md
+  references/bad-output-examples.md
 references/
   evals/
     regression-cases.md
@@ -198,3 +210,4 @@ references/
 - Keep `update-agent-handoff` focused on compact state sync and significance assessment, not multi-step planning.
 - Prefer structured decision rules over broad prose.
 - Do not default to full-repo rescans when a minimal patch decision is enough.
+- Treat regression cases and bad-output examples as release-gating references, not optional samples.

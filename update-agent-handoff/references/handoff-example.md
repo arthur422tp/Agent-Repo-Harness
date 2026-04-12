@@ -35,3 +35,31 @@ Use this only when the shape of a compact handoff update is uncertain. Keep the 
 - Kept progress to the single most important delta.
 - Kept the next pointer to one short line.
 - Left the detailed plan in the planning doc.
+
+## Remove Handoff Example
+
+When no useful current-state information remains, remove the section instead of keeping empty scaffolding.
+
+### Before
+
+```markdown
+## Handoff
+
+- Last updated: 2026-04-07
+- Current focus: None
+- Progress: None
+- Next pointer: None
+- Blockers: None
+- Related plan: None
+```
+
+### After
+
+```markdown
+<!-- Handoff section removed -->
+```
+
+### Why
+
+- no next-session signal remains
+- keeping the section would add noise rather than context

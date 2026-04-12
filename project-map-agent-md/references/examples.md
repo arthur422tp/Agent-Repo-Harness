@@ -99,3 +99,44 @@ Create module guidance only when local complexity or risk justifies it:
 
 - TODO: Confirm schema, migration, auth, billing, deploy, or external API coupling.
 ````
+
+## Low-Evidence Fallback Example
+
+When repo evidence is partial, keep the map smaller:
+
+````markdown
+# Agent Guidance
+
+## Project Overview
+
+- Verified: Repo name: `sample-repo`
+- Inferred: Stack: Node.js service
+- TODO: Confirm production startup path.
+
+## Fast-Start Map
+
+- `README.md`: current project intent and setup notes
+- `package.json`: script and dependency evidence
+- `src/index.ts`: likely runtime entrypoint
+- `tests/`: behavior coverage and missing boundary hints
+
+## Module Index
+
+- `App`
+  - role: Inferred: main service entry
+  - path: `src/`
+  - owns: TODO: confirm API or worker ownership
+  - depends_on: TODO
+  - used_by: TODO
+  - risk: Inferred: medium until startup and contract boundaries are confirmed
+
+## Known Gaps / TODO
+
+- TODO: Confirm whether this repo exposes HTTP routes, a worker, or both.
+- TODO: Confirm deployment target and environment boundary.
+````
+
+Why this is good:
+
+- it stays navigational without pretending to know the full architecture
+- it points to the best evidence for resolving uncertainty
