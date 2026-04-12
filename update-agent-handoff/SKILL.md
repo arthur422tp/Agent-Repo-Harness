@@ -1,81 +1,122 @@
 ---
 name: update-agent-handoff
-description: Update compact state in existing canonical guidance only.
+description: Use when syncing compact current-state notes and assessing whether changed files require canonical guidance updates.
 ---
 
 # Update Agent Handoff
 
-Update existing canonical repo guidance so the next session can resume. Do not create repo maps or implementation plans.
+Update only current-state guidance and patch `agent.md` only when architecture-significant facts changed.
+
+## Core Principle
+
+- `agent.md` is the map.
+- Planning docs are navigation.
+- Handoff is the current position.
+- Do not mix them.
 
 ## Boundary
 
-Use this skill only for compact state updates:
+Use this skill for:
 
-- session wrap-up or resume note
-- current active task
+- session wrap-up or resume state
+- current focus
+- concise progress delta
 - one-line next pointer
-- dependency TODO or verified command update
-- stale fact cleanup
-- blocker or decision needed
+- blockers
+- linking to the relevant planning doc
+- deciding whether changed files require a minimal `agent.md` patch
 
-Use `writing-plans` for implementation plans, test plans, file-by-file execution, code snippets, commit sequences, or detailed procedures.
+Do not use this skill for:
+
+- initial repo mapping
+- full repo rescans
+- implementation plans
+- test plans
+- chronological logs
 
 ## Workflow
 
 1. Read the canonical root guidance file first. Supported names: `agent.md`, `AGENT.md`, `AGENTS.md`, `claude.md`, `CLAUDE.md`.
-2. Preserve the canonical filename; do not create parallel full-content root guidance. If a secondary filename is needed, keep it as a short pointer only.
-3. Read module guidance only if the session touched that module.
-4. Update only changed facts, active task, blockers, dependency TODOs, verified commands, and one-line next pointer.
-5. Remove stale or completed state after verification.
-6. Prefer incremental edits; do not rewrite unrelated sections.
-7. Link to a `writing-plans` document when detailed planning exists or is needed.
+2. Preserve the canonical filename. Do not create a parallel full-content root guidance file.
+3. Inspect changed files first.
+4. From changed files, identify impacted modules.
+5. Assess architecture significance.
+6. If architecture significance is `yes`, patch `agent.md` minimally.
+7. If architecture significance is `no`, update only the handoff section or do nothing.
+8. Read module guidance only if the changed files or impacted modules require it.
+9. Remove stale or completed handoff state after verification.
+10. Link to a planning document when details exist elsewhere.
 
-## Reference Loading
+## Architecture Significance Gate
 
-- If update shape is uncertain, read `references/handoff-example.md` for a minimal before/after example.
+Update `agent.md` only when one or more of these changed:
+
+1. repository tree or module boundaries
+2. entry points or startup path
+3. cross-module dependencies or data flow
+4. external contracts such as APIs, schemas, migrations, integrations
+5. tooling commands or package-manager evidence
+6. risk map or skip zones
+7. an important `TODO:` or `Inferred:` fact that is now verified and belongs in canonical guidance
+
+If none of the above changed:
+
+- do not update `agent.md`
+- update only handoff if next-session state matters
+- otherwise do nothing
+
+## Minimal Patch Rules
+
+- Do not do a full repo scan by default.
+- Prioritize changed files, adjacent impacted modules, and the existing canonical guidance.
+- Patch only the affected lines or sections.
+- Do not rewrite the entire `agent.md` unless the current file is unusable.
+- Keep stable project-map content stable.
 
 ## Handoff Section Schema
 
-- `Last updated`: date.
-- `Current active task`: current task or `None`.
-- `Changed this session`: terse factual summary only.
-- `Read first next session`: paths only.
-- `Next recommended step`: one short pointer, not a plan.
-- `Blockers / decisions`: unresolved items only.
-- `Related plan`: path, if any.
+Keep the handoff short and state-only:
+
+- `Last updated`
+- `Current focus`
+- `Progress`
+- `Next pointer`
+- `Blockers`
+- `Related plan`
+
+### Handoff Rules
+
+- `Current focus`: the current main work item
+- `Progress`: only the most important delta
+- `Next pointer`: one short pointer, not a plan
+- `Blockers`: unresolved blockers or `None`
+- `Related plan`: planning doc path or `None`
+
+Do not include:
+
+- long background explanation
+- historical logs
+- detailed ordered steps
+- commit-style chronological notes
 
 ## Anti-Bloat Rules
 
 - Keep only next-session-relevant state.
 - Do not restate stable repo-map content unless it changed.
-- Do not preserve reasoning history, chronological logs, or completed work unless needed to avoid repeat work.
-- Keep handoff shorter than the repo map.
-- Preserve evidence labels; do not promote `Inferred:` or `TODO:` items to `Verified:` without proof.
-
-## Dependency / Module Updates
-
-Update dependency notes only when work revealed new manifests, lockfiles, package-manager evidence, verified/unverified commands, missing packages, unclear runtime versions, conflicts, or risky/outdated deps.
-
-Update module guidance only for touched modules or newly discovered module-specific risk: local active task, one-line next pointer, dependency notes, generated files, schemas, migrations, external contracts, or safety boundaries.
-
-## Maintenance Policy
-
-- Rewrite the handoff section only when its current shape is stale, contradictory, or too noisy to update safely.
-- Append a new fact only when it is next-session-relevant and not already captured elsewhere.
-- Replace stale facts instead of preserving historical notes.
-- Prune completed tasks, resolved blockers, outdated next steps, and chronological logs after verification.
-- Keep stable repo-map content in the map sections; keep temporary state in the handoff section.
-- If a handoff grows into multiple ordered tasks, link to a planning document or use `writing-plans` instead.
+- Replace stale facts instead of appending history.
+- Keep handoff shorter than the map.
+- Preserve `Verified:`, `Inferred:`, and `TODO:` labels when touching canonical facts.
+- If a handoff needs more than one short next pointer, move the detail to planning and link it.
 
 ## Quality Checklist
 
 Before finishing, verify:
 
-- The canonical root guidance filename was preserved.
-- No parallel full-content root guidance file was created.
-- The handoff is shorter than the repo map.
-- The handoff contains only next-session-relevant state.
-- `Verified:`, `Inferred:`, and `TODO:` labels were preserved and not promoted without evidence.
-- Detailed implementation plans, code snippets, commit sequences, and test plans were not added.
-- `Read first next session` contains paths only.
-- `Next recommended step` is one short pointer, not a multi-step plan.
+- the canonical root guidance filename was preserved
+- no parallel full-content guidance file was created
+- changed files were assessed before any canonical update
+- `agent.md` was updated only if the architecture-significance gate passed
+- any `agent.md` edit was a minimal patch
+- the handoff follows the minimal schema above
+- the handoff contains no detailed plan
+- `Related plan` points to a planning doc or `None`

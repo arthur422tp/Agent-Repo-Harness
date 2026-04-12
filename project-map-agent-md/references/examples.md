@@ -1,10 +1,10 @@
 # Project Map Examples
 
-Use these examples only when output shape is uncertain. Keep the final guidance specific to evidence from the target repo.
+Use these examples only when output shape is uncertain. Keep the final guidance tied to evidence from the target repo.
 
 ## Minimal `agent.md`
 
-```markdown
+````markdown
 # Agent Guidance
 
 ## Project Overview
@@ -14,74 +14,88 @@ Use these examples only when output shape is uncertain. Keep the final guidance 
 - Inferred: Stack: `<stack inferred from manifests>`
 - TODO: Confirm runtime version and deployment target.
 
-## Guidance Mission
-
-- Optimize for fast onboarding with low-token navigation.
-- Prefer verified paths and commands over broad summaries.
-- Do not edit generated, vendor, cache, or build output unless explicitly asked.
-
 ## Fast-Start Map
 
-- `README.md`: project overview and setup notes.
-- `package.json`: scripts and dependency evidence.
-- `src/`: primary application code.
-- `tests/`: test entry points.
-- `.github/workflows/`: CI commands, if present.
+- `README.md`: overview and setup notes
+- `<manifest>`: dependency and script evidence
+- `<entrypoint>`: runtime bootstrap
+- `<main module dir>`: primary code entry
+- `<tests dir>`: test entry points
 
-## Repository Map
+## Repository Tree
 
-- `src/`: application source and task entry points.
-- `tests/`: test coverage and examples.
-- `docs/`: project docs, if present.
+- `<app-or-src>/`
+  - `<feature-a>/`
+  - `<feature-b>/`
+- `<tests>/`
+- `<infra-or-config>/`
+- `<schema-or-migrations>/`
 
-## Skip / Expand-Later
+## Module Index
 
-- `node_modules/`, `dist/`, `build/`, `.next/`, `.cache/`: generated or dependency output.
-- Large generated snapshots or lockfile internals unless dependency work requires them.
+- `<ModuleName>`
+  - role: `<responsibility>`
+  - path: `<path>`
+  - owns: `<main files, contracts, or behavior>`
+  - depends_on: `<dependencies or None>`
+  - used_by: `<dependents or entrypoints>`
+  - risk: `<low/medium/high + why>`
+
+## Pseudo-DSL
+
+- `App -> Router`
+- `Router -> AuthModule`
+- `AuthModule -> AuthService`
+- `AuthService -> UserRepo`
+
+## Adjacency List
+
+- `App: Router`
+- `Router: AuthModule, UserModule`
+- `AuthService: JWTProvider, UserRepo`
 
 ## Risk Map
 
 - TODO: Confirm auth, billing, migration, deployment, and external API boundaries.
-- Inferred: Database or schema risk if migrations or ORM schema files exist.
-
-## Package & Dependency TODO
-
-- Verified: Checked `<manifest files>`.
-- TODO: Confirm install command if no lockfile or package manager evidence is clear.
+- Inferred: Schema or migration risk if contract files exist.
 
 ## Tooling & Commands
 
-- TODO: Verify install command.
+- Verified: Install: `<command if proven>`
+- TODO: Verify dev command.
 - TODO: Verify test command.
 - TODO: Verify lint/build commands.
 
 ## Known Gaps / TODO
 
-- TODO: Confirm production entry point.
 - TODO: Confirm generated-file boundaries.
-```
+- TODO: Confirm production startup path.
+````
 
 ## Module Guidance Pointer
 
-Create module guidance only when local risk or complexity justifies it:
+Create module guidance only when local complexity or risk justifies it:
 
-```markdown
+````markdown
 # `<module-path>` Agent Guidance
 
-## Module Purpose
+## Module Overview
 
-- Verified: `<what this module owns>`
+- Verified: role: `<responsibility>`
+- Verified: path: `<module-path>`
+- TODO: Confirm local contracts and runtime boundaries.
 
 ## Read First
 
 - `<module-path>/README.md`
 - `<module-path>/<entrypoint>`
 
-## Local Risks
+## Local Dependencies
 
-- TODO: Confirm external contracts, schemas, migrations, auth, or deploy coupling.
+- depends_on: `<deps or None>`
+- used_by: `<dependents or entrypoints>`
 
-## Local Commands
+## Local Risk
 
-- TODO: Verify module-specific test/build command.
-```
+- TODO: Confirm schema, migration, auth, billing, deploy, or external API coupling.
+````
