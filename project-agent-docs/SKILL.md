@@ -20,7 +20,7 @@ Use `$project-map-agent-md` for:
 
 - first-time canonical guidance creation
 - repo scan or onboarding after concrete repo evidence exists
-- stable project-map updates when the current guidance is missing or unusable
+- stable project-map updates when the current guidance is missing, unusable, or too wrong to patch safely
 
 Use `$update-agent-handoff` for:
 
@@ -28,6 +28,7 @@ Use `$update-agent-handoff` for:
 - compact current-focus updates
 - checking whether changed files require a minimal `agent.md` patch
 - pruning stale handoff state
+- refreshing existing canonical guidance when it mostly exists but may be stale
 
 Use `writing-plans` or another planning workflow for:
 
@@ -52,6 +53,8 @@ Use a planning or scaffolding workflow before repo-guidance skills when:
 - Do not put session state into the stable `agent.md` body.
 - Do not use handoff for multi-step planning.
 - Do not duplicate target-skill schemas here.
+- Default to patching existing canonical guidance before considering rebuild.
+- Rebuild only when the current canonical guidance is missing, clearly broken, or so stale that patching is less reliable than remapping.
 
 ## Mixed Requests
 
@@ -59,3 +62,36 @@ Use a planning or scaffolding workflow before repo-guidance skills when:
 - If the request is "what are we doing now / update resume context", use `$update-agent-handoff`.
 - If the request combines status plus detailed next steps, keep status in handoff and route the detailed steps to planning.
 - If the request combines initial mapping plus end-of-session state, create the canonical map first, then add a minimal handoff only if current-state capture is actually needed.
+
+## Conflict Resolution / Mixed Request Rules
+
+When canonical guidance already exists but may be outdated:
+
+- If the main need is to refresh architecture understanding, route to `$update-agent-handoff` first.
+- Prefer patching over rebuilding by default.
+- Escalate to `$project-map-agent-md` only when the existing canonical guidance is missing, clearly unusable, or materially misleading enough that targeted patching is not trustworthy.
+
+When the request mixes "organize or refresh repo guidance" with "tell me what to do next":
+
+- Handle repo guidance first.
+- Keep the "next" part to a short pointer or link.
+- Route detailed execution steps to planning.
+- Do not absorb a detailed plan into `agent.md` or handoff.
+
+When a planning doc already exists but handoff may be out of sync with real progress:
+
+- Keep the planning doc as the source of future steps.
+- Use handoff only for current focus, progress delta, blockers, and related-plan linkage.
+- Do not overwrite handoff by copying planning content verbatim.
+- Do not reinterpret unfinished planning steps as completed without fresh progress evidence.
+
+When only a few files changed but they include high-impact files:
+
+- Treat shared contracts, workspace config, CI, schema, migration, env template, generated client, bootstrap files, router registration, and infra config as architecture-sensitive.
+- Prefer `$update-agent-handoff` for deeper significance assessment instead of assuming the change is local.
+- Do not route purely by touched-file count.
+
+When the repo has only vague idea text or insufficient evidence:
+
+- Do not force `$project-map-agent-md` to build a full canonical map.
+- Prefer planning or ask for concrete repo evidence first.

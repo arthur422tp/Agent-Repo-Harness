@@ -39,13 +39,14 @@ Do not use this skill for:
 1. Read the canonical root guidance file first. Supported names: `agent.md`, `AGENT.md`, `AGENTS.md`, `claude.md`, `CLAUDE.md`.
 2. Preserve the canonical filename. Do not create a parallel full-content root guidance file.
 3. Inspect changed files first.
-4. From changed files, identify impacted modules.
-5. Assess architecture significance.
-6. If architecture significance is `yes`, patch `agent.md` minimally.
-7. If architecture significance is `no`, update only the handoff section or do nothing.
-8. Read module guidance only if the changed files or impacted modules require it.
-9. Remove stale or completed handoff state after verification.
-10. Link to a planning document when details exist elsewhere.
+4. Check for high-priority global triggers before narrowing to local modules.
+5. From changed files, identify impacted modules.
+6. Assess architecture significance.
+7. If architecture significance is `yes`, patch `agent.md` minimally.
+8. If architecture significance is `no`, update only the handoff section or do nothing.
+9. Read module guidance only if the changed files or impacted modules require it.
+10. Remove stale or completed handoff state after verification.
+11. Link to a planning document when details exist elsewhere.
 
 ## Architecture Significance Gate
 
@@ -64,6 +65,65 @@ If none of the above changed:
 - do not update `agent.md`
 - update only handoff if next-session state matters
 - otherwise do nothing
+
+## Architecture Significance Calibration
+
+Use these rules to avoid over-updating canonical guidance:
+
+- Code-level dependency change does not automatically mean architecture-level dependency change.
+- Internal refactor does not automatically mean module ownership change.
+- A new file does not automatically mean a new module.
+- New tests usually do not require `agent.md` updates unless they reveal a new entry point, runtime boundary, external contract, or previously unknown structure.
+- A command mentioned in docs is not a verified command.
+- Import relationships do not automatically equal runtime dependencies.
+- Prioritize runtime evidence such as config wiring, DI wiring, router registration, startup path, schema ownership, and external integrations over file adjacency.
+- Shared type, DTO, schema, or contract changes require elevated review and should not be judged only by the touched directory.
+- If the change only affects function internals, local helpers, naming, test coverage, or copy text, usually do not update `agent.md`.
+
+Treat the following as stronger architecture evidence than ordinary code edits:
+
+- bootstrap or startup registration
+- router or plugin registration
+- manifest or workspace linkage
+- schema ownership or migrations
+- external integration wiring
+- command definitions in executable repo config
+
+## High-Priority Global Triggers
+
+Escalate to architecture-sensitive review when changed files hit any of these areas:
+
+- workspace config
+- package manifests or lockfiles
+- CI or deploy config
+- Docker, compose, or infra config
+- env example or env schema
+- migrations, schema, OpenAPI, GraphQL, protobuf, or generated client
+- shared packages, common contracts, core app bootstrap, or router registration
+- auth, billing, permissions, secrets, or external integrations
+
+These files may imply architecture, runtime, contract, or command changes even when the local directory diff looks small.
+
+Do not stop at the nearest touched folder when one of these triggers is present. Review the related runtime boundary, ownership edge, or contract surface before deciding whether `agent.md` changes.
+
+## Evidence Thresholds
+
+Use evidence labels as a method, not formatting:
+
+- `Verified command`: only if observed in executable repo evidence such as package scripts, Makefile, task runner config, CI invocation, or directly executed and confirmed. Mention the source of verification when possible.
+- `Inferred command`: docs mention only, or a conventional guess from framework or tooling.
+- `Verified dependency edge`: runtime evidence such as router wiring, bootstrap registration, DI config, manifest or workspace linkage, schema ownership, external contract reference, or runtime config.
+- `Inferred dependency edge`: import path, naming convention, directory convention, or weak structural hints only.
+- `Verified contract change`: concrete schema, migration, generated client, API spec, config, or runtime registration evidence confirms the contract moved.
+- `Inferred contract change`: naming or colocated files suggest a contract edge, but ownership or runtime usage is not yet proven.
+
+## Repo Not Ready For Mapping
+
+If the repo is still a bare folder, only contains vague idea text, or lacks concrete evidence such as manifests, README, entry points, tests, config, or schema files:
+
+- do not rebuild or fabricate a full canonical map from pure intention
+- limit updates to handoff or explicit TODO notes
+- route full mapping work back to concrete repo evidence first
 
 ## Minimal Patch Rules
 
@@ -87,8 +147,8 @@ Keep the handoff short and state-only:
 ### Handoff Rules
 
 - `Current focus`: the current main work item
-- `Progress`: only the most important delta
-- `Next pointer`: one short pointer, not a plan
+- `Progress`: only the most important delta since the related plan or prior session
+- `Next pointer`: one short pointer, not a multi-step plan
 - `Blockers`: unresolved blockers or `None`
 - `Related plan`: planning doc path or `None`
 
@@ -98,6 +158,8 @@ Do not include:
 - historical logs
 - detailed ordered steps
 - commit-style chronological notes
+- execution narratives
+- copied planning detail when a plan document already exists
 
 ## Anti-Bloat Rules
 
@@ -107,6 +169,7 @@ Do not include:
 - Keep handoff shorter than the map.
 - Preserve `Verified:`, `Inferred:`, and `TODO:` labels when touching canonical facts.
 - If a handoff needs more than one short next pointer, move the detail to planning and link it.
+- If detailed next steps already exist, link to the planning doc instead of copying them into handoff.
 
 ## Quality Checklist
 

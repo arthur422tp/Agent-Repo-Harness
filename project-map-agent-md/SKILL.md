@@ -27,6 +27,7 @@ If the repo is only a bare folder or an idea with little concrete evidence, do n
 - Report that the repo is not ready for full mapping.
 - Ask for or wait for concrete repo evidence.
 - If the user explicitly insists, create only a minimal TODO-only skeleton.
+- Do not build a full canonical map from pure intention.
 
 ## Scope
 
@@ -69,6 +70,8 @@ Scan in this order and stop when you have enough evidence:
 
 The root file should stay compact and structured. Prefer tree form, bullets, pseudo-DSL, and adjacency lists over prose.
 
+Do not optimize for section completeness at the cost of navigational usefulness.
+
 - `Project Overview`
 - `Fast-Start Map`
 - `Repository Tree`
@@ -80,6 +83,12 @@ The root file should stay compact and structured. Prefer tree form, bullets, pse
 - `Known Gaps / TODO`
 
 ### Required Shape
+
+`Fast-Start Map`
+
+- List read-first paths with real navigational value.
+- Prefer concrete files or focused directories over vague top-level folder names.
+- Prioritize files that explain bootstrap, manifests, contracts, schemas, deploy, tests, or frequent task entry points.
 
 `Repository Tree`
 
@@ -94,20 +103,23 @@ The root file should stay compact and structured. Prefer tree form, bullets, pse
   - `depends_on`
   - `used_by`
   - `risk`
+- If evidence is weak, mark fields as `Inferred:` or `TODO:` instead of filling with generic prose.
 
 `Pseudo-DSL`
 
-- Show the main runtime or data-flow path in short edges, for example:
+- Show the main runtime, ownership, or contract path in short edges, for example:
   - `App -> Router`
   - `Router -> AuthModule`
   - `AuthModule -> AuthService`
   - `AuthService -> UserRepo`
+- Do not rewrite the directory tree as fake edges.
 
 `Adjacency List`
 
-- Show dependency edges in compact form, for example:
+- Show high-value runtime, ownership, or contract edges in compact form, for example:
   - `Router: AuthModule, UserModule`
   - `AuthService: JWTProvider, UserRepo`
+- Do not include low-signal edges just to make the section look complete.
 
 ## Structure Rules
 
@@ -117,6 +129,7 @@ The root file should stay compact and structured. Prefer tree form, bullets, pse
 - Prefer path references, trees, lists, and compact field blocks over prose paragraphs.
 - Mark unknown or uncertain facts explicitly.
 - Avoid full-repo narration.
+- If evidence is thin, produce a smaller high-signal map rather than a larger low-signal one.
 
 ## Module Threshold
 
@@ -132,11 +145,27 @@ Do not create module guidance for obvious helpers, thin wrappers, generated/vend
 
 ## Evidence Labels
 
-- `Verified:` confirmed by files or command output
-- `Inferred:` likely from names, conventions, manifests, or framework patterns
+- `Verified:` confirmed by files, executable repo config, or command output
+- `Inferred:` likely from names, conventions, manifests, imports, or framework patterns but not yet proven by runtime or ownership evidence
 - `TODO:` still unknown and worth confirming
 
 Never promote `Inferred:` or `TODO:` to `Verified:` without proof.
+
+### Evidence Thresholds
+
+- `Verified command`: only if observed in executable repo evidence such as package scripts, Makefile, task runner config, CI invocation, or directly executed and confirmed.
+- `Inferred command`: docs mention only, or a conventional guess from framework or tooling.
+- `Verified dependency edge`: runtime or ownership evidence such as router wiring, bootstrap registration, DI config, manifest or workspace linkage, schema ownership, external contract reference, or runtime config.
+- `Inferred dependency edge`: import path, naming convention, directory convention, or other weak structural hints only.
+- `Verified module ownership`: schema files, bootstrap code, deploy config, manifests, explicit docs, or entrypoint wiring show the module owns that concern.
+- `Inferred module ownership`: path naming or colocated files suggest ownership, but no strong evidence confirms it.
+
+## Anti-Empty-Map Rules
+
+- `Fast-Start Map` should guide a new model to the best read-first evidence, not restate obvious folder names.
+- `Module Index`, `Pseudo-DSL`, and `Adjacency List` should emphasize runtime boundaries, ownership, and contract edges over cosmetic completeness.
+- If the repo evidence is sparse, leave sections smaller and mark uncertainty explicitly.
+- Do not fill sections with generic statements that would fit almost any repo.
 
 ## Quality Checklist
 

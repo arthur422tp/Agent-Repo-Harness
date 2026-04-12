@@ -2,9 +2,7 @@
 
 Chinese version: [README.md](README.md)
 
-This repo contains three skills for Codex / agent workflows. They are designed to create, route, and update project guidance documents without mixing stable repo knowledge, planning, and current-session state.
-
-## Core Principle
+This repo contains three skills for Codex or agent workflows. The design is intentionally three-layered:
 
 - `agent.md` is the map
 - planning docs are navigation
@@ -16,23 +14,46 @@ Do not mix them.
 
 | Skill | Purpose |
 | --- | --- |
-| `project-agent-docs` | Router. Use this when you are not sure whether to create a repo map, update a handoff, or send the work to planning. |
-| `project-map-agent-md` | Initializes canonical repo guidance such as `agent.md` or `AGENTS.md` from concrete repository evidence. |
-| `update-agent-handoff` | Updates minimal handoff state in existing canonical guidance and decides whether a small `agent.md` patch is actually needed. |
+| `project-agent-docs` | Router and dispatcher for repo-guidance work. |
+| `project-map-agent-md` | Creates or rebuilds canonical repo guidance from concrete repository evidence. |
+| `update-agent-handoff` | Updates compact handoff state and decides whether an existing canonical map needs a minimal patch. |
 
-## When To Use Which
+## Routing Rules
 
 | Goal | Recommended Skill |
 | --- | --- |
-| You are not sure which repo-guidance workflow to use | `$project-agent-docs` |
-| The repo already has concrete evidence such as README, manifests, entry points, tests, infra, or schemas, and you want a canonical map | `$project-map-agent-md` |
-| You only want to sync concise next-session state | `$update-agent-handoff` |
-| You need a detailed implementation plan, test plan, or file-by-file task breakdown | Do not use these three repo-guidance skills; use a planning skill such as `writing-plans` |
-| The repo is still just an idea or a bare folder with little concrete evidence | Create concrete repo evidence first, then use `$project-map-agent-md` |
+| Unsure which repo-guidance workflow to use | `$project-agent-docs` |
+| First canonical repo map from concrete repo evidence | `$project-map-agent-md` |
+| Existing canonical guidance may be stale and needs patch-level refresh | `$update-agent-handoff` |
+| Session state, current focus, blockers, or resume context | `$update-agent-handoff` |
+| Detailed implementation plan, test plan, or file-by-file task breakdown | Use a planning workflow such as `writing-plans`, not these repo-guidance skills |
+| Repo is still mostly an idea or a bare folder | Gather concrete repo evidence first; do not force a full canonical map |
+
+## Router Decisions That Must Stay Stable
+
+- Prefer patching existing canonical guidance before rebuilding it.
+- Rebuild only when the current canonical guidance is missing, broken, or too misleading to patch safely.
+- If a request mixes "refresh repo understanding" with "tell me what to do next", handle repo guidance first and keep the next-step output to a short pointer or plan link.
+- Planning docs remain the source of future steps.
+- Handoff records only current focus, progress delta, blockers, and a related-plan pointer.
+- Small diffs in high-impact files still require deeper significance review.
+
+High-impact files include:
+
+- workspace config
+- package manifests and lockfiles
+- CI or deploy config
+- Docker, compose, or infra config
+- env examples or env schema
+- migrations, schema, OpenAPI, GraphQL, protobuf, or generated clients
+- shared packages, common contracts, bootstrap files, or router registration
+- auth, billing, permissions, secrets, or external integrations
+
+These files may imply architecture, runtime, contract, or command changes even when the local directory diff looks small.
 
 ## Canonical agent.md Shape
 
-`project-map-agent-md` keeps the root guidance stable, compact, and low-token:
+`project-map-agent-md` keeps the root guidance compact, navigable, and evidence-based:
 
 - `Project Overview`
 - `Fast-Start Map`
@@ -44,11 +65,17 @@ Do not mix them.
 - `Tooling & Commands`
 - `Known Gaps / TODO`
 
-The preferred representation is tree structure, bullets, pseudo-DSL, and adjacency lists rather than long prose.
+Constraints:
+
+- `Fast-Start Map` should list read-first paths with real navigational value.
+- `Module Index` should prefer `role`, `path`, `owns`, `depends_on`, `used_by`, and `risk` when evidence exists.
+- `Pseudo-DSL` and `Adjacency List` should show runtime, ownership, and contract edges, not rephrase the directory tree.
+- If evidence is thin, produce a smaller high-signal map.
+- Do not optimize for section completeness at the cost of navigational usefulness.
 
 ## Handoff Shape
 
-`update-agent-handoff` keeps handoff intentionally thin:
+`update-agent-handoff` keeps handoff intentionally thin and state-only:
 
 - `Last updated`
 - `Current focus`
@@ -57,43 +84,67 @@ The preferred representation is tree structure, bullets, pseudo-DSL, and adjacen
 - `Blockers`
 - `Related plan`
 
-The handoff should answer only:
+Rules:
 
-- what is being worked on now
-- how far it got
-- the shortest next pointer
-- whether anything is blocked
-- where the detailed plan lives
+- `Next pointer` must be one short pointer, not a multi-step plan.
+- `Progress` should capture only the most important delta since the related plan or prior session.
+- Do not preserve history logs, long explanations, or execution narratives.
+- If detailed next steps exist, link to the planning doc instead of copying them into handoff.
 
 ## When agent.md Should Change
 
-`update-agent-handoff` should not update `agent.md` after every code change. It should patch canonical guidance only when one of these changed:
+`update-agent-handoff` should patch canonical guidance only when architecture-significant facts changed, such as:
 
 1. repository tree or module boundaries
 2. entry points or startup path
 3. cross-module dependencies or data flow
 4. external contracts such as APIs, schemas, migrations, or integrations
-5. tooling commands or package-manager evidence
+5. tooling commands backed by executable repo evidence
 6. risk map or skip zones
-7. an important `TODO:` or `Inferred:` fact that is now verified and belongs in canonical guidance
+7. an important `TODO:` or `Inferred:` fact that is now verified
 
-If none of those changed:
+Calibration rules:
 
-- do not update `agent.md`
-- update only handoff, or do nothing
+- code-level dependency change does not automatically mean architecture-level dependency change
+- internal refactor does not automatically mean module ownership change
+- a new file does not automatically mean a new module
+- new tests usually do not require `agent.md` updates unless they reveal a new entry point, runtime boundary, external contract, or previously unknown structure
+- docs mentioning a command do not make it a verified command
+- imports do not automatically equal runtime dependencies
+- shared type, DTO, schema, or contract changes require elevated review
+- function-internal changes, local helpers, naming, test coverage, or copy changes usually do not require `agent.md` updates
 
-## Change Impact Assessment
+## Evidence Labels
 
-The update flow is intentionally narrow:
+Use labels as a method, not decoration:
 
-`changed files -> impacted modules -> architecture significance assessment -> yes: patch agent.md minimally -> no: update only handoff or do nothing`
+- `Verified command`: present in package scripts, Makefile, task-runner config, CI invocation, or directly executed and confirmed
+- `Inferred command`: docs mention only, or a conventional framework or tooling guess
+- `Verified dependency edge`: proven by router wiring, bootstrap registration, DI config, manifest or workspace linkage, schema ownership, external contract reference, or runtime config
+- `Inferred dependency edge`: suggested only by imports, names, or directory conventions
+- `TODO`: still unknown and worth confirming
 
-This means:
+Never promote `Inferred:` or `TODO:` to `Verified:` without stronger evidence.
 
-- no default full-repo scan
-- no full rewrite of `agent.md`
-- minimal necessary updates first
-- inspect changed files, adjacent impacted modules, and existing canonical guidance only
+## Evaluation Cases
+
+Regression examples live in [references/evals/regression-cases.md](references/evals/regression-cases.md). They cover:
+
+- small monolith repo
+- frontend/backend split repo
+- monorepo
+- infra-heavy repo
+- repo with stale `agent.md`
+- repo with planning docs but no canonical map
+- small diff that actually changes a shared contract
+
+Each case records:
+
+- input context
+- expected route
+- whether `agent.md` should update
+- whether handoff should update
+- failure mode to avoid
 
 ## Install
 
@@ -106,8 +157,6 @@ Copy-Item -Recurse -Force .\project-map-agent-md $target
 Copy-Item -Recurse -Force .\update-agent-handoff $target
 ```
 
-If you use a different Codex home or skills path, replace `$target` with the correct location. If your current Codex session does not see the new skills after copying them, starting a new session is usually enough.
-
 ## Example Prompts
 
 ```text
@@ -119,17 +168,7 @@ Use $project-map-agent-md to create a compact canonical repo guidance map from t
 ```
 
 ```text
-Use $update-agent-handoff to update compact session state in the existing canonical repo guidance.
-```
-
-You can also phrase the request naturally:
-
-```text
-Create an agent.md for this scaffolded repo so the next agent can onboard quickly.
-```
-
-```text
-Update the handoff so it only keeps the current status, the shortest next pointer, blockers, and a link to the planning doc.
+Use $update-agent-handoff to refresh compact current-state guidance and patch agent.md only if the architecture-significance gate passes.
 ```
 
 ## Repository Layout
@@ -147,15 +186,15 @@ update-agent-handoff/
   SKILL.md
   agents/openai.yaml
   references/handoff-example.md
+references/
+  evals/
+    regression-cases.md
 ```
-
-Each `SKILL.md` contains the main rules. Each `agents/openai.yaml` provides UI metadata and the default prompt. Files in `references/` are loaded only when needed, so the main skills stay short and stable.
 
 ## Notes For Maintainers
 
-Keep the boundaries between these three skills clear:
-
-- `project-agent-docs` should only route requests and should not duplicate full schemas.
-- `project-map-agent-md` should only maintain the stable repo map and should not store session state or planning detail.
-- `update-agent-handoff` should only maintain compact state and impact assessment, not detailed plans.
-- If the content starts needing ordered execution steps, testing strategy, or file-level tasks, move that detail into planning docs and keep only a pointer in guidance.
+- Keep `project-agent-docs` as a router and conflict resolver, not a duplicate schema.
+- Keep `project-map-agent-md` focused on stable repo mapping, not planning or session state.
+- Keep `update-agent-handoff` focused on compact state sync and significance assessment, not multi-step planning.
+- Prefer structured decision rules over broad prose.
+- Do not default to full-repo rescans when a minimal patch decision is enough.
