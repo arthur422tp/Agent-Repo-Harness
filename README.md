@@ -24,12 +24,13 @@ Agent-Repo-Harness
   = subagent context packets / discoveries memory / domain risk review
 ```
 
-## Current Status: MVP
+## Current Status: v0.2 Enforced Harness MVP
 
-目前這個 repo 是 **lightweight harness MVP**。
+目前這個 repo 是 **v0.2 Enforced Harness MVP**。
 
 - 它提供 templates、skills、scripts、examples
-- 它負責 repo-aware workflow 與 verification / policy gates
+- 它負責 repo-aware workflow 與 enforceable verification / policy / scope
+  gates
 - 它**不是**完整 agent runtime
 - 它**不是** MCP server
 
@@ -51,6 +52,7 @@ bash install-agent-harness.sh /path/to/target-repo
 bash scripts/agent-preflight.sh
 bash scripts/check-agent-md.sh agent.md
 bash scripts/check-policy.sh
+bash scripts/check-scope.sh
 bash scripts/agent-verify.sh
 ```
 
@@ -82,7 +84,8 @@ Run scripts/agent-preflight.sh.
 Use Superpowers-compatible workflow.
 Create subagent context packets.
 Apply policy-gate before touching high-risk files.
-Run scripts/check-policy.sh and scripts/agent-verify.sh before finishing.
+Run scripts/check-policy.sh、scripts/check-scope.sh、scripts/agent-verify.sh
+before finishing.
 Update handoff.md if task state changed.
 
 Task:
@@ -112,9 +115,10 @@ Use $subagent-context-packet before dispatching coding or review subagents.
 
 ## 現在提供什麼
 
-- `templates/`: `agent.md` 與 `handoff.md` 樣板、`docs/agent/` 長期與短期
-  記憶樣板、`scripts/` 安全預設的 preflight / verify / policy / context
-  scripts，以及 `.agent/` harness 與 policy 設定
+- `templates/`: `agent.md`、`handoff.md`、`.agent/task.yml` 樣板、
+  `docs/agent/` 長期與短期記憶樣板、`scripts/` 安全預設的
+  preflight / verify / policy / scope / context scripts，以及 `.agent/`
+  harness 與 policy 設定
 - `skills/`: `harness-entrypoint`、`repo-context-bootstrap`、
   `repo-map-maintenance`、`handoff-update`、`subagent-context-packet`、
   `policy-gate`、`verification-gate`、`discoveries-memory`、
@@ -164,20 +168,24 @@ bash install-agent-harness.sh /path/to/target-repo
 
 ```bash
 scripts/check-policy.sh
+scripts/check-scope.sh
 scripts/agent-verify.sh
 ```
 
 6. 更新 `handoff.md` 與 `docs/agent/discoveries.md`。
+7. 若 repo 要把高風險變更變成阻斷 gate，可使用
+   `scripts/check-policy.sh --strict`。
 
 ## File Responsibilities
 
 - `agent.md`：穩定的 repo map 與 repo-specific 規則
 - `handoff.md`：只記錄目前 task state
+- `.agent/task.yml`：machine-readable current task state 與 scope 限制
 - `docs/agent/known-issues.md`：長期 gotchas 與重複踩雷點
 - `docs/agent/discoveries.md`：短期 discoveries，供後續 subagent 重用
 - `.agent/harness.yml`：harness 行為與 workflow 要求
 - `.agent/policy.yml`：高風險 pattern 與完成前 gate
-- `scripts/`：preflight、policy、context、verification helpers
+- `scripts/`：preflight、policy、scope、context、verification helpers
 
 ## Example Prompts
 
@@ -194,7 +202,8 @@ scripts/agent-verify.sh
 - Superpowers 繼續負責開發流程
 - Agent-Repo-Harness 只增加 project-aware control，不建立新 runtime
 - stable repo map 與 current task state 必須分離
-- policy 與 verification 在 completion 前必須明確檢查
+- policy、scope、verification 在 completion 前必須明確檢查
+- machine-readable task state 可以驅動 enforceable guardrails
 - discoveries 應被記錄並跨 session 重用
 
 ## FAQ
@@ -225,9 +234,12 @@ scripts/agent-verify.sh
 - 沒有建立完整 agent runtime
 - 沒有建立 MCP server
 - `agent-verify.sh` 預設採 strict mode，並提供 `--best-effort` 給尚未完整
-  配置的 repo 做非阻斷檢查；目標 repo 仍應自行客製
+  配置的 repo 做非阻斷檢查；也可從 `.agent/harness.yml` 讀取 repo
+  自訂 verification commands；目標 repo 仍應自行客製
 - `check-policy.sh` 使用的是輕量 pattern matching，不是完整 policy
   engine
+- `check-scope.sh` 使用簡化 YAML subset parser，對 untracked files 的
+  line counting 採 `wc -l` 近似值
 
 ## 參考與既有資產
 

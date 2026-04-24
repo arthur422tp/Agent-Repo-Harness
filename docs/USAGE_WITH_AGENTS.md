@@ -42,8 +42,19 @@ of:
 
 ```bash
 scripts/check-policy.sh
+scripts/check-scope.sh
 scripts/agent-verify.sh
 ```
+
+Notes:
+
+- `scripts/check-policy.sh --strict` turns high-risk matches into a blocking
+  gate unless explicit approval is recorded.
+- `scripts/check-scope.sh` enforces `.agent/task.yml` path and change-budget
+  limits when that file exists.
+- `.agent/task.yml` is machine-readable task state for repo-aware gates.
+- Agent-Repo-Harness remains a control layer, not an agent runtime or MCP
+  server.
 
 ## Avoid This
 

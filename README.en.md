@@ -24,12 +24,13 @@ Agent-Repo-Harness
   = subagent context packets / discoveries memory / domain risk review
 ```
 
-## Current Status: MVP
+## Current Status: v0.2 Enforced Harness MVP
 
-This repository is currently a **lightweight harness MVP**.
+This repository is currently the **v0.2 Enforced Harness MVP**.
 
 - It ships templates, skills, scripts, and examples.
-- It adds repo-aware workflow control plus verification and policy gates.
+- It adds repo-aware workflow control plus enforceable policy, scope, and
+  verification gates.
 - It is **not** a full agent runtime.
 - It is **not** an MCP server.
 
@@ -51,6 +52,7 @@ bash install-agent-harness.sh /path/to/target-repo
 bash scripts/agent-preflight.sh
 bash scripts/check-agent-md.sh agent.md
 bash scripts/check-policy.sh
+bash scripts/check-scope.sh
 bash scripts/agent-verify.sh
 ```
 
@@ -83,7 +85,8 @@ Run scripts/agent-preflight.sh.
 Use Superpowers-compatible workflow.
 Create subagent context packets.
 Apply policy-gate before touching high-risk files.
-Run scripts/check-policy.sh and scripts/agent-verify.sh before finishing.
+Run scripts/check-policy.sh, scripts/check-scope.sh, and
+scripts/agent-verify.sh before finishing.
 Update handoff.md if task state changed.
 
 Task:
@@ -113,10 +116,10 @@ Use $subagent-context-packet before dispatching coding or review subagents.
 
 ## What This Repo Now Provides
 
-- `templates/`: `agent.md` and `handoff.md` templates, `docs/agent/`
-  long-term and short-term memory templates, `scripts/` safe-by-default
-  preflight / verification / policy / context helpers, and `.agent/`
-  harness and policy configuration
+- `templates/`: `agent.md`, `handoff.md`, and `.agent/task.yml` templates,
+  `docs/agent/` long-term and short-term memory templates, `scripts/`
+  safe-by-default preflight / verification / policy / scope / context
+  helpers, and `.agent/` harness and policy configuration
 - `skills/`: `harness-entrypoint`, `repo-context-bootstrap`,
   `repo-map-maintenance`, `handoff-update`, `subagent-context-packet`,
   `policy-gate`, `verification-gate`, `discoveries-memory`, and
@@ -169,20 +172,24 @@ preserved as `.bak`.
 
 ```bash
 scripts/check-policy.sh
+scripts/check-scope.sh
 scripts/agent-verify.sh
 ```
 
 6. Update `handoff.md` and `docs/agent/discoveries.md`.
+7. Use `scripts/check-policy.sh --strict` when high-risk changes should block
+   completion unless explicitly approved.
 
 ## File Responsibilities
 
 - `agent.md`: stable repo map and repo-specific operating rules
 - `handoff.md`: current task state only
+- `.agent/task.yml`: machine-readable current task state and scope limits
 - `docs/agent/known-issues.md`: durable gotchas and repeated pitfalls
 - `docs/agent/discoveries.md`: short-term findings for later subagents
 - `.agent/harness.yml`: harness behavior and workflow expectations
 - `.agent/policy.yml`: high-risk patterns and finish gates
-- `scripts/`: preflight, policy, context, and verification helpers
+- `scripts/`: preflight, policy, scope, context, and verification helpers
 
 ## Example Prompts
 
@@ -202,7 +209,8 @@ scripts/agent-verify.sh
 - Superpowers stays in charge of the development workflow
 - Agent-Repo-Harness adds project-aware control, not a new runtime
 - stable repo map and current task state stay separate
-- policy and verification are explicit gates before completion
+- policy, scope, and verification are explicit gates before completion
+- machine-readable task state can drive enforceable guardrails
 - discoveries should be captured and reused across sessions
 
 ## FAQ
@@ -234,8 +242,11 @@ Current limits:
 - this is not a full agent runtime
 - this does not ship an MCP server
 - `agent-verify.sh` defaults to strict mode and supports `--best-effort` for
-  non-blocking verification in partially provisioned repos
+  non-blocking verification in partially provisioned repos; it can also run
+  repo-defined commands from `.agent/harness.yml`
 - `check-policy.sh` is lightweight pattern matching, not a full policy engine
+- `check-scope.sh` uses a simple YAML subset parser and approximates
+  untracked-file line counts with `wc -l`
 
 ## References And Carried-Forward Assets
 

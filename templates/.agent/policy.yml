@@ -1,5 +1,9 @@
 version: 1
 default_mode: warn
+approval:
+  high_risk:
+    env: AGENT_APPROVED_HIGH_RISK
+    file: .agent/approvals/high-risk-approved
 
 risk_files:
   high:
@@ -45,10 +49,13 @@ required_reviews:
 
 required_before_finish:
   - scripts/check-policy.sh
+  - scripts/check-scope.sh
   - scripts/agent-verify.sh
 
 notes:
   - Customize high-risk patterns for this repository after installation.
-  - Warning mode is the safe default for new installs.
+  - `check-policy.sh` defaults to warning mode and supports `--strict`.
+  - In strict mode, use the approval env var or approval file for explicit
+    high-risk authorization.
   - Policy workflow should be invoked through skills or repo config, not
     recopied into every task prompt.

@@ -40,6 +40,8 @@ have_cmd() {
   command -v "$1" >/dev/null 2>&1
 }
 
+repo_defined_checks_found=0
+
 failures=0
 warnings=0
 checks_run=0
@@ -80,6 +82,62 @@ run_check() {
     echo "FAIL: $label"
     failures=$((failures + 1))
   fi
+}
+
+extract_required_verification_entries() {
+  local config_file="$1"
+
+  awk '
+    /^verification:/ { in_verification=1; next }
+    in_verification && /^[^[:space:]]/ { in_verification=0 }
+    in_verification && /^[[:space:]]*required:[[:space:]]*$/ { in_required=1; next }
+    in_required && substr($0, 1, 4) == "    " && $0 ~ /-[[:space:]]+name:[[:space:]]*/ {
+      line=$0
+      sub(/^[[:space:]]*-[[:space:]]*name:[[:space:]]*/, "", line)
+      gsub(/"/, "", line)
+      name=line
+      next
+    }
+    in_required && substr($0, 1, 6) == "      " && $0 ~ /command:[[:space:]]*/ {
+      line=$0
+      sub(/^[[:space:]]*command:[[:space:]]*/, "", line)
+      gsub(/"/, "", line)
+      printf "%s\t%s\n", name, line
+      next
+    }
+    in_required && /^[[:space:]]{2}[A-Za-z0-9_]+:/ { in_required=0 }
+  ' "$config_file"
+}
+
+run_configured_verification_checks() {
+  local config_file="$1"
+  local entries
+  local label
+  local command_string
+
+  entries="$(extract_required_verification_entries "$config_file")"
+  if [ -z "$entries" ]; then
+    return 0
+  fi
+
+  repo_defined_checks_found=1
+  echo
+  echo "== Repo-defined verification commands =="
+  echo "Config: $config_file"
+  echo "Repo-defined verification commands found."
+
+  while IFS=$'\t' read -r label command_string; do
+    [ -n "${label:-}" ] || continue
+    [ -n "${command_string:-}" ] || continue
+
+    echo "COMMAND: $command_string"
+    # Commands come from repo-owned config and may contain shell syntax.
+    # Running them through bash -lc keeps parsing centralized without adding
+    # external YAML or command parsing dependencies.
+    run_check "$label" bash -lc "$command_string"
+  done <<EOF
+$entries
+EOF
 }
 
 run_shell_syntax_checks() {
@@ -124,6 +182,10 @@ fi
 
 echo
 echo "== Detect and run common checks =="
+
+if [ -f .agent/harness.yml ]; then
+  run_configured_verification_checks .agent/harness.yml
+fi
 
 if [ -d scripts ] && find scripts -maxdepth 1 -type f -name "*.sh" | grep -q .; then
   run_check "bash -n scripts/*.sh" run_shell_syntax_checks

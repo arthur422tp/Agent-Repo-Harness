@@ -20,17 +20,20 @@ repeating it in every user prompt.
 
 ```bash
 scripts/check-policy.sh
+scripts/check-scope.sh
 scripts/agent-verify.sh
 ```
 
-3. Record both command results in `handoff.md`.
-4. If both commands pass:
+3. Record the required command results in `handoff.md`.
+4. If `.agent/task.yml` exists, keep its machine-readable verification state
+   aligned with the final result.
+5. If all required commands pass:
    - report the exact commands and results
-5. If either command fails:
+6. If either command fails:
    - fix minimally when appropriate
    - rerun the failed command
-   - do not claim verified until both commands pass
-6. If either command cannot run:
+   - do not claim verified until the required commands pass
+7. If either command cannot run:
    - explain why
    - record the limitation in `handoff.md`
    - mark completion as unverified
@@ -43,6 +46,7 @@ scripts/agent-verify.sh
 - Never say "verified" without command evidence.
 - `scripts/check-policy.sh` is required when files changed or when policy
   exists.
+- `scripts/check-scope.sh` is required when `.agent/task.yml` exists.
 - `scripts/agent-verify.sh` must be run before final completion.
-- Record both command results in `handoff.md`.
-- Do not claim verified if either command fails or cannot run.
+- Record required command results in `handoff.md`.
+- Do not claim verified if a required command fails or cannot run.

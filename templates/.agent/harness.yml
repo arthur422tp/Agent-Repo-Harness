@@ -5,6 +5,7 @@ mode: lightweight
 paths:
   agent_map: agent.md
   handoff: handoff.md
+  task_state: .agent/task.yml
   known_issues: docs/agent/known-issues.md
   discoveries: docs/agent/discoveries.md
   debug_recipes: docs/agent/debug-recipes
@@ -46,6 +47,7 @@ scripts:
   verify: scripts/agent-verify.sh
   collect_context: scripts/collect-context.sh
   check_policy: scripts/check-policy.sh
+  check_scope: scripts/check-scope.sh
   check_agent_map: scripts/check-agent-md.sh
 
 subagents:
@@ -65,7 +67,14 @@ reviews:
 
 verification:
   required_policy_command: scripts/check-policy.sh
+  required_scope_command: scripts/check-scope.sh
   required_command: scripts/agent-verify.sh
+  # Optional repo-defined verification commands run before heuristic checks.
+  # required:
+  #   - name: lint
+  #     command: npm run lint
+  #   - name: tests
+  #     command: npm test
   allow_unverified_completion: false
 
 handoff:

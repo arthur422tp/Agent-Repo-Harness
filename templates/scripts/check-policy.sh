@@ -1,7 +1,48 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-policy_file="${1:-.agent/policy.yml}"
+usage() {
+  cat <<'EOF'
+Usage: check-policy.sh [--warn|--strict] [POLICY_FILE]
+
+Modes:
+  --warn    Default. Print high-risk matches but exit 0.
+  --strict  Exit 1 on high-risk matches unless approval is detected.
+  -h, --help
+            Show this help text.
+
+Approval for strict mode:
+  AGENT_APPROVED_HIGH_RISK=1
+  .agent/approvals/high-risk-approved
+EOF
+}
+
+mode="warn"
+policy_file=".agent/policy.yml"
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --warn)
+      mode="warn"
+      ;;
+    --strict)
+      mode="strict"
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      if [ "$policy_file" != ".agent/policy.yml" ]; then
+        echo "ERROR: multiple policy files provided"
+        usage
+        exit 2
+      fi
+      policy_file="$1"
+      ;;
+  esac
+  shift
+done
 
 if [ ! -f "$policy_file" ]; then
   echo "SKIP: policy file not found at $policy_file"
@@ -31,6 +72,23 @@ extract_patterns() {
   ' "$policy_file"
 }
 
+approval_detected=0
+approval_source=""
+
+detect_approval() {
+  if [ "${AGENT_APPROVED_HIGH_RISK:-}" = "1" ]; then
+    approval_detected=1
+    approval_source="environment"
+    return 0
+  fi
+
+  if [ -f ".agent/approvals/high-risk-approved" ]; then
+    approval_detected=1
+    approval_source="file"
+    return 0
+  fi
+}
+
 changed_files="$(list_changed_files)"
 
 if [ -z "$changed_files" ]; then
@@ -40,6 +98,7 @@ fi
 
 echo "== Policy Gate =="
 echo "Policy file: $policy_file"
+echo "Mode: $mode"
 
 matched=0
 while IFS= read -r pattern; do
@@ -64,7 +123,33 @@ EOF
 
 if [ "$matched" -eq 0 ]; then
   echo "No policy warnings."
-else
-  echo
-  echo "Review recommended before claiming completion."
+  exit 0
 fi
+
+echo
+echo "High-risk changes detected."
+detect_approval
+
+if [ "$approval_detected" -eq 1 ]; then
+  case "$approval_source" in
+    environment)
+      echo "High-risk approval detected from environment."
+      ;;
+    file)
+      echo "High-risk approval detected from .agent/approvals/high-risk-approved."
+      ;;
+  esac
+fi
+
+if [ "$mode" = "strict" ]; then
+  if [ "$approval_detected" -eq 1 ]; then
+    echo "Strict policy gate passed with approval."
+    exit 0
+  fi
+
+  echo "Strict policy gate failed."
+  echo "Action: set AGENT_APPROVED_HIGH_RISK=1 or create .agent/approvals/high-risk-approved if this change is explicitly approved."
+  exit 1
+fi
+
+echo "Review recommended before claiming completion."
