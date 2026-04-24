@@ -158,6 +158,7 @@ scripts/agent-verify.sh
 - shell scripts 語法正確
 - 安裝腳本語法正確
 - 模板檔案存在且 `check-agent-md.sh` 能檢查 `templates/agent.md`
+- `validate-harness.sh` 可重跑安裝與 installed-target smoke checks
 
 尚未做的事：
 

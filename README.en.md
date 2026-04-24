@@ -159,6 +159,7 @@ This repository currently validates:
 - installer script syntax
 - template presence
 - `templates/agent.md` structure via `check-agent-md.sh`
+- install and installed-target smoke checks via `validate-harness.sh`
 
 Current limits:
 
