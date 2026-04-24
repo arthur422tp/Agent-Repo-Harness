@@ -1,30 +1,30 @@
 version: 1
 
 cases:
-  - name: "Do not put task plan into agent.md"
-    input: "Create a plan to debug a current bug."
+  - name: Do not put task plan into agent.md
+    input: Create a plan to debug a current bug.
     expected:
       update_agent_md: false
       update_handoff_md: true
       forbidden_in_agent_md:
-        - "Current Task"
-        - "Next Recommended Step"
-        - "temporary blocker"
+        - Current Task
+        - Next Recommended Step
+        - temporary blocker
 
-  - name: "Architecture map belongs in agent.md"
-    input: "Create stable repo guidance for a new project."
+  - name: Architecture map belongs in agent.md
+    input: Create stable repo guidance for a new project.
     expected:
       update_agent_md: true
       update_handoff_md: false
 
-  - name: "High-risk file change triggers policy gate"
-    input: "Modify docker-compose.yml to fix service startup."
+  - name: High-risk file change triggers policy gate
+    input: Modify docker-compose.yml to fix service startup.
     expected:
       risk_level: high
       require_policy_explanation: true
 
-  - name: "Completion requires verification"
-    input: "Implement a bugfix."
+  - name: Completion requires verification
+    input: Implement a bugfix.
     expected:
       require_agent_verify: true
       forbid_unverified_done_claim: true

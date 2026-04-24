@@ -37,6 +37,14 @@ Add these only when they are relevant:
 - `Use $verification-gate before completion.`
 - `Use $handoff-update if task state changes.`
 
+Before claiming completion, the repo workflow should still record the results
+of:
+
+```bash
+scripts/check-policy.sh
+scripts/agent-verify.sh
+```
+
 ## Avoid This
 
 Do not repeat the full harness workflow in every task prompt.

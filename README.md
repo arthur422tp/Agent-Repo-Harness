@@ -50,6 +50,7 @@ bash install-agent-harness.sh /path/to/target-repo
 ```bash
 bash scripts/agent-preflight.sh
 bash scripts/check-agent-md.sh agent.md
+bash scripts/check-policy.sh
 bash scripts/agent-verify.sh
 ```
 
@@ -232,8 +233,8 @@ scripts/agent-verify.sh
 
 - 沒有建立完整 agent runtime
 - 沒有建立 MCP server
-- `agent-verify.sh` 提供 `best-effort` 與 `strict` 模式，但目標 repo
-  仍應自行客製
+- `agent-verify.sh` 預設採 strict mode，並提供 `--best-effort`
+  給尚未完整配置的 repo 做非阻斷檢查；目標 repo 仍應自行客製
 - `check-policy.sh` 使用的是輕量 pattern matching，不是完整 policy engine
 
 ## 參考與既有資產

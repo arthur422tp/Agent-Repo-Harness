@@ -29,7 +29,11 @@ fi
 echo
 echo "== Recent commits =="
 if [ "$in_git_repo" -eq 1 ]; then
-  git log --oneline -5 || true
+  if git rev-parse --verify HEAD >/dev/null 2>&1; then
+    git log --oneline -5
+  else
+    echo "SKIP: no commits yet"
+  fi
 else
   echo "SKIP: not a git repository"
 fi

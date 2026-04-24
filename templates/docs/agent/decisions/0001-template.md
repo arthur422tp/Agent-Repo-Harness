@@ -2,8 +2,16 @@
 
 ## Context
 
+TODO
+
 ## Decision
+
+TODO
 
 ## Consequences
 
+TODO
+
 ## Verification
+
+TODO

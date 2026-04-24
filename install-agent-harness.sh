@@ -112,8 +112,10 @@ while IFS= read -r -d '' path; do
   copy_path "$path" "$dest"
 done < <(find "$template_root" -mindepth 1 -print0 | sort -z)
 
-if [ -d "$target/scripts" ]; then
-  chmod +x "$target"/scripts/*.sh 2>/dev/null || true
+if [ -d "$target/scripts" ] && find "$target/scripts" -maxdepth 1 -type f -name "*.sh" | grep -q .; then
+  while IFS= read -r -d '' script; do
+    chmod +x "$script"
+  done < <(find "$target/scripts" -maxdepth 1 -type f -name "*.sh" -print0)
 fi
 
 echo "Install complete."
@@ -123,4 +125,5 @@ echo "1. Review $target/agent.md and fill in repo-specific facts."
 echo "2. Review $target/.agent/policy.yml and customize risk patterns."
 echo "3. Run: cd $target && bash scripts/agent-preflight.sh"
 echo "4. Run: cd $target && bash scripts/check-agent-md.sh agent.md"
-echo "5. Run: cd $target && bash scripts/agent-verify.sh"
+echo "5. Run: cd $target && bash scripts/check-policy.sh"
+echo "6. Run: cd $target && bash scripts/agent-verify.sh"

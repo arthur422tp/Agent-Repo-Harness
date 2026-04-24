@@ -1,14 +1,34 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-mode="${1:-best-effort}"
+usage() {
+  cat <<'EOF'
+Usage: agent-verify.sh [--strict|--best-effort]
 
-case "$mode" in
-  strict|best-effort)
+Modes:
+  --strict       Default. Missing tooling for detected checks is treated as a failure.
+  --best-effort  Missing tooling becomes a warning, but failed checks still fail.
+EOF
+}
+
+mode="strict"
+
+case "${1:-}" in
+  "")
+    ;;
+  --strict)
+    mode="strict"
+    ;;
+  --best-effort)
+    mode="best-effort"
+    ;;
+  -h|--help)
+    usage
+    exit 0
     ;;
   *)
-    echo "ERROR: unsupported mode: $mode"
-    echo "Usage: $0 [strict|best-effort]"
+    echo "ERROR: unsupported mode: ${1:-}"
+    usage
     exit 2
     ;;
 esac
@@ -21,15 +41,40 @@ have_cmd() {
 }
 
 failures=0
-skips=0
+warnings=0
+checks_run=0
 
-run_check() {
+mark_warning() {
+  local reason="$1"
+
+  echo "WARN: $reason"
+  warnings=$((warnings + 1))
+}
+
+handle_missing_tool() {
   local label="$1"
-  local command="$2"
 
   echo
   echo "RUN: $label"
-  if bash -lc "$command"; then
+  if [ "$mode" = "strict" ]; then
+    echo "FAIL: $label"
+    echo "Reason: required tool or dependency is unavailable."
+    failures=$((failures + 1))
+  else
+    echo "WARN: $label"
+    echo "Reason: required tool or dependency is unavailable."
+    warnings=$((warnings + 1))
+  fi
+}
+
+run_check() {
+  local label="$1"
+  shift
+
+  echo
+  echo "RUN: $label"
+  checks_run=$((checks_run + 1))
+  if "$@"; then
     echo "PASS: $label"
   else
     echo "FAIL: $label"
@@ -37,11 +82,31 @@ run_check() {
   fi
 }
 
-skip_check() {
-  local reason="$1"
+run_shell_syntax_checks() {
+  local file
+  local found=0
+  local status=0
 
-  echo "SKIP: $reason"
-  skips=$((skips + 1))
+  while IFS= read -r -d '' file; do
+    found=1
+    if ! bash -n "$file"; then
+      status=1
+    fi
+  done < <(find scripts -maxdepth 1 -type f -name "*.sh" -print0)
+
+  [ "$found" -eq 1 ] && [ "$status" -eq 0 ]
+}
+
+run_gofmt_check() {
+  local output
+
+  output="$(gofmt -l .)"
+  if [ -n "$output" ]; then
+    printf '%s\n' "$output"
+    return 1
+  fi
+
+  return 0
 }
 
 in_git_repo=0
@@ -54,78 +119,88 @@ echo "== Git diff stat =="
 if [ "$in_git_repo" -eq 1 ]; then
   git diff --stat
 else
-  echo "SKIP: not a git repository"
+  mark_warning "not a git repository"
 fi
 
 echo
 echo "== Detect and run common checks =="
 
+if [ -d scripts ] && find scripts -maxdepth 1 -type f -name "*.sh" | grep -q .; then
+  run_check "bash -n scripts/*.sh" run_shell_syntax_checks
+fi
+
 if [ -f package.json ]; then
   echo "Detected Node project"
   if have_cmd npm; then
-    run_check "npm run lint --if-present" "npm run lint --if-present"
-    run_check "npm run build --if-present" "npm run build --if-present"
-    run_check "npm test --if-present" "npm test --if-present"
+    run_check "npm run lint --if-present" npm run lint --if-present
+    run_check "npm run build --if-present" npm run build --if-present
+    run_check "npm test --if-present" npm test --if-present
   else
-    skip_check "npm not installed"
+    handle_missing_tool "npm project checks"
   fi
 fi
 
 if [ -f go.mod ]; then
   echo "Detected Go project"
   if have_cmd go; then
-    run_check "gofmt -l ." "gofmt -l ."
-    run_check "go test ./..." "go test ./..."
+    run_check "gofmt -l ." run_gofmt_check
+    run_check "go test ./..." go test ./...
   else
-    skip_check "go not installed"
+    handle_missing_tool "go project checks"
   fi
 fi
 
 if [ -f pyproject.toml ] || [ -f requirements.txt ]; then
   echo "Detected Python project"
   if have_cmd python3; then
-    run_check "python3 -m compileall ." "python3 -m compileall ."
+    run_check "python3 -m compileall ." python3 -m compileall .
   elif have_cmd python; then
-    run_check "python -m compileall ." "python -m compileall ."
+    run_check "python -m compileall ." python -m compileall .
   else
-    skip_check "python not installed"
+    handle_missing_tool "python compile check"
   fi
 
   if have_cmd pytest; then
-    run_check "pytest" "pytest"
+    run_check "pytest" pytest
   else
-    skip_check "pytest not installed"
+    handle_missing_tool "pytest"
   fi
 
   if have_cmd ruff; then
-    run_check "ruff check ." "ruff check ."
+    run_check "ruff check ." ruff check .
   else
-    skip_check "ruff not installed"
+    handle_missing_tool "ruff"
   fi
 fi
 
 if [ -f docker-compose.yml ] || [ -f compose.yml ]; then
   echo "Detected Docker Compose config"
   if have_cmd docker; then
-    run_check "docker compose config" "docker compose config >/dev/null"
+    run_check "docker compose config" docker compose config
   else
-    skip_check "docker not installed"
+    handle_missing_tool "docker compose config"
   fi
+fi
+
+if [ "$checks_run" -eq 0 ]; then
+  mark_warning "no verification checks were detected"
 fi
 
 echo
 echo "== Verification summary =="
+echo "Mode: $mode"
+echo "Checks run: $checks_run"
 echo "Failures: $failures"
-echo "Skips: $skips"
-
-if [ "$mode" = "strict" ] && [ "$skips" -gt 0 ]; then
-  echo "STRICT MODE: skipped checks are treated as failures."
-  exit 1
-fi
+echo "Warnings: $warnings"
 
 if [ "$failures" -gt 0 ]; then
   echo "Verification failed."
   exit 1
 fi
 
-echo "Verification completed."
+if [ "$warnings" -gt 0 ]; then
+  echo "Verification completed with warnings."
+  exit 0
+fi
+
+echo "Verification passed."

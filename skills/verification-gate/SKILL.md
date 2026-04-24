@@ -1,6 +1,7 @@
 ---
 name: verification-gate
-description: Require explicit verification evidence before claiming the work is complete.
+description: Require explicit verification evidence before claiming the work is
+  complete.
 ---
 
 # Verification Gate
@@ -13,21 +14,26 @@ repeating it in every user prompt.
 
 ## Workflow
 
-1. Before claiming completion, run:
+1. Decide whether `scripts/check-policy.sh` is required.
+   Run it when files changed or when `.agent/policy.yml` exists.
+2. Before final completion, run:
 
 ```bash
 scripts/check-policy.sh
 scripts/agent-verify.sh
 ```
 
-2. If both pass:
-   - report the commands and results
-3. If either fails:
-   - fix minimally and rerun
-4. If it cannot run:
+3. Record both command results in `handoff.md`.
+4. If both commands pass:
+   - report the exact commands and results
+5. If either command fails:
+   - fix minimally when appropriate
+   - rerun the failed command
+   - do not claim verified until both commands pass
+6. If either command cannot run:
    - explain why
+   - record the limitation in `handoff.md`
    - mark completion as unverified
-5. Record the last meaningful policy and verification results in `handoff.md`.
 
 ## Hard Rules
 
@@ -35,5 +41,8 @@ scripts/agent-verify.sh
 - Do not hide skipped checks.
 - Prefer repo-native commands over guessed commands.
 - Never say "verified" without command evidence.
-- `scripts/check-policy.sh` is part of the completion gate, not an optional
-  extra.
+- `scripts/check-policy.sh` is required when files changed or when policy
+  exists.
+- `scripts/agent-verify.sh` must be run before final completion.
+- Record both command results in `handoff.md`.
+- Do not claim verified if either command fails or cannot run.

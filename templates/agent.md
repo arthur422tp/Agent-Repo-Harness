@@ -1,6 +1,8 @@
 # agent.md
 
-> Put stable repo facts here. Do not use this file for one-time task instructions or repeated workflow prompts.
+> Put stable repo facts here.
+> Do not use this file for one-time task instructions or repeated workflow
+> prompts.
 
 ## Project Overview
 TODO: Describe what this repository does.
@@ -22,8 +24,11 @@ TODO: Describe the major modules and data flow.
 Before claiming completion, run:
 
 ```bash
+scripts/check-policy.sh
 scripts/agent-verify.sh
 ```
+
+Only claim verified if both commands pass.
 
 ## Risk Areas
 - TODO: files or modules that should not be changed casually
@@ -31,8 +36,11 @@ scripts/agent-verify.sh
 ## Agent Rules
 - Do not invent repo facts.
 - Mark uncertain items as `TODO:` or `Inferred:` until stronger evidence exists.
-- Use `Verified:` only for facts backed by files, executable config, or command output.
+- Use `Verified:` only for facts backed by files, executable config, or command
+  output.
 - Prefer minimal patches over broad rewrites.
 - Do not rewrite architecture unless explicitly requested.
-- Do not claim verified unless verification commands passed.
-- Keep reusable workflow in skills and keep one-time task instructions in the live user prompt.
+- Do not claim verified unless `scripts/check-policy.sh` and
+  `scripts/agent-verify.sh` both passed.
+- Keep reusable workflow in skills and keep one-time task instructions in the
+  live user prompt.

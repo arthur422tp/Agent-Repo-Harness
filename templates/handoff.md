@@ -1,6 +1,8 @@
 # handoff.md
 
-> Record current task state here. Do not turn this file into a reusable workflow prompt or a long execution log.
+> Record current task state here.
+> Do not turn this file into a reusable workflow prompt or a long execution
+> log.
 
 ## Current Task
 TODO
@@ -15,8 +17,8 @@ TODO
 - TODO
 
 ## Verification
-- Last command: TODO
-- Result: TODO
+- `scripts/check-policy.sh`: TODO
+- `scripts/agent-verify.sh`: TODO
 - Notes: TODO
 
 ## Open Issues

@@ -50,6 +50,7 @@ bash install-agent-harness.sh /path/to/target-repo
 ```bash
 bash scripts/agent-preflight.sh
 bash scripts/check-agent-md.sh agent.md
+bash scripts/check-policy.sh
 bash scripts/agent-verify.sh
 ```
 
@@ -233,8 +234,8 @@ Current limits:
 
 - this is not a full agent runtime
 - this does not ship an MCP server
-- `agent-verify.sh` provides `best-effort` and `strict` modes and should be
-  customized per target repo
+- `agent-verify.sh` defaults to strict mode and supports `--best-effort` for
+  non-blocking verification in partially provisioned repos
 - `check-policy.sh` is lightweight pattern matching, not a full policy engine
 
 ## References And Carried-Forward Assets
