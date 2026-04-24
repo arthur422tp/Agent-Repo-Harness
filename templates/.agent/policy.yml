@@ -1,0 +1,47 @@
+version: 1
+default_mode: warn
+
+risk_files:
+  high:
+    - ".github/workflows/**"
+    - "docker-compose*.yml"
+    - "compose*.yml"
+    - "Dockerfile"
+    - ".env*"
+    - "**/migrations/**"
+    - "**/schema/**"
+    - "**/auth/**"
+    - "**/permissions/**"
+    - "**/billing/**"
+    - "**/infra/**"
+    - "**/terraform/**"
+    - "*.tf"
+    - "openapi/**"
+    - "graphql/**"
+    - "proto/**"
+    - "secrets/**"
+
+rules:
+  - id: no-architecture-rewrite-without-approval
+    level: high
+    description: "Do not rewrite architecture unless explicitly requested."
+  - id: minimal-patch-first
+    level: medium
+    description: "Prefer minimal patches over broad refactors."
+  - id: verify-before-completion
+    level: high
+    description: "Do not claim completion unless verification command passes."
+  - id: update-handoff-on-state-change
+    level: medium
+    description: "Update handoff.md when task state, verification, blockers, or architecture-relevant context changes."
+
+required_reviews:
+  - "domain-risk-review"
+  - "verification-gate"
+
+required_before_finish:
+  - "scripts/agent-verify.sh"
+
+notes:
+  - Customize high-risk patterns for this repository after installation.
+  - Warning mode is the safe default for new installs.

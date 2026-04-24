@@ -8,6 +8,11 @@ description: |
 
 # Update Agent Handoff
 
+Migration note:
+- Legacy handoff updater kept for compatibility.
+- New installs should prefer `handoff-update`.
+- See [../references/harness-migration.md](../references/harness-migration.md).
+
 Update current-state guidance only after routing is complete.
 
 ## Shared Spec

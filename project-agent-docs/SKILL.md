@@ -8,6 +8,11 @@ description: |
 
 # Project Agent Docs
 
+Migration note:
+- Legacy router kept for compatibility.
+- New installs should prefer `harness-entrypoint` plus `repo-context-bootstrap`.
+- See [../references/harness-migration.md](../references/harness-migration.md).
+
 Act as the ONLY routing authority for repo-guidance work.
 
 ## Shared Spec

@@ -1,93 +1,177 @@
-# Project Agent Docs Skills
+# Agent-Repo-Harness
 
 English version: [README.en.md](README.en.md)
 
-## 這個 Repo 解決什麼問題
+## 這個 Repo 的目標
 
-這個 repo 用來幫 agent 把三種 repo guidance 分開且維持穩定：
+這個 repo 正在把 `Agent-Repo-Guide` 演進成 `Agent-Repo-Harness`。
 
-- `agent.md`：穩定的 repo 地圖
-- planning docs：未來執行步驟
-- handoff：下一個 session 要接手的目前位置
+核心原則不變：
 
-如果沒有這個分層，agent 很容易過度重寫地圖、把 planning 塞進 handoff，或搞不清楚這次到底改了什麼。
+- **不要取代 Superpowers**
+- **Superpowers 繼續負責開發流程**
+- **Agent-Repo-Harness 負責 repo-aware control layer**
 
-## 三個 Skill 何時用
-
-| Skill | 什麼時候用 | 不要拿來做什麼 |
-| --- | --- | --- |
-| `project-agent-docs` | 你需要先決定 repo-guidance 應該走哪條路 | 直接建立 map 或直接更新 handoff |
-| `project-map-agent-md` | 你要建立第一份 canonical map，或現有 map 已不可信 | session 狀態、blockers、詳細 planning |
-| `update-agent-handoff` | 你要同步目前狀態，或在既有 map 上做最小 patch | 初始 repo mapping 或 multi-step planning |
-
-## 六個真實情境對照
-
-| 情境 | 用哪個 | 原因 |
-| --- | --- | --- |
-| 新 scaffold repo，已有 README、manifest、entrypoint | `project-map-agent-md` | 還沒有 canonical map |
-| 已有 `agent.md`，但只想更新 blockers 與下一個 session 狀態 | `update-agent-handoff` | 這是 handoff-only 工作 |
-| 已有 `agent.md`，但 shared schema 或 CI 剛改過 | `update-agent-handoff` | 需要 architecture-sensitive patch review |
-| 已有 `agent.md`，但內容描述的是錯的 repo 形狀 | `project-map-agent-md` | patch 已不可信，應 rebuild |
-| 使用者問「下一步該做什麼？」 | planning workflow | 這是導航，不是 repo guidance |
-| 混合需求：整理 repo guidance 再告訴我下一步 | `project-agent-docs` 先 | 先由 router 決策，planning 保持分離 |
-
-## 常見誤用
-
-- 把 handoff 當成 mini plan
-- 明明只要 patch，卻整份重建 `agent.md`
-- repo 還只有想法，就硬做 canonical map
-- 只憑 import 就把依賴邊標成 verified
-- 把 examples 或長解釋塞回 `SKILL.md`
-
-## 最小安裝
-
-```powershell
-$target = "$env:USERPROFILE\.codex\skills"
-Copy-Item -Recurse -Force .\project-agent-docs $target
-Copy-Item -Recurse -Force .\project-map-agent-md $target
-Copy-Item -Recurse -Force .\update-agent-handoff $target
-```
-
-## 最小成功案例
-
-1. 打開一個已經有 `README.md`、manifest、entrypoint 的 repo。
-2. 問：`Use $project-agent-docs to choose the right canonical repo guidance workflow.`
-3. 如果它路由到 `project-map-agent-md`，就建立第一份 `agent.md`。
-4. 下一個 session 再用 `update-agent-handoff` 同步 blockers 與 current focus，但不要複製 planning 內容。
-
-## 先看哪裡
-
-- 共用術語與 labels：[references/shared-spec.md](references/shared-spec.md)
-- router 與 precedence：[project-agent-docs/SKILL.md](project-agent-docs/SKILL.md)
-- map builder：[project-map-agent-md/SKILL.md](project-map-agent-md/SKILL.md)
-- handoff 與 patch engine：[update-agent-handoff/SKILL.md](update-agent-handoff/SKILL.md)
-
-## References
-
-- 好的 map examples：[project-map-agent-md/references/examples.md](project-map-agent-md/references/examples.md)
-- 好的 handoff example：[update-agent-handoff/references/handoff-example.md](update-agent-handoff/references/handoff-example.md)
-- bad-output examples：[project-map-agent-md/references/bad-output-examples.md](project-map-agent-md/references/bad-output-examples.md)、[update-agent-handoff/references/bad-output-examples.md](update-agent-handoff/references/bad-output-examples.md)
-- release checks：[references/evals/regression-cases.md](references/evals/regression-cases.md)
-
-## Repository Layout
+分工如下：
 
 ```text
-project-agent-docs/
-  SKILL.md
-  agents/openai.yaml
-project-map-agent-md/
-  SKILL.md
-  agents/openai.yaml
-  references/examples.md
-  references/scenarios.md
-  references/bad-output-examples.md
-update-agent-handoff/
-  SKILL.md
-  agents/openai.yaml
-  references/handoff-example.md
-  references/bad-output-examples.md
-references/
-  shared-spec.md
-  evals/
-    regression-cases.md
+Superpowers
+  = brainstorming / writing-plans / subagent-driven-development
+  = test-driven-development / code review / finishing branch
+
+Agent-Repo-Harness
+  = agent.md / handoff.md / policy gates / verification gates
+  = subagent context packets / discoveries memory / domain risk review
 ```
+
+## Quick Start
+
+1. 先把 harness 安裝到目標 repo：
+
+```bash
+bash install-agent-harness.sh --dry-run /path/to/target-repo
+bash install-agent-harness.sh /path/to/target-repo
+```
+
+2. 在目標 repo 執行：
+
+```bash
+bash scripts/agent-preflight.sh
+bash scripts/check-agent-md.sh agent.md
+bash scripts/agent-verify.sh
+```
+
+3. 在非 trivial 的 repo 任務前先用 `harness-entrypoint`。
+4. 設計、計畫、TDD、執行、review 仍由 Superpowers 處理。
+
+## 現在提供什麼
+
+- `templates/`
+  - `agent.md` 與 `handoff.md` 樣板
+  - `docs/agent/` 長期與短期記憶樣板
+  - `scripts/` 安全預設的 preflight / verify / policy / context scripts
+  - `.agent/` harness 與 policy 設定
+- `skills/`
+  - `harness-entrypoint`
+  - `repo-context-bootstrap`
+  - `repo-map-maintenance`
+  - `handoff-update`
+  - `subagent-context-packet`
+  - `policy-gate`
+  - `verification-gate`
+  - `discoveries-memory`
+  - `domain-risk-review`
+- `install-agent-harness.sh`
+  - 將 `templates/` 複製到目標 repo
+- `examples/`
+  - Go IoT platform
+  - RAG contract system
+
+## 與既有 Agent-Repo-Guide 的關係
+
+這次 migration 採用 additive 方式，先保留原本 skill：
+
+- `project-agent-docs`
+- `project-map-agent-md`
+- `update-agent-handoff`
+
+對應關係：
+
+| 舊概念 | 新 harness 模組 |
+| --- | --- |
+| `project-agent-docs` | `harness-entrypoint` + `repo-context-bootstrap` |
+| `project-map-agent-md` | `repo-map-maintenance` |
+| `update-agent-handoff` | `handoff-update` |
+
+在新 skill 完整取代前，不會強制刪除舊內容。
+
+## 安裝方式
+
+把樣板安裝到目標 repo：
+
+```bash
+bash install-agent-harness.sh --dry-run /path/to/target-repo
+bash install-agent-harness.sh /path/to/target-repo
+```
+
+如果目標 repo 已經有同名檔案，installer 預設會跳過，不會覆蓋。要覆蓋必須顯式加 `--force`。
+如果你要保留被覆蓋檔案，可搭配 `--backup` 產生 `.bak`。
+
+## 典型使用流程
+
+1. 在目標 repo 安裝 harness 樣板。
+2. 用 `harness-entrypoint` 或 `repo-context-bootstrap` 讀取 repo context。
+3. 用 Superpowers 做設計、計畫、TDD、實作、review。
+4. dispatch subagent 前用 `subagent-context-packet` 準備 repo-aware context。
+5. 完成前跑：
+
+```bash
+scripts/check-policy.sh
+scripts/agent-verify.sh
+```
+
+6. 更新 `handoff.md` 與 `docs/agent/discoveries.md`。
+
+## File Responsibilities
+
+- `agent.md`：穩定的 repo map 與 repo-specific 規則
+- `handoff.md`：只記錄目前 task state
+- `docs/agent/known-issues.md`：長期 gotchas 與重複踩雷點
+- `docs/agent/discoveries.md`：短期 discoveries，供後續 subagent 重用
+- `.agent/harness.yml`：harness 行為與 workflow 要求
+- `.agent/policy.yml`：高風險 pattern 與完成前 gate
+- `scripts/`：preflight、policy、context、verification helpers
+
+## Example Prompts
+
+- `Use $harness-entrypoint before implementing this feature in the current repo.`
+- `Use $repo-context-bootstrap to initialize Agent-Repo-Harness files for this project.`
+- `Use $subagent-context-packet before dispatching a coding subagent for the auth fix.`
+- `Use $handoff-update after this session and keep the result concise.`
+- `Use $domain-risk-review on this retrieval pipeline change.`
+
+## Design Principles
+
+- Superpowers 繼續負責開發流程
+- Agent-Repo-Harness 只增加 project-aware control，不建立新 runtime
+- stable repo map 與 current task state 必須分離
+- policy 與 verification 在 completion 前必須明確檢查
+- discoveries 應被記錄並跨 session 重用
+
+## FAQ
+
+**這會取代 Superpowers 嗎？**
+不會。它是包在 Superpowers 外層的 repo-aware control layer。
+
+**這個 repo 有提供 runtime 或 MCP server 嗎？**
+沒有。這裡只提供 templates、scripts、skills、examples。
+
+**預設 scripts 應該原封不動直接用嗎？**
+不應該。它們是安全預設，安裝到目標 repo 後應再客製。
+
+**`agent.md` 應該放目前 implementation plan 嗎？**
+不應該。plan 應留在 planning docs，不應放進 stable repo map。
+
+## 驗證與限制
+
+目前這個 repo 只驗證：
+
+- shell scripts 語法正確
+- 安裝腳本語法正確
+- 模板檔案存在且 `check-agent-md.sh` 能檢查 `templates/agent.md`
+
+尚未做的事：
+
+- 沒有建立完整 agent runtime
+- 沒有建立 MCP server
+- `agent-verify.sh` 會依 repo 類型做 best-effort checks，但目標 repo 仍應自行客製
+- `check-policy.sh` 使用的是輕量 pattern matching，不是完整 policy engine
+
+## 參考與既有資產
+
+- 共享 label 與 guidance 邊界：[references/shared-spec.md](references/shared-spec.md)
+- migration 對照：[references/harness-migration.md](references/harness-migration.md)
+- regression cases：[references/evals/regression-cases.md](references/evals/regression-cases.md)
+- 舊 router skill：[project-agent-docs/SKILL.md](project-agent-docs/SKILL.md)
+- 舊 map maintenance skill：[project-map-agent-md/SKILL.md](project-map-agent-md/SKILL.md)
+- 舊 handoff update skill：[update-agent-handoff/SKILL.md](update-agent-handoff/SKILL.md)

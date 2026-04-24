@@ -8,6 +8,11 @@ description: |
 
 # Project Map Agent.md
 
+Migration note:
+- Legacy map builder kept for compatibility.
+- New installs should prefer `repo-map-maintenance`.
+- See [../references/harness-migration.md](../references/harness-migration.md).
+
 Build the stable repo map only after routing is complete.
 
 ## Shared Spec

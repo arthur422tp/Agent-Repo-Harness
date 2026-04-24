@@ -1,0 +1,63 @@
+name: "Agent Repo Harness"
+version: 1
+mode: lightweight
+
+paths:
+  agent_map: agent.md
+  handoff: handoff.md
+  known_issues: docs/agent/known-issues.md
+  discoveries: docs/agent/discoveries.md
+  debug_recipes: docs/agent/debug-recipes
+  decisions: docs/agent/decisions
+
+superpowers:
+  enabled: true
+  role: development_workflow_engine
+  preferred_execution: "subagent-driven-development"
+  require_tdd_for:
+    - feature
+    - bugfix
+    - refactor
+    - behavior-change
+  note: Agent-Repo-Harness wraps around Superpowers and does not replace it.
+
+context:
+  required_files:
+    - agent.md
+    - handoff.md
+    - .agent/policy.yml
+  optional_files:
+    - docs/agent/known-issues.md
+    - docs/agent/discoveries.md
+    - docs/agent/debug-recipes/
+
+scripts:
+  preflight: scripts/agent-preflight.sh
+  verify: scripts/agent-verify.sh
+  collect_context: scripts/collect-context.sh
+  check_policy: scripts/check-policy.sh
+  check_agent_map: scripts/check-agent-md.sh
+
+subagents:
+  require_context_packet: true
+  require_red_green_refactor_evidence: true
+  collect_discoveries: true
+
+reviews:
+  required:
+    - spec-compliance
+    - code-quality
+  optional:
+    - domain-risk
+
+verification:
+  required_command: "scripts/agent-verify.sh"
+  allow_unverified_completion: false
+
+handoff:
+  update_on:
+    - changed_architecture
+    - changed_config
+    - changed_verification_status
+    - unresolved_blocker
+    - new_known_issue
