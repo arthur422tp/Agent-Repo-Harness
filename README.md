@@ -56,6 +56,12 @@ bash scripts/check-scope.sh
 bash scripts/agent-verify.sh
 ```
 
+`scripts/check-scope.sh` 在你先為目前 task 配置 `.agent/task.yml` 後最有用；
+fresh install 預設不應因為 harness 自己安裝出的檔案而失敗。若要做嚴格
+task-scoped work，請先填好 `allowed_paths`、`forbidden_paths`、
+`max_changed_files`、`max_diff_lines`；否則它可用來確認目前沒有啟用任何
+task scope limits。
+
 3. 在非 trivial 的 repo 任務前先用 `harness-entrypoint`。
 4. 設計、計畫、TDD、執行、review 仍由 Superpowers 處理。
 
@@ -171,6 +177,9 @@ scripts/check-policy.sh
 scripts/check-scope.sh
 scripts/agent-verify.sh
 ```
+
+`scripts/check-scope.sh` 建議在已為當前 task 配置 `.agent/task.yml` 後執行；
+或用它確認目前沒有啟用任何 task scope limits。
 
 6. 更新 `handoff.md` 與 `docs/agent/discoveries.md`。
 7. 若 repo 要把高風險變更變成阻斷 gate，可使用

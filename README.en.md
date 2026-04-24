@@ -56,6 +56,13 @@ bash scripts/check-scope.sh
 bash scripts/agent-verify.sh
 ```
 
+`scripts/check-scope.sh` is most useful after `.agent/task.yml` has been
+configured for the current task. A fresh install should not fail scope
+checking by default. For strict task-scoped work, fill in
+`allowed_paths`, `forbidden_paths`, `max_changed_files`, and
+`max_diff_lines` first; otherwise, run it to confirm that no task scope
+limits are currently active.
+
 3. Use `harness-entrypoint` before non-trivial repo work.
 4. Use Superpowers for design, planning, TDD, execution, and review.
 
@@ -175,6 +182,10 @@ scripts/check-policy.sh
 scripts/check-scope.sh
 scripts/agent-verify.sh
 ```
+
+Run `scripts/check-scope.sh` after configuring `.agent/task.yml` for the
+current task, or use it to confirm that no task scope limits are currently
+active.
 
 6. Update `handoff.md` and `docs/agent/discoveries.md`.
 7. Use `scripts/check-policy.sh --strict` when high-risk changes should block

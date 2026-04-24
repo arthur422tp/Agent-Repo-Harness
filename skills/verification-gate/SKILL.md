@@ -19,10 +19,15 @@ repeating it in every user prompt.
 2. Before final completion, run:
 
 ```bash
-scripts/check-policy.sh
-scripts/check-scope.sh
-scripts/agent-verify.sh
+scripts/check-policy.sh --warn
+scripts/check-scope.sh --strict
+scripts/agent-verify.sh --strict
 ```
+
+`check-policy.sh` defaults to warn mode unless strict policy approval is
+required. `check-scope.sh` defaults to strict mode, but it only enforces
+limits configured in `.agent/task.yml`. `agent-verify.sh` defaults to strict
+mode.
 
 3. Record the required command results in `handoff.md`.
 4. If `.agent/task.yml` exists, keep its machine-readable verification state

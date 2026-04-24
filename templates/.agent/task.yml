@@ -3,8 +3,11 @@ task:
   goal: ""
   allowed_paths: []
   forbidden_paths: []
-  max_changed_files: 10
-  max_diff_lines: 800
+
+  # Enable these per task when useful:
+  # max_changed_files: 10
+  # max_diff_lines: 800
+
   last_verified:
     command: ""
     result: ""

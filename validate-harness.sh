@@ -7,6 +7,7 @@ warnings_root="/tmp/test-agent-harness-warnings"
 failure_root="/tmp/test-agent-harness-failure"
 scope_skip_root="/tmp/test-agent-harness-scope-skip"
 scope_pass_root="/tmp/test-agent-harness-scope-pass"
+scope_max_files_root="/tmp/test-agent-harness-scope-max-files"
 scope_outside_root="/tmp/test-agent-harness-scope-outside"
 scope_forbidden_root="/tmp/test-agent-harness-scope-forbidden"
 policy_strict_root="/tmp/test-agent-harness-policy-strict"
@@ -65,6 +66,9 @@ echo "== Installed target checks =="
   bash scripts/collect-context.sh >/dev/null
   assert_exists "$target_root/.agent/task.yml"
   assert_exists "$target_root/scripts/check-scope.sh"
+  scope_log="$target_root/check-scope-fresh-install.log"
+  bash scripts/check-scope.sh >"$scope_log" 2>&1
+  assert_contains "$scope_log" "Scope check passed."
 )
 
 echo
@@ -130,6 +134,32 @@ git init -q "$scope_pass_root"
   scope_log="/tmp/test-agent-harness-scope-pass.log"
   bash "$repo_root/templates/scripts/check-scope.sh" >"$scope_log" 2>&1
   assert_contains "$scope_log" "Scope check passed."
+)
+
+echo
+echo "== Scope gate max_changed_files failure =="
+rm -rf "$scope_max_files_root"
+mkdir -p "$scope_max_files_root/.agent" "$scope_max_files_root/src/retry"
+git init -q "$scope_max_files_root"
+(
+  cd "$scope_max_files_root"
+  printf '%s\n' \
+    'task:' \
+    '  max_changed_files: 1' \
+    > .agent/task.yml
+  git config user.email "test@example.com"
+  git config user.name "Test User"
+  git add .agent/task.yml
+  git commit -q -m "Add task config"
+  printf '%s\n' 'line one' > src/retry/worker.js
+  printf '%s\n' 'line two' > src/retry/helper.js
+  scope_log="/tmp/test-agent-harness-scope-max-files.log"
+  if bash "$repo_root/templates/scripts/check-scope.sh" >"$scope_log" 2>&1; then
+    echo "ERROR: expected scope failure for max_changed_files"
+    exit 1
+  fi
+  assert_contains "$scope_log" "exceeds max_changed_files"
+  assert_contains "$scope_log" "Scope check failed."
 )
 
 echo
