@@ -62,9 +62,10 @@ bash scripts/agent-verify.sh
 Do not paste the same long workflow prompt every time you use Codex or Claude Code.
 
 - `skills/`: repeated workflow rules and reusable operating procedures
-- `agent.md`, `handoff.md`, `docs/agent/*`:
-  project-specific facts, state, and memory for the target repo
-- the live user prompt: only the current task and any special constraints for this run
+- `agent.md`, `handoff.md`, `docs/agent/*`: project-specific facts, state, and
+  memory for the target repo
+- the live user prompt: only the current task and any special constraints for
+  this run
 
 Rule of thumb:
 
@@ -112,25 +113,17 @@ Use $subagent-context-packet before dispatching coding or review subagents.
 
 ## What This Repo Now Provides
 
-- `templates/`
-  - `agent.md` and `handoff.md` templates
-  - `docs/agent/` long-term and short-term memory templates
-  - `scripts/` safe-by-default preflight, verification, policy, and context helpers
-  - `.agent/` harness and policy configuration
-- `skills/`
-  - `harness-entrypoint`
-  - `repo-context-bootstrap`
-  - `repo-map-maintenance`
-  - `handoff-update`
-  - `subagent-context-packet`
-  - `policy-gate`
-  - `verification-gate`
-  - `discoveries-memory`
-  - `domain-risk-review`
-- `install-agent-harness.sh`
-  - copies the `templates/` payload into a target repository
-- `examples/`
-  - RAG contract system
+- `templates/`: `agent.md` and `handoff.md` templates, `docs/agent/`
+  long-term and short-term memory templates, `scripts/` safe-by-default
+  preflight / verification / policy / context helpers, and `.agent/`
+  harness and policy configuration
+- `skills/`: `harness-entrypoint`, `repo-context-bootstrap`,
+  `repo-map-maintenance`, `handoff-update`, `subagent-context-packet`,
+  `policy-gate`, `verification-gate`, `discoveries-memory`, and
+  `domain-risk-review`
+- `install-agent-harness.sh`: copies the `templates/` payload into a target
+  repository
+- `examples/`: RAG contract system
 
 ## Relationship To The Existing Guide Skills
 
@@ -161,13 +154,16 @@ bash install-agent-harness.sh /path/to/target-repo
 
 Existing files are skipped by default.
 Use `--force` only when you intentionally want to overwrite them.
-Use `--backup` together with `--force` when you want overwritten files preserved as `.bak`.
+Use `--backup` together with `--force` when you want overwritten files
+preserved as `.bak`.
 
 ## Typical Workflow
 
 1. Install the harness templates into a target repo.
-2. Use `harness-entrypoint` or `repo-context-bootstrap` to load repo-aware context.
-3. Use Superpowers for design, planning, TDD, implementation, review, and branch finishing.
+2. Use `harness-entrypoint` or `repo-context-bootstrap` to load repo-aware
+   context.
+3. Use Superpowers for design, planning, TDD, implementation, review, and
+   branch finishing.
 4. Before dispatching subagents, use `subagent-context-packet`.
 5. Before claiming completion, run:
 
@@ -190,11 +186,14 @@ scripts/agent-verify.sh
 
 ## Example Prompts
 
-- `Use $harness-entrypoint before implementing this feature in the current repo.`
+- `Use $harness-entrypoint before implementing this feature in the current
+  repo.`
 - `Use $harness-entrypoint for this task. Only fix the retry bug in the
   ingestion worker and do not change the API schema.`
-- `Use $repo-context-bootstrap to initialize Agent-Repo-Harness files for this project.`
-- `Use $subagent-context-packet before dispatching a coding subagent for the auth fix.`
+- `Use $repo-context-bootstrap to initialize Agent-Repo-Harness files for
+  this project.`
+- `Use $subagent-context-packet before dispatching a coding subagent for the
+  auth fix.`
 - `Use $handoff-update after this session and keep the result concise.`
 - `Use $domain-risk-review on this retrieval pipeline change.`
 
@@ -240,9 +239,15 @@ Current limits:
 
 ## References And Carried-Forward Assets
 
-- shared labels and boundaries: [references/shared-spec.md](references/shared-spec.md)
-- migration mapping: [references/harness-migration.md](references/harness-migration.md)
-- regression cases: [references/evals/regression-cases.md](references/evals/regression-cases.md)
-- legacy router skill: [project-agent-docs/SKILL.md](project-agent-docs/SKILL.md)
-- legacy map maintenance skill: [project-map-agent-md/SKILL.md](project-map-agent-md/SKILL.md)
-- legacy handoff update skill: [update-agent-handoff/SKILL.md](update-agent-handoff/SKILL.md)
+- shared labels and boundaries:
+  [references/shared-spec.md](references/shared-spec.md)
+- migration mapping:
+  [references/harness-migration.md](references/harness-migration.md)
+- regression cases:
+  [references/evals/regression-cases.md](references/evals/regression-cases.md)
+- legacy router skill:
+  [project-agent-docs/SKILL.md](project-agent-docs/SKILL.md)
+- legacy map maintenance skill:
+  [project-map-agent-md/SKILL.md](project-map-agent-md/SKILL.md)
+- legacy handoff update skill:
+  [update-agent-handoff/SKILL.md](update-agent-handoff/SKILL.md)

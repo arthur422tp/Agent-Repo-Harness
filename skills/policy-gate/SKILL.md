@@ -1,6 +1,7 @@
 ---
 name: policy-gate
-description: Run repo policy checks and surface project-specific risk warnings before completion.
+description: Run repo policy checks and surface project-specific risk
+  warnings before completion.
 ---
 
 # Policy Gate

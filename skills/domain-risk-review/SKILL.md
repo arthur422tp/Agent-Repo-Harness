@@ -1,6 +1,7 @@
 ---
 name: domain-risk-review
-description: Review risky changes for project-specific contract, safety, and operational concerns.
+description: Review risky changes for project-specific contract, safety, and
+  operational concerns.
 ---
 
 # Domain Risk Review

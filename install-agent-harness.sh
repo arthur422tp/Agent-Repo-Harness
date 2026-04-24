@@ -112,7 +112,9 @@ while IFS= read -r -d '' path; do
   copy_path "$path" "$dest"
 done < <(find "$template_root" -mindepth 1 -print0 | sort -z)
 
-if [ -d "$target/scripts" ] && find "$target/scripts" -maxdepth 1 -type f -name "*.sh" | grep -q .; then
+if [ -d "$target/scripts" ] && \
+  find "$target/scripts" -maxdepth 1 -type f -name "*.sh" | grep -q .
+then
   while IFS= read -r -d '' script; do
     chmod +x "$script"
   done < <(find "$target/scripts" -maxdepth 1 -type f -name "*.sh" -print0)

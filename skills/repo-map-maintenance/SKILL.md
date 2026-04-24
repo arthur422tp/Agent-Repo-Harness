@@ -1,6 +1,7 @@
 ---
 name: repo-map-maintenance
-description: Build or patch stable repo guidance from concrete repository evidence.
+description: Build or patch stable repo guidance from concrete repository
+  evidence.
 ---
 
 # Repo Map Maintenance

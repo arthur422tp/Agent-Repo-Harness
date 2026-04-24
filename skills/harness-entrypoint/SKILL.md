@@ -9,9 +9,9 @@ description: Lightweight repo-aware control entrypoint that wraps around
 Use this skill at the start of any non-trivial development, debugging,
 refactor, repo-analysis, or handoff task.
 
-This skill exists so the user does not need to restate the same repo workflow
-in every prompt. The live prompt should stay focused on the current task and
-any special constraints.
+This skill exists so the user does not need to restate the same repo
+workflow in every prompt. The live prompt should stay focused on the current
+task and any special constraints.
 
 ## Steps
 

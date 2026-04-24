@@ -8,7 +8,8 @@ description: Build a compact repo-aware context packet for subagents from
 
 Prepare context for Superpowers subagents before dispatch.
 
-Use this packet instead of copying a long repo workflow prompt into every subagent request.
+Use this packet instead of copying a long repo workflow prompt into every
+subagent request.
 
 ## Template
 

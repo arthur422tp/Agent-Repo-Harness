@@ -33,8 +33,8 @@ Agent-Repo-Harness
 - 它**不是**完整 agent runtime
 - 它**不是** MCP server
 
-最短使用方式可參考：
-[docs/USAGE_WITH_AGENTS.md](docs/USAGE_WITH_AGENTS.md)
+最短使用方式可參考
+[docs/USAGE_WITH_AGENTS.md](docs/USAGE_WITH_AGENTS.md)。
 
 ## Quick Start
 
@@ -62,8 +62,8 @@ bash scripts/agent-verify.sh
 不要在每次使用 Codex 或 Claude Code 時重貼一大段 workflow prompt。
 
 - `skills/`：放可重複使用的 workflow 規則與操作流程
-- `agent.md`、`handoff.md`、`docs/agent/*`：
-  放這個 target repo 的事實、狀態與長短期記憶
+- `agent.md`、`handoff.md`、`docs/agent/*`：放這個 target repo 的事實、
+  狀態與長短期記憶
 - 使用者當下的 prompt：只放目前 task 與這次特別限制
 
 簡化原則：
@@ -112,25 +112,15 @@ Use $subagent-context-packet before dispatching coding or review subagents.
 
 ## 現在提供什麼
 
-- `templates/`
-  - `agent.md` 與 `handoff.md` 樣板
-  - `docs/agent/` 長期與短期記憶樣板
-  - `scripts/` 安全預設的 preflight / verify / policy / context scripts
-  - `.agent/` harness 與 policy 設定
-- `skills/`
-  - `harness-entrypoint`
-  - `repo-context-bootstrap`
-  - `repo-map-maintenance`
-  - `handoff-update`
-  - `subagent-context-packet`
-  - `policy-gate`
-  - `verification-gate`
-  - `discoveries-memory`
-  - `domain-risk-review`
-- `install-agent-harness.sh`
-  - 將 `templates/` 複製到目標 repo
-- `examples/`
-  - RAG contract system
+- `templates/`: `agent.md` 與 `handoff.md` 樣板、`docs/agent/` 長期與短期
+  記憶樣板、`scripts/` 安全預設的 preflight / verify / policy / context
+  scripts，以及 `.agent/` harness 與 policy 設定
+- `skills/`: `harness-entrypoint`、`repo-context-bootstrap`、
+  `repo-map-maintenance`、`handoff-update`、`subagent-context-packet`、
+  `policy-gate`、`verification-gate`、`discoveries-memory`、
+  `domain-risk-review`
+- `install-agent-harness.sh`：將 `templates/` 複製到目標 repo
+- `examples/`：RAG contract system
 
 ## 與既有 Agent-Repo-Guide 的關係
 
@@ -168,7 +158,8 @@ bash install-agent-harness.sh /path/to/target-repo
 1. 在目標 repo 安裝 harness 樣板。
 2. 用 `harness-entrypoint` 或 `repo-context-bootstrap` 讀取 repo context。
 3. 用 Superpowers 做設計、計畫、TDD、實作、review。
-4. dispatch subagent 前用 `subagent-context-packet` 準備 repo-aware context。
+4. dispatch subagent 前用 `subagent-context-packet` 準備 repo-aware
+   context。
 5. 完成前跑：
 
 ```bash
@@ -233,15 +224,21 @@ scripts/agent-verify.sh
 
 - 沒有建立完整 agent runtime
 - 沒有建立 MCP server
-- `agent-verify.sh` 預設採 strict mode，並提供 `--best-effort`
-  給尚未完整配置的 repo 做非阻斷檢查；目標 repo 仍應自行客製
-- `check-policy.sh` 使用的是輕量 pattern matching，不是完整 policy engine
+- `agent-verify.sh` 預設採 strict mode，並提供 `--best-effort` 給尚未完整
+  配置的 repo 做非阻斷檢查；目標 repo 仍應自行客製
+- `check-policy.sh` 使用的是輕量 pattern matching，不是完整 policy
+  engine
 
 ## 參考與既有資產
 
-- 共享 label 與 guidance 邊界：[references/shared-spec.md](references/shared-spec.md)
-- migration 對照：[references/harness-migration.md](references/harness-migration.md)
-- regression cases：[references/evals/regression-cases.md](references/evals/regression-cases.md)
+- 共享 label 與 guidance 邊界：
+  [references/shared-spec.md](references/shared-spec.md)
+- migration 對照：
+  [references/harness-migration.md](references/harness-migration.md)
+- regression cases：
+  [references/evals/regression-cases.md](references/evals/regression-cases.md)
 - 舊 router skill：[project-agent-docs/SKILL.md](project-agent-docs/SKILL.md)
-- 舊 map maintenance skill：[project-map-agent-md/SKILL.md](project-map-agent-md/SKILL.md)
-- 舊 handoff update skill：[update-agent-handoff/SKILL.md](update-agent-handoff/SKILL.md)
+- 舊 map maintenance skill：
+  [project-map-agent-md/SKILL.md](project-map-agent-md/SKILL.md)
+- 舊 handoff update skill：
+  [update-agent-handoff/SKILL.md](update-agent-handoff/SKILL.md)

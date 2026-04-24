@@ -6,7 +6,8 @@ description: Capture short-term discoveries and promote repeated insights into
 
 # Discoveries Memory
 
-Use this skill when implementation or debugging reveals facts that later agents should reuse.
+Use this skill when implementation or debugging reveals facts that later
+agents should reuse.
 
 ## Workflow
 
