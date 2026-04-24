@@ -64,7 +64,6 @@ bash scripts/agent-verify.sh
 - `install-agent-harness.sh`
   - 將 `templates/` 複製到目標 repo
 - `examples/`
-  - Go IoT platform
   - RAG contract system
 
 ## 與既有 Agent-Repo-Guide 的關係

@@ -64,7 +64,6 @@ bash scripts/agent-verify.sh
 - `install-agent-harness.sh`
   - copies the `templates/` payload into a target repository
 - `examples/`
-  - Go IoT platform
   - RAG contract system
 
 ## Relationship To The Existing Guide Skills

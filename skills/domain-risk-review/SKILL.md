@@ -19,13 +19,6 @@ Use this skill when changes touch high-risk or high-coupling areas.
 
 ## Review Examples
 
-For IoT projects:
-
-- Did the change affect protocol worker -> queue -> handler -> DB -> frontend flow?
-- Did it affect bucket naming?
-- Did it affect signal parsing?
-- Did it touch Docker, queue, DB, or handler config?
-
 For RAG projects:
 
 - Did it affect chunking, embedding, retrieval, reranking, or generation?
