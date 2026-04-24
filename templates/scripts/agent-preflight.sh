@@ -31,7 +31,14 @@ find . -maxdepth 3 \( \
 
 echo
 echo "== Harness files =="
-for f in agent.md handoff.md .agent/harness.yml .agent/policy.yml docs/agent/known-issues.md docs/agent/discoveries.md; do
+for f in \
+  agent.md \
+  handoff.md \
+  .agent/harness.yml \
+  .agent/policy.yml \
+  docs/agent/known-issues.md \
+  docs/agent/discoveries.md
+do
   if [ -f "$f" ]; then
     echo "FOUND $f"
   else

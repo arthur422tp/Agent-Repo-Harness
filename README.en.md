@@ -24,6 +24,18 @@ Agent-Repo-Harness
   = subagent context packets / discoveries memory / domain risk review
 ```
 
+## Current Status: MVP
+
+This repository is currently a **lightweight harness MVP**.
+
+- It ships templates, skills, scripts, and examples.
+- It adds repo-aware workflow control plus verification and policy gates.
+- It is **not** a full agent runtime.
+- It is **not** an MCP server.
+
+For the shortest day-to-day prompts, see
+[docs/USAGE_WITH_AGENTS.md](docs/USAGE_WITH_AGENTS.md).
+
 ## Quick Start
 
 1. Install the harness into a target repo:
@@ -49,7 +61,8 @@ bash scripts/agent-verify.sh
 Do not paste the same long workflow prompt every time you use Codex or Claude Code.
 
 - `skills/`: repeated workflow rules and reusable operating procedures
-- `agent.md`, `handoff.md`, `docs/agent/*`: project-specific facts, state, and memory for the target repo
+- `agent.md`, `handoff.md`, `docs/agent/*`:
+  project-specific facts, state, and memory for the target repo
 - the live user prompt: only the current task and any special constraints for this run
 
 Rule of thumb:
@@ -145,7 +158,8 @@ bash install-agent-harness.sh --dry-run /path/to/target-repo
 bash install-agent-harness.sh /path/to/target-repo
 ```
 
-Existing files are skipped by default. Use `--force` only when you intentionally want to overwrite them.
+Existing files are skipped by default.
+Use `--force` only when you intentionally want to overwrite them.
 Use `--backup` together with `--force` when you want overwritten files preserved as `.bak`.
 
 ## Typical Workflow
@@ -176,7 +190,8 @@ scripts/agent-verify.sh
 ## Example Prompts
 
 - `Use $harness-entrypoint before implementing this feature in the current repo.`
-- `Use $harness-entrypoint for this task. Only fix the retry bug in the ingestion worker and do not change the API schema.`
+- `Use $harness-entrypoint for this task. Only fix the retry bug in the
+  ingestion worker and do not change the API schema.`
 - `Use $repo-context-bootstrap to initialize Agent-Repo-Harness files for this project.`
 - `Use $subagent-context-packet before dispatching a coding subagent for the auth fix.`
 - `Use $handoff-update after this session and keep the result concise.`
@@ -218,7 +233,8 @@ Current limits:
 
 - this is not a full agent runtime
 - this does not ship an MCP server
-- `agent-verify.sh` provides best-effort checks and should be customized per target repo
+- `agent-verify.sh` provides `best-effort` and `strict` modes and should be
+  customized per target repo
 - `check-policy.sh` is lightweight pattern matching, not a full policy engine
 
 ## References And Carried-Forward Assets

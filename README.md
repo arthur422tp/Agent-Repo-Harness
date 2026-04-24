@@ -24,6 +24,18 @@ Agent-Repo-Harness
   = subagent context packets / discoveries memory / domain risk review
 ```
 
+## Current Status: MVP
+
+目前這個 repo 是 **lightweight harness MVP**。
+
+- 它提供 templates、skills、scripts、examples
+- 它負責 repo-aware workflow 與 verification / policy gates
+- 它**不是**完整 agent runtime
+- 它**不是** MCP server
+
+最短使用方式可參考：
+[docs/USAGE_WITH_AGENTS.md](docs/USAGE_WITH_AGENTS.md)
+
 ## Quick Start
 
 1. 先把 harness 安裝到目標 repo：
@@ -49,7 +61,8 @@ bash scripts/agent-verify.sh
 不要在每次使用 Codex 或 Claude Code 時重貼一大段 workflow prompt。
 
 - `skills/`：放可重複使用的 workflow 規則與操作流程
-- `agent.md`、`handoff.md`、`docs/agent/*`：放這個 target repo 的事實、狀態與長短期記憶
+- `agent.md`、`handoff.md`、`docs/agent/*`：
+  放這個 target repo 的事實、狀態與長短期記憶
 - 使用者當下的 prompt：只放目前 task 與這次特別限制
 
 簡化原則：
@@ -145,7 +158,8 @@ bash install-agent-harness.sh --dry-run /path/to/target-repo
 bash install-agent-harness.sh /path/to/target-repo
 ```
 
-如果目標 repo 已經有同名檔案，installer 預設會跳過，不會覆蓋。要覆蓋必須顯式加 `--force`。
+如果目標 repo 已經有同名檔案，installer 預設會跳過，不會覆蓋。
+要覆蓋必須顯式加 `--force`。
 如果你要保留被覆蓋檔案，可搭配 `--backup` 產生 `.bak`。
 
 ## 典型使用流程
@@ -176,7 +190,8 @@ scripts/agent-verify.sh
 ## Example Prompts
 
 - `Use $harness-entrypoint before implementing this feature in the current repo.`
-- `Use $harness-entrypoint for this task. Only focus on the retry bug in the ingestion worker and do not change the API schema.`
+- `Use $harness-entrypoint for this task. Only focus on the retry bug in the
+  ingestion worker and do not change the API schema.`
 - `Use $repo-context-bootstrap to initialize Agent-Repo-Harness files for this project.`
 - `Use $subagent-context-packet before dispatching a coding subagent for the auth fix.`
 - `Use $handoff-update after this session and keep the result concise.`
@@ -217,7 +232,8 @@ scripts/agent-verify.sh
 
 - 沒有建立完整 agent runtime
 - 沒有建立 MCP server
-- `agent-verify.sh` 會依 repo 類型做 best-effort checks，但目標 repo 仍應自行客製
+- `agent-verify.sh` 提供 `best-effort` 與 `strict` 模式，但目標 repo
+  仍應自行客製
 - `check-policy.sh` 使用的是輕量 pattern matching，不是完整 policy engine
 
 ## 參考與既有資產

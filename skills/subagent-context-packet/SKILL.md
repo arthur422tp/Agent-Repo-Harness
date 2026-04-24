@@ -1,6 +1,7 @@
 ---
 name: subagent-context-packet
-description: Build a compact repo-aware context packet for subagents from stable guidance, handoff, discoveries, and policy.
+description: Build a compact repo-aware context packet for subagents from
+  stable guidance, handoff, discoveries, and policy.
 ---
 
 # Subagent Context Packet
@@ -55,4 +56,5 @@ Use this packet instead of copying a long repo workflow prompt into every subage
 - Subagents must report discoveries.
 - Include only task-relevant context.
 - Prefer stable facts over recent speculation.
-- Pull reusable repo workflow from skills and repo files rather than rewriting it manually in the dispatch prompt.
+- Pull reusable repo workflow from skills and repo files rather than rewriting
+  it manually in the dispatch prompt.

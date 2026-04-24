@@ -1,13 +1,15 @@
 ---
 name: handoff-update
-description: Update current-task state and patch stable guidance only when repo-significant facts changed.
+description: Update current-task state and patch stable guidance only when
+  repo-significant facts changed.
 ---
 
 # Handoff Update
 
 Update `handoff.md` as current-task state only.
 
-Use `handoff.md` for repo state handoff, not as a substitute for repeated workflow instructions in the prompt.
+Use `handoff.md` for repo state handoff, not as a substitute for repeated
+workflow instructions in the prompt.
 
 ## Workflow
 
@@ -22,7 +24,8 @@ Use `handoff.md` for repo state handoff, not as a substitute for repeated workfl
    - open issues
    - next recommended step
 4. Patch `agent.md` only if stable repo facts changed.
-5. Update after meaningful state changes, blockers, verification changes, or architecture-sensitive changes.
+5. Update after meaningful state changes, blockers, verification changes, or
+   architecture-sensitive changes.
 
 ## Stability Gate
 

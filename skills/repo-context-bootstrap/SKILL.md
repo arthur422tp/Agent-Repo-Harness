@@ -1,6 +1,7 @@
 ---
 name: repo-context-bootstrap
-description: Bootstrap repo-aware context by reading stable guidance, handoff state, policy, and obvious project markers.
+description: Bootstrap repo-aware context by reading stable guidance, handoff
+  state, policy, and obvious project markers.
 ---
 
 # Repo Context Bootstrap

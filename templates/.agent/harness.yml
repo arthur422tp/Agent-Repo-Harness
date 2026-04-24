@@ -26,7 +26,8 @@ prompting:
   guidance:
     - Put repeated workflow rules in skills.
     - Put repo-specific facts in agent.md, handoff.md, and docs/agent/*.
-    - Keep the live user prompt focused on the current task and special constraints.
+    - Keep the live user prompt focused on the current task and special
+      constraints.
 
 context:
   required_files:
@@ -49,7 +50,8 @@ subagents:
   require_context_packet: true
   require_red_green_refactor_evidence: true
   collect_discoveries: true
-  note: Use subagent context packets instead of repeating long repo workflow prompts.
+  note: Use subagent context packets instead of repeating long repo workflow
+    prompts.
 
 reviews:
   required:
@@ -59,6 +61,7 @@ reviews:
     - domain-risk
 
 verification:
+  required_policy_command: "scripts/check-policy.sh"
   required_command: "scripts/agent-verify.sh"
   allow_unverified_completion: false
 

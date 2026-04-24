@@ -1,13 +1,17 @@
 ---
 name: harness-entrypoint
-description: Lightweight repo-aware control entrypoint that wraps around Superpowers without replacing it.
+description: Lightweight repo-aware control entrypoint that wraps around
+  Superpowers without replacing it.
 ---
 
 # Harness Entrypoint
 
-Use this skill at the start of any non-trivial development, debugging, refactor, repo-analysis, or handoff task.
+Use this skill at the start of any non-trivial development, debugging,
+refactor, repo-analysis, or handoff task.
 
-This skill exists so the user does not need to restate the same repo workflow in every prompt. The live prompt should stay focused on the current task and any special constraints.
+This skill exists so the user does not need to restate the same repo workflow
+in every prompt. The live prompt should stay focused on the current task and
+any special constraints.
 
 ## Steps
 
@@ -44,8 +48,8 @@ scripts/agent-preflight.sh
 5. Before dispatching subagents, create a Subagent Context Packet.
 
 6. Before final completion:
+   - run `scripts/check-policy.sh`
    - run `scripts/agent-verify.sh`
-   - run policy checks
    - update `handoff.md` if needed
    - update discoveries if useful
 
@@ -54,7 +58,8 @@ scripts/agent-preflight.sh
 - Agent-Repo-Harness does not replace Superpowers.
 - Reusable workflow instructions belong in skills, not repeated user prompts.
 - Repo-specific facts belong in `agent.md`, `handoff.md`, and `docs/agent/*`.
-- Treat the user's live prompt as task-specific input, not as a place to rebuild the whole harness protocol.
+- Treat the user's live prompt as task-specific input, not as a place to
+  rebuild the whole harness protocol.
 - Do not duplicate Superpowers workflows.
 - Do not use `handoff.md` as a plan.
 - Do not put session logs into `agent.md`.

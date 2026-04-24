@@ -1,6 +1,7 @@
 ---
 name: discoveries-memory
-description: Capture short-term discoveries and promote repeated insights into durable repo guidance.
+description: Capture short-term discoveries and promote repeated insights into
+  durable repo guidance.
 ---
 
 # Discoveries Memory

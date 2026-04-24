@@ -1,6 +1,7 @@
 # RAG Contract System Example
 
-This example shows how Agent-Repo-Harness can be applied to a retrieval-augmented contract-analysis project.
+This example shows how Agent-Repo-Harness can be applied to a
+retrieval-augmented contract-analysis project.
 
 ## Typical Repo Shape
 
@@ -14,9 +15,12 @@ This example shows how Agent-Repo-Harness can be applied to a retrieval-augmente
 
 ## Suggested Harness Focus
 
-- `agent.md`: map ingestion, chunking, embedding, retrieval, ranking, and answer-generation boundaries
-- `handoff.md`: record the active retrieval or evaluation task and the last successful checks
-- `docs/agent/discoveries.md`: capture dataset quirks, indexing assumptions, or prompt regressions
+- `agent.md`: map ingestion, chunking, embedding, retrieval, ranking, and
+  answer-generation boundaries
+- `handoff.md`: record the active retrieval or evaluation task and the last
+  successful checks
+- `docs/agent/discoveries.md`: capture dataset quirks, indexing assumptions,
+  or prompt regressions
 - `docs/agent/known-issues.md`: store recurring eval drift or document-shape issues
 
 ## Example `known-issues.md` Topics
@@ -27,7 +31,8 @@ This example shows how Agent-Repo-Harness can be applied to a retrieval-augmente
 
 ## Domain Review Focus
 
-- verify chunking, embedding, retrieval, reranking, generation, and answer validation boundaries
+- verify chunking, embedding, retrieval, reranking, generation, and answer
+  validation boundaries
 - check whether unsafe metadata can leak into prompts
 - confirm retrieval quality safeguards still hold
 
@@ -37,7 +42,8 @@ This example shows how Agent-Repo-Harness can be applied to a retrieval-augmente
 - prompt and evaluation drift
 - secrets for model providers or vector stores
 - infra changes that affect indexing or retrieval performance
-- prompt templates, retrieval logic, DB migrations, and auth as high-risk paths
+- prompt templates, retrieval logic, DB migrations, and auth as high-risk
+  paths
 
 ## Likely Verification
 
