@@ -1,5 +1,7 @@
 # handoff.md
 
+> Record current task state here. Do not turn this file into a reusable workflow prompt or a long execution log.
+
 ## Current Task
 TODO
 

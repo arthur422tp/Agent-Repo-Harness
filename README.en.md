@@ -44,6 +44,58 @@ bash scripts/agent-verify.sh
 3. Use `harness-entrypoint` before non-trivial repo work.
 4. Use Superpowers for design, planning, TDD, execution, and review.
 
+## Prompt / Skill / Repo File Separation
+
+Do not paste the same long workflow prompt every time you use Codex or Claude Code.
+
+- `skills/`: repeated workflow rules and reusable operating procedures
+- `agent.md`, `handoff.md`, `docs/agent/*`: project-specific facts, state, and memory for the target repo
+- the live user prompt: only the current task and any special constraints for this run
+
+Rule of thumb:
+
+- if the instruction is reusable workflow, move it into a skill
+- if it is a fact about this repo, store it in repo files
+- if it only matters for this task, keep it in the prompt
+
+### Old Style: repeat the whole workflow in every prompt
+
+```text
+Use Agent-Repo-Harness for this task.
+
+Read agent.md, handoff.md, .agent/harness.yml, and .agent/policy.yml.
+Run scripts/agent-preflight.sh.
+Use Superpowers-compatible workflow.
+Create subagent context packets.
+Apply policy-gate before touching high-risk files.
+Run scripts/check-policy.sh and scripts/agent-verify.sh before finishing.
+Update handoff.md if task state changed.
+
+Task:
+[task here]
+```
+
+### New Style: invoke the right skills and keep the prompt short
+
+```text
+Use $harness-entrypoint for this task.
+Use $policy-gate if you touch high-risk files.
+Use $verification-gate before completion.
+Use $handoff-update if task state changes.
+
+Task:
+[task here]
+
+Special constraints:
+[only task-specific constraints here]
+```
+
+If subagents are involved, add:
+
+```text
+Use $subagent-context-packet before dispatching coding or review subagents.
+```
+
 ## What This Repo Now Provides
 
 - `templates/`
@@ -124,6 +176,7 @@ scripts/agent-verify.sh
 ## Example Prompts
 
 - `Use $harness-entrypoint before implementing this feature in the current repo.`
+- `Use $harness-entrypoint for this task. Only fix the retry bug in the ingestion worker and do not change the API schema.`
 - `Use $repo-context-bootstrap to initialize Agent-Repo-Harness files for this project.`
 - `Use $subagent-context-packet before dispatching a coding subagent for the auth fix.`
 - `Use $handoff-update after this session and keep the result concise.`

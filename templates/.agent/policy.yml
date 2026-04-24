@@ -45,3 +45,4 @@ required_before_finish:
 notes:
   - Customize high-risk patterns for this repository after installation.
   - Warning mode is the safe default for new installs.
+  - Policy workflow should be invoked through skills or repo config, not recopied into every task prompt.

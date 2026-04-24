@@ -7,6 +7,8 @@ description: Build a compact repo-aware context packet for subagents from stable
 
 Prepare context for Superpowers subagents before dispatch.
 
+Use this packet instead of copying a long repo workflow prompt into every subagent request.
+
 ## Template
 
 ```markdown
@@ -53,3 +55,4 @@ Prepare context for Superpowers subagents before dispatch.
 - Subagents must report discoveries.
 - Include only task-relevant context.
 - Prefer stable facts over recent speculation.
+- Pull reusable repo workflow from skills and repo files rather than rewriting it manually in the dispatch prompt.

@@ -7,6 +7,8 @@ description: Run repo policy checks and surface project-specific risk warnings b
 
 Use this skill before claiming completion or when risky paths are touched.
 
+This keeps risk workflow out of the user's main prompt. The prompt should only say what the task is and any special constraints.
+
 ## Workflow
 
 1. Read `.agent/policy.yml`.

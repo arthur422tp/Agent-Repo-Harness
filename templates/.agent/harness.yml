@@ -21,6 +21,13 @@ superpowers:
     - behavior-change
   note: Agent-Repo-Harness wraps around Superpowers and does not replace it.
 
+prompting:
+  preferred_style: short-task-prompt
+  guidance:
+    - Put repeated workflow rules in skills.
+    - Put repo-specific facts in agent.md, handoff.md, and docs/agent/*.
+    - Keep the live user prompt focused on the current task and special constraints.
+
 context:
   required_files:
     - agent.md
@@ -42,6 +49,7 @@ subagents:
   require_context_packet: true
   require_red_green_refactor_evidence: true
   collect_discoveries: true
+  note: Use subagent context packets instead of repeating long repo workflow prompts.
 
 reviews:
   required:

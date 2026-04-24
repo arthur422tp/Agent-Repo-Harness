@@ -7,6 +7,8 @@ description: Require explicit verification evidence before claiming the work is 
 
 Use this skill at the end of implementation and before handoff updates are finalized.
 
+This keeps finish-time verification workflow in a reusable skill instead of repeating it in every user prompt.
+
 ## Workflow
 
 1. Before claiming completion, run:

@@ -7,6 +7,8 @@ description: Lightweight repo-aware control entrypoint that wraps around Superpo
 
 Use this skill at the start of any non-trivial development, debugging, refactor, repo-analysis, or handoff task.
 
+This skill exists so the user does not need to restate the same repo workflow in every prompt. The live prompt should stay focused on the current task and any special constraints.
+
 ## Steps
 
 1. Read project harness files:
@@ -50,6 +52,9 @@ scripts/agent-preflight.sh
 ## Hard Rules
 
 - Agent-Repo-Harness does not replace Superpowers.
+- Reusable workflow instructions belong in skills, not repeated user prompts.
+- Repo-specific facts belong in `agent.md`, `handoff.md`, and `docs/agent/*`.
+- Treat the user's live prompt as task-specific input, not as a place to rebuild the whole harness protocol.
 - Do not duplicate Superpowers workflows.
 - Do not use `handoff.md` as a plan.
 - Do not put session logs into `agent.md`.

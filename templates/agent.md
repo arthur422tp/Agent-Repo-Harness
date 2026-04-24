@@ -1,5 +1,7 @@
 # agent.md
 
+> Put stable repo facts here. Do not use this file for one-time task instructions or repeated workflow prompts.
+
 ## Project Overview
 TODO: Describe what this repository does.
 
@@ -33,3 +35,4 @@ scripts/agent-verify.sh
 - Prefer minimal patches over broad rewrites.
 - Do not rewrite architecture unless explicitly requested.
 - Do not claim verified unless verification commands passed.
+- Keep reusable workflow in skills and keep one-time task instructions in the live user prompt.

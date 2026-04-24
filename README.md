@@ -44,6 +44,58 @@ bash scripts/agent-verify.sh
 3. 在非 trivial 的 repo 任務前先用 `harness-entrypoint`。
 4. 設計、計畫、TDD、執行、review 仍由 Superpowers 處理。
 
+## Prompt / Skill / Repo File 分工
+
+不要在每次使用 Codex 或 Claude Code 時重貼一大段 workflow prompt。
+
+- `skills/`：放可重複使用的 workflow 規則與操作流程
+- `agent.md`、`handoff.md`、`docs/agent/*`：放這個 target repo 的事實、狀態與長短期記憶
+- 使用者當下的 prompt：只放目前 task 與這次特別限制
+
+簡化原則：
+
+- 重複三次以上還會用到的流程，應移到 skill
+- 只屬於這個 repo 的內容，應寫進 repo 檔案，不應每次重新口述
+- 只跟這次任務有關的要求，才放進當次 prompt
+
+### 舊寫法：每次都貼長 prompt
+
+```text
+Use Agent-Repo-Harness for this task.
+
+Read agent.md, handoff.md, .agent/harness.yml, and .agent/policy.yml.
+Run scripts/agent-preflight.sh.
+Use Superpowers-compatible workflow.
+Create subagent context packets.
+Apply policy-gate before touching high-risk files.
+Run scripts/check-policy.sh and scripts/agent-verify.sh before finishing.
+Update handoff.md if task state changed.
+
+Task:
+[task here]
+```
+
+### 新寫法：只叫對 skill，prompt 保留 task
+
+```text
+Use $harness-entrypoint for this task.
+Use $policy-gate if you touch high-risk files.
+Use $verification-gate before completion.
+Use $handoff-update if task state changes.
+
+Task:
+[task here]
+
+Special constraints:
+[only task-specific constraints here]
+```
+
+如果 subagent 會參與，額外要求：
+
+```text
+Use $subagent-context-packet before dispatching coding or review subagents.
+```
+
 ## 現在提供什麼
 
 - `templates/`
@@ -124,6 +176,7 @@ scripts/agent-verify.sh
 ## Example Prompts
 
 - `Use $harness-entrypoint before implementing this feature in the current repo.`
+- `Use $harness-entrypoint for this task. Only focus on the retry bug in the ingestion worker and do not change the API schema.`
 - `Use $repo-context-bootstrap to initialize Agent-Repo-Harness files for this project.`
 - `Use $subagent-context-packet before dispatching a coding subagent for the auth fix.`
 - `Use $handoff-update after this session and keep the result concise.`
