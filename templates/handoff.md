@@ -20,6 +20,7 @@ TODO
 
 ## Verification
 - `scripts/check-policy.sh`: TODO
+- `scripts/check-scope.sh`: TODO
 - `scripts/agent-verify.sh`: TODO
 - Notes: TODO
 

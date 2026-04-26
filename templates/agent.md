@@ -25,10 +25,11 @@ Before claiming completion, run:
 
 ```bash
 scripts/check-policy.sh
+scripts/check-scope.sh
 scripts/agent-verify.sh
 ```
 
-Only claim verified if both commands pass.
+Only claim verified if the required commands pass.
 
 ## Risk Areas
 - TODO: files or modules that should not be changed casually
@@ -40,7 +41,7 @@ Only claim verified if both commands pass.
   output.
 - Prefer minimal patches over broad rewrites.
 - Do not rewrite architecture unless explicitly requested.
-- Do not claim verified unless `scripts/check-policy.sh` and
-  `scripts/agent-verify.sh` both passed.
+- Do not claim verified unless the required policy, scope, and verification
+  gates passed.
 - Keep reusable workflow in skills and keep one-time task instructions in the
   live user prompt.

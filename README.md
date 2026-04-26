@@ -4,6 +4,11 @@ English version: [README.en.md](README.en.md)
 
 ## 這個 Repo 的目標
 
+Agent-Repo-Harness is a lightweight control layer for AI coding agents. It
+installs repo-local context files, reusable skills, and shell gates so agents
+can understand project context, stay within task scope, run verification, and
+preserve handoff memory across sessions.
+
 這個 repo 正在把 `Agent-Repo-Guide` 演進成 `Agent-Repo-Harness`。
 
 核心原則不變：
@@ -32,6 +37,7 @@ Agent-Repo-Harness
 - 它負責 repo-aware workflow 與 enforceable verification / policy / scope
   gates
 - 它**不是**完整 agent runtime
+- 它**不是** Superpowers 的替代品
 - 它**不是** MCP server
 
 最短使用方式可參考
@@ -46,7 +52,13 @@ bash install-agent-harness.sh --dry-run /path/to/target-repo
 bash install-agent-harness.sh /path/to/target-repo
 ```
 
-2. 在目標 repo 執行：
+2. 填好 `agent.md` 與 `handoff.md`，讓它們反映 target repo 的穩定事實與
+   current task state。
+
+3. 讓 Codex / Claude Code 讀取 relevant skills，例如
+   `harness-entrypoint`、`policy-gate`、`verification-gate`。
+
+4. 在目標 repo 執行 policy、scope、verification gates：
 
 ```bash
 bash scripts/agent-preflight.sh
@@ -62,8 +74,7 @@ task-scoped work，請先填好 `allowed_paths`、`forbidden_paths`、
 `max_changed_files`、`max_diff_lines`；否則它可用來確認目前沒有啟用任何
 task scope limits。
 
-3. 在非 trivial 的 repo 任務前先用 `harness-entrypoint`。
-4. 設計、計畫、TDD、執行、review 仍由 Superpowers 處理。
+5. 設計、計畫、TDD、執行、review 仍由 Superpowers 處理。
 
 ## Prompt / Skill / Repo File 分工
 
@@ -130,7 +141,7 @@ Use $subagent-context-packet before dispatching coding or review subagents.
   `policy-gate`、`verification-gate`、`discoveries-memory`、
   `domain-risk-review`
 - `install-agent-harness.sh`：將 `templates/` 複製到目標 repo
-- `examples/`：RAG contract system
+- `examples/`：minimal agent run 與 RAG contract system
 
 ## 與既有 Agent-Repo-Guide 的關係
 

@@ -2,16 +2,27 @@
 set -euo pipefail
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
-target_root="/tmp/test-agent-harness-target"
-warnings_root="/tmp/test-agent-harness-warnings"
-failure_root="/tmp/test-agent-harness-failure"
-scope_skip_root="/tmp/test-agent-harness-scope-skip"
-scope_pass_root="/tmp/test-agent-harness-scope-pass"
-scope_max_files_root="/tmp/test-agent-harness-scope-max-files"
-scope_outside_root="/tmp/test-agent-harness-scope-outside"
-scope_forbidden_root="/tmp/test-agent-harness-scope-forbidden"
-policy_strict_root="/tmp/test-agent-harness-policy-strict"
-verify_config_root="/tmp/test-agent-harness-verify-config"
+tmp_root="$(mktemp -d "${TMPDIR:-/tmp}/agent-harness-validate.XXXXXX")"
+target_root="$tmp_root/target"
+warnings_root="$tmp_root/warnings"
+failure_root="$tmp_root/failure"
+scope_skip_root="$tmp_root/scope-skip"
+scope_pass_root="$tmp_root/scope-pass"
+scope_max_files_root="$tmp_root/scope-max-files"
+scope_outside_root="$tmp_root/scope-outside"
+scope_forbidden_root="$tmp_root/scope-forbidden"
+policy_strict_root="$tmp_root/policy-strict"
+verify_config_root="$tmp_root/verify-config"
+
+cleanup() {
+  rm -rf "$tmp_root"
+}
+
+trap cleanup EXIT
+
+pass() {
+  echo "PASS: $1"
+}
 
 assert_contains() {
   local file="$1"
@@ -33,6 +44,22 @@ assert_exists() {
   fi
 }
 
+run_yaml_syntax_checks() {
+  local yaml_files=()
+  local file
+
+  while IFS= read -r -d '' file; do
+    yaml_files+=("$file")
+  done < <(find templates/.agent examples -type f -name "*.yml" -print0)
+
+  if [ "${#yaml_files[@]}" -eq 0 ]; then
+    echo "ERROR: no YAML files found for validation"
+    exit 1
+  fi
+
+  ruby -e 'require "yaml"; ARGV.each { |f| YAML.load_file(f) }' "${yaml_files[@]}"
+}
+
 echo "== Validate Agent-Repo-Harness =="
 
 cd "$repo_root"
@@ -44,23 +71,56 @@ bash -n validate-harness.sh
 for f in templates/scripts/*.sh; do
   bash -n "$f"
 done
+pass "shell syntax checks"
+
+echo
+echo "== YAML syntax =="
+if command -v ruby >/dev/null 2>&1; then
+  run_yaml_syntax_checks
+  pass "YAML syntax checks"
+else
+  echo "WARN: ruby unavailable; skipped YAML syntax checks"
+fi
 
 echo
 echo "== Fresh install target =="
-rm -rf "$target_root"
 mkdir -p "$target_root"
 git init -q "$target_root"
 
+dry_run_log="$tmp_root/install-dry-run.log"
+bash install-agent-harness.sh --dry-run "$target_root" >"$dry_run_log" 2>&1
+assert_contains "$dry_run_log" "DRY-RUN copy:"
+assert_contains "$dry_run_log" "Install complete."
+pass "installer dry run"
+
 bash install-agent-harness.sh "$target_root"
+pass "installer copy"
 
 echo
 echo "== Installed target checks =="
+for required_path in \
+  agent.md \
+  handoff.md \
+  .agent/harness.yml \
+  .agent/policy.yml \
+  .agent/task.yml \
+  scripts/agent-preflight.sh \
+  scripts/check-agent-md.sh \
+  scripts/check-policy.sh \
+  scripts/check-scope.sh \
+  scripts/agent-verify.sh
+do
+  assert_exists "$target_root/$required_path"
+done
+pass "required files installed"
+
 (
   cd "$target_root"
   bash scripts/agent-preflight.sh
   bash scripts/check-agent-md.sh agent.md
   verify_log="$target_root/agent-verify-pass.log"
-  bash scripts/agent-verify.sh >"$verify_log" 2>&1
+  bash scripts/agent-verify.sh --best-effort >"$verify_log" 2>&1
+  assert_contains "$verify_log" "HARNESS_VERIFY_RESULT=pass"
   assert_contains "$verify_log" "Verification passed."
   bash scripts/check-policy.sh .agent/policy.yml
   bash scripts/collect-context.sh >/dev/null
@@ -70,6 +130,7 @@ echo "== Installed target checks =="
   bash scripts/check-scope.sh >"$scope_log" 2>&1
   assert_contains "$scope_log" "Scope check passed."
 )
+pass "installed script smoke checks"
 
 echo
 echo "== Warning-mode verification semantics =="
@@ -79,8 +140,10 @@ mkdir -p "$warnings_root"
   cd "$warnings_root"
   verify_log="$warnings_root/agent-verify-warnings.log"
   bash "$repo_root/templates/scripts/agent-verify.sh" >"$verify_log" 2>&1
+  assert_contains "$verify_log" "HARNESS_VERIFY_RESULT=warn"
   assert_contains "$verify_log" "Verification completed with warnings."
 )
+pass "warning-mode verification semantics"
 
 echo
 echo "== Failure-mode verification semantics =="
@@ -96,8 +159,10 @@ printf '%s\n' '#!/usr/bin/env bash' 'if' >"$failure_root/scripts/bad.sh"
     echo "ERROR: expected verification failure"
     exit 1
   fi
+  assert_contains "$verify_log" "HARNESS_VERIFY_RESULT=fail"
   assert_contains "$verify_log" "Verification failed."
 )
+pass "failure-mode verification semantics"
 
 echo
 echo "== Scope gate skip semantics =="
@@ -111,6 +176,7 @@ git init -q "$scope_skip_root"
   assert_contains "$scope_log" "SKIP: task file not found"
   assert_contains "$scope_log" "Scope check skipped."
 )
+pass "scope skip semantics"
 
 echo
 echo "== Scope gate pass semantics =="
@@ -135,6 +201,7 @@ git init -q "$scope_pass_root"
   bash "$repo_root/templates/scripts/check-scope.sh" >"$scope_log" 2>&1
   assert_contains "$scope_log" "Scope check passed."
 )
+pass "scope pass semantics"
 
 echo
 echo "== Scope gate max_changed_files failure =="
@@ -161,6 +228,7 @@ git init -q "$scope_max_files_root"
   assert_contains "$scope_log" "exceeds max_changed_files"
   assert_contains "$scope_log" "Scope check failed."
 )
+pass "scope max_changed_files failure"
 
 echo
 echo "== Scope gate allowed-path failure =="
@@ -187,6 +255,7 @@ git init -q "$scope_outside_root"
   assert_contains "$scope_log" "outside allowed_paths"
   assert_contains "$scope_log" "Scope check failed."
 )
+pass "scope allowed-path failure"
 
 echo
 echo "== Scope gate forbidden-path failure =="
@@ -213,6 +282,7 @@ git init -q "$scope_forbidden_root"
   assert_contains "$scope_log" "matches forbidden_paths"
   assert_contains "$scope_log" "Scope check failed."
 )
+pass "scope forbidden-path failure"
 
 echo
 echo "== Strict policy semantics =="
@@ -239,11 +309,12 @@ git init -q "$policy_strict_root"
   assert_contains "$strict_approved_log" "High-risk approval detected from environment."
   assert_contains "$strict_approved_log" "Strict policy gate passed with approval."
 )
+pass "strict policy semantics"
 
 echo
 echo "== Repo-defined verification commands =="
-rm -rf "$verify_config_root"
 mkdir -p "$verify_config_root/.agent"
+git init -q "$verify_config_root"
 (
   cd "$verify_config_root"
   printf '%s\n' \
@@ -260,7 +331,9 @@ mkdir -p "$verify_config_root/.agent"
   assert_contains "$verify_log" "Repo-defined verification commands found."
   assert_contains "$verify_log" "RUN: shell-check"
   assert_contains "$verify_log" "PASS: shell-check"
+  assert_contains "$verify_log" "HARNESS_VERIFY_RESULT=pass"
 )
+pass "repo-defined verification commands"
 
 echo
-echo "Validation completed."
+echo "PASS: validation completed"

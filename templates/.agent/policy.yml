@@ -54,7 +54,7 @@ required_before_finish:
 
 notes:
   - Customize high-risk patterns for this repository after installation.
-  - `check-policy.sh` defaults to warning mode and supports `--strict`.
+  - "`check-policy.sh` defaults to warning mode and supports `--strict`."
   - In strict mode, use the approval env var or approval file for explicit
     high-risk authorization.
   - Policy workflow should be invoked through skills or repo config, not

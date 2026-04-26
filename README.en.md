@@ -4,6 +4,11 @@ Chinese version: [README.md](README.md)
 
 ## Goal
 
+Agent-Repo-Harness is a lightweight control layer for AI coding agents. It
+installs repo-local context files, reusable skills, and shell gates so agents
+can understand project context, stay within task scope, run verification, and
+preserve handoff memory across sessions.
+
 This repository is evolving `Agent-Repo-Guide` into `Agent-Repo-Harness`.
 
 The key design rule is unchanged:
@@ -32,6 +37,7 @@ This repository is currently the **v0.2 Enforced Harness MVP**.
 - It adds repo-aware workflow control plus enforceable policy, scope, and
   verification gates.
 - It is **not** a full agent runtime.
+- It is **not** a replacement for Superpowers.
 - It is **not** an MCP server.
 
 For the shortest day-to-day prompts, see
@@ -46,7 +52,13 @@ bash install-agent-harness.sh --dry-run /path/to/target-repo
 bash install-agent-harness.sh /path/to/target-repo
 ```
 
-2. In the target repo, run:
+2. Fill in `agent.md` and `handoff.md` with stable target-repo facts and
+   current task state.
+
+3. Let Codex / Claude Code read the relevant skills, such as
+   `harness-entrypoint`, `policy-gate`, and `verification-gate`.
+
+4. In the target repo, run the policy, scope, and verification gates:
 
 ```bash
 bash scripts/agent-preflight.sh
@@ -63,8 +75,7 @@ checking by default. For strict task-scoped work, fill in
 `max_diff_lines` first; otherwise, run it to confirm that no task scope
 limits are currently active.
 
-3. Use `harness-entrypoint` before non-trivial repo work.
-4. Use Superpowers for design, planning, TDD, execution, and review.
+5. Use Superpowers for design, planning, TDD, execution, and review.
 
 ## Prompt / Skill / Repo File Separation
 
@@ -133,7 +144,7 @@ Use $subagent-context-packet before dispatching coding or review subagents.
   `domain-risk-review`
 - `install-agent-harness.sh`: copies the `templates/` payload into a target
   repository
-- `examples/`: RAG contract system
+- `examples/`: minimal agent run and RAG contract system
 
 ## Relationship To The Existing Guide Skills
 

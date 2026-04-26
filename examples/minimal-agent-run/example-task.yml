@@ -1,0 +1,18 @@
+task:
+  status: "in_progress"
+  goal: "Fix retry handling in the worker without changing unrelated systems."
+  allowed_paths:
+    - "src/retry/**"
+    - "tests/retry/**"
+  forbidden_paths:
+    - "src/auth/**"
+    - "src/billing/**"
+    - ".github/workflows/**"
+  max_changed_files: 4
+  max_diff_lines: 200
+
+last_verified:
+  command: ""
+  result: ""
+
+blockers: []

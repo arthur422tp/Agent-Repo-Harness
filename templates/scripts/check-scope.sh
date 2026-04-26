@@ -48,8 +48,6 @@ if [ ! -f "$task_file" ]; then
   exit 0
 fi
 
-shopt -s globstar nullglob
-
 list_changed_files() {
   {
     git diff --name-only HEAD 2>/dev/null || true
@@ -136,6 +134,18 @@ allowed_patterns="$(extract_task_list allowed_paths)"
 forbidden_patterns="$(extract_task_list forbidden_paths)"
 max_changed_files="$(extract_task_scalar max_changed_files)"
 max_diff_lines="$(extract_task_scalar max_diff_lines)"
+
+case "$max_changed_files" in
+  ""|null|~)
+    max_changed_files=""
+    ;;
+esac
+
+case "$max_diff_lines" in
+  ""|null|~)
+    max_diff_lines=""
+    ;;
+esac
 
 if [ -n "$allowed_patterns" ]; then
   while IFS= read -r file; do

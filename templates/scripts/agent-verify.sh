@@ -256,13 +256,25 @@ echo "Failures: $failures"
 echo "Warnings: $warnings"
 
 if [ "$failures" -gt 0 ]; then
+  echo "HARNESS_VERIFY_RESULT=fail"
+  echo "HARNESS_CHECKS_RUN=$checks_run"
+  echo "HARNESS_FAILURES=$failures"
+  echo "HARNESS_WARNINGS=$warnings"
   echo "Verification failed."
   exit 1
 fi
 
 if [ "$warnings" -gt 0 ]; then
+  echo "HARNESS_VERIFY_RESULT=warn"
+  echo "HARNESS_CHECKS_RUN=$checks_run"
+  echo "HARNESS_FAILURES=$failures"
+  echo "HARNESS_WARNINGS=$warnings"
   echo "Verification completed with warnings."
   exit 0
 fi
 
+echo "HARNESS_VERIFY_RESULT=pass"
+echo "HARNESS_CHECKS_RUN=$checks_run"
+echo "HARNESS_FAILURES=$failures"
+echo "HARNESS_WARNINGS=$warnings"
 echo "Verification passed."
