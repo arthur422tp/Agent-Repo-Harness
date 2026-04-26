@@ -4,44 +4,55 @@ English version: [README.en.md](README.en.md)
 
 ## 這個 Repo 的目標
 
-Agent-Repo-Harness is a lightweight control layer for AI coding agents. It
-installs repo-local context files, reusable skills, and shell gates so agents
-can understand project context, stay within task scope, run verification, and
-preserve handoff memory across sessions.
+Agent-Repo-Harness is a repo-local contract layer for Superpowers-powered
+coding agents. Superpowers defines the development workflow. Agent-Repo-Harness
+defines the repo memory, task boundaries, risk gates, and completion
+requirements.
 
-這個 repo 正在把 `Agent-Repo-Guide` 演進成 `Agent-Repo-Harness`。
+換句話說：Superpowers 決定 agent 怎麼做事；Agent-Repo-Harness 決定這個 repo
+記住什麼、允許什麼，以及完成前必須檢查什麼。
 
-核心原則不變：
+這個 repo 正在把 `Agent-Repo-Guide` 演進成 `Agent-Repo-Harness`，但它不會
+變成 Superpowers replacement 或 agent orchestrator。
 
-- **不要取代 Superpowers**
-- **Superpowers 繼續負責開發流程**
-- **Agent-Repo-Harness 負責 repo-aware control layer**
+## Current Status: v0.2 Superpowers Companion MVP
 
-分工如下：
-
-```text
-Superpowers
-  = brainstorming / writing-plans / subagent-driven-development
-  = test-driven-development / code review / finishing branch
-
-Agent-Repo-Harness
-  = agent.md / handoff.md / policy gates / verification gates
-  = subagent context packets / discoveries memory / domain risk review
-```
-
-## Current Status: v0.2 Enforced Harness MVP
-
-目前這個 repo 是 **v0.2 Enforced Harness MVP**。
+目前這個 repo 是 **v0.2 Superpowers Companion MVP**。
 
 - 它提供 templates、skills、scripts、examples
-- 它負責 repo-aware workflow 與 enforceable verification / policy / scope
-  gates
+- 它負責 repo-local context、task boundaries、risk policy 與 enforceable
+  verification / policy / scope gates
 - 它**不是**完整 agent runtime
 - 它**不是** Superpowers 的替代品
 - 它**不是** MCP server
 
 最短使用方式可參考
 [docs/USAGE_WITH_AGENTS.md](docs/USAGE_WITH_AGENTS.md)。
+Superpowers 整合細節可參考
+[docs/superpowers-integration.md](docs/superpowers-integration.md)。
+
+## Relationship to Superpowers
+
+- Superpowers controls workflow discipline.
+- Agent-Repo-Harness controls repo-local context and gates.
+- Superpowers decides how work is done.
+- This harness defines what this repo allows, remembers, and requires before
+  completion.
+
+Conceptual split:
+
+```text
+Superpowers
+  = brainstorming / writing-plans / using git worktrees
+  = test-driven-development / subagent-driven-development
+  = requesting reviews / finishing a development branch
+
+Agent-Repo-Harness
+  = agent.md repo map / handoff.md state
+  = .agent/task.yml scope / .agent/policy.yml risk policy
+  = scripts/agent-verify.sh verification
+  = scripts/agent-finish.sh completion gates
+```
 
 ## Quick Start
 
@@ -66,6 +77,7 @@ bash scripts/check-agent-md.sh agent.md
 bash scripts/check-policy.sh
 bash scripts/check-scope.sh
 bash scripts/agent-verify.sh
+bash scripts/agent-finish.sh
 ```
 
 `scripts/check-scope.sh` 在你先為目前 task 配置 `.agent/task.yml` 後最有用；
@@ -174,26 +186,37 @@ bash install-agent-harness.sh /path/to/target-repo
 要覆蓋必須顯式加 `--force`。
 如果你要保留被覆蓋檔案，可搭配 `--backup` 產生 `.bak`。
 
+## Typical Workflow
+
+1. Install Superpowers.
+2. Install Agent-Repo-Harness into the target repo.
+3. Run `scripts/agent-preflight.sh`.
+4. Use Superpowers to brainstorm and write a plan.
+5. Translate the current Superpowers plan task into `.agent/task.yml`.
+6. Execute with Superpowers subagent-driven development.
+7. Run `scripts/agent-finish.sh`.
+8. Update `handoff.md`.
+
 ## 典型使用流程
 
-1. 在目標 repo 安裝 harness 樣板。
-2. 用 `harness-entrypoint` 或 `repo-context-bootstrap` 讀取 repo context。
-3. 用 Superpowers 做設計、計畫、TDD、實作、review。
-4. dispatch subagent 前用 `subagent-context-packet` 準備 repo-aware
+1. 在目標 repo 安裝 Superpowers。
+2. 在目標 repo 安裝 harness 樣板。
+3. 執行 `scripts/agent-preflight.sh`。
+4. 用 Superpowers 做 brainstorming、planning、TDD、實作與 review。
+5. 將目前 Superpowers plan task 翻成 `.agent/task.yml`。
+6. dispatch subagent 前用 `subagent-context-packet` 準備 repo-aware
    context。
-5. 完成前跑：
+7. 完成前跑：
 
 ```bash
-scripts/check-policy.sh
-scripts/check-scope.sh
-scripts/agent-verify.sh
+scripts/agent-finish.sh
 ```
 
 `scripts/check-scope.sh` 建議在已為當前 task 配置 `.agent/task.yml` 後執行；
 或用它確認目前沒有啟用任何 task scope limits。
 
-6. 更新 `handoff.md` 與 `docs/agent/discoveries.md`。
-7. 若 repo 要把高風險變更變成阻斷 gate，可使用
+8. 更新 `handoff.md` 與 `docs/agent/discoveries.md`。
+9. 若 repo 要把高風險變更變成阻斷 gate，可使用
    `scripts/check-policy.sh --strict`。
 
 ## File Responsibilities
@@ -220,7 +243,8 @@ scripts/agent-verify.sh
 ## Design Principles
 
 - Superpowers 繼續負責開發流程
-- Agent-Repo-Harness 只增加 project-aware control，不建立新 runtime
+- Agent-Repo-Harness 只增加 repo-local context、boundaries、risk policy 與
+  gates，不建立新 runtime
 - stable repo map 與 current task state 必須分離
 - policy、scope、verification 在 completion 前必須明確檢查
 - machine-readable task state 可以驅動 enforceable guardrails
@@ -256,10 +280,17 @@ scripts/agent-verify.sh
 - `agent-verify.sh` 預設採 strict mode，並提供 `--best-effort` 給尚未完整
   配置的 repo 做非阻斷檢查；也可從 `.agent/harness.yml` 讀取 repo
   自訂 verification commands；目標 repo 仍應自行客製
+- `agent-finish.sh` 是 completion gate wrapper，預設 strict，也支援
+  `--best-effort`
 - `check-policy.sh` 使用的是輕量 pattern matching，不是完整 policy
   engine
 - `check-scope.sh` 使用簡化 YAML subset parser，對 untracked files 的
   line counting 採 `wc -l` 近似值
+- 不是 sandbox
+- 不阻止惡意 shell commands
+- 不取代 human code review
+- 不證明 semantic correctness
+- 假設 repo-owned config 是可信的
 
 ## 參考與既有資產
 

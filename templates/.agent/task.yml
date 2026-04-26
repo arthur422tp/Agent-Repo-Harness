@@ -1,10 +1,27 @@
 task:
   status: "not_started"
   goal: ""
-  allowed_paths: []
-  forbidden_paths: []
+  source_plan: "docs/superpowers/plans/YYYY-MM-DD-feature.md"
+  current_task: "Task N: short task name"
+  allowed_paths:
+    # - "src/example/**"
+    # - "tests/example/**"
+  forbidden_paths:
+    # - "src/auth/**"
+    # - "src/billing/**"
+    # - ".github/workflows/**"
   max_changed_files: null
   max_diff_lines: null
+  # Example limits for a scoped task:
+  # max_changed_files: 4
+  # max_diff_lines: 250
+
+  completion:
+    requires_tdd_evidence: true
+    requires_scope_check: true
+    requires_policy_check: true
+    requires_verification: true
+    requires_handoff_update: true
 
 last_verified:
   command: ""

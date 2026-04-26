@@ -24,12 +24,28 @@ TODO: Describe the major modules and data flow.
 Before claiming completion, run:
 
 ```bash
-scripts/check-policy.sh
-scripts/check-scope.sh
-scripts/agent-verify.sh
+scripts/agent-finish.sh
 ```
 
-Only claim verified if the required commands pass.
+Only claim verified if the finish gate passes. It runs the required policy,
+scope, repo map, and verification checks.
+
+## Superpowers Contract
+This repo assumes Superpowers is installed.
+
+Before implementation:
+- Use Superpowers brainstorming or writing-plans when appropriate.
+- Use git worktrees for feature work.
+- Use TDD for feature, bugfix, refactor, and behavior changes.
+
+During implementation:
+- Keep changes within `.agent/task.yml`.
+- Check `.agent/policy.yml` before touching high-risk areas.
+- Keep commits small and task-scoped.
+
+Before completion:
+- Run `scripts/agent-finish.sh`.
+- Update `handoff.md`.
 
 ## Risk Areas
 - TODO: files or modules that should not be changed casually

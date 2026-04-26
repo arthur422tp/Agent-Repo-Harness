@@ -13,6 +13,7 @@ scope_outside_root="$tmp_root/scope-outside"
 scope_forbidden_root="$tmp_root/scope-forbidden"
 policy_strict_root="$tmp_root/policy-strict"
 verify_config_root="$tmp_root/verify-config"
+finish_strict_root="$tmp_root/finish-strict"
 
 cleanup() {
   rm -rf "$tmp_root"
@@ -68,6 +69,7 @@ echo
 echo "== Shell syntax =="
 bash -n install-agent-harness.sh
 bash -n validate-harness.sh
+bash -n templates/scripts/agent-finish.sh
 for f in templates/scripts/*.sh; do
   bash -n "$f"
 done
@@ -105,6 +107,7 @@ for required_path in \
   .agent/policy.yml \
   .agent/task.yml \
   scripts/agent-preflight.sh \
+  scripts/agent-finish.sh \
   scripts/check-agent-md.sh \
   scripts/check-policy.sh \
   scripts/check-scope.sh \
@@ -122,6 +125,10 @@ pass "required files installed"
   bash scripts/agent-verify.sh --best-effort >"$verify_log" 2>&1
   assert_contains "$verify_log" "HARNESS_VERIFY_RESULT=pass"
   assert_contains "$verify_log" "Verification passed."
+  finish_log="$target_root/agent-finish-pass.log"
+  bash scripts/agent-finish.sh --best-effort >"$finish_log" 2>&1
+  assert_contains "$finish_log" "AGENT_FINISH_RESULT=pass"
+  assert_contains "$finish_log" "Agent finish gates passed."
   bash scripts/check-policy.sh .agent/policy.yml
   bash scripts/collect-context.sh >/dev/null
   assert_exists "$target_root/.agent/task.yml"
@@ -334,6 +341,44 @@ git init -q "$verify_config_root"
   assert_contains "$verify_log" "HARNESS_VERIFY_RESULT=pass"
 )
 pass "repo-defined verification commands"
+
+echo
+echo "== Finish gate strict scope failure =="
+rm -rf "$finish_strict_root"
+mkdir -p "$finish_strict_root/.agent" "$finish_strict_root/scripts" "$finish_strict_root/src/billing"
+git init -q "$finish_strict_root"
+(
+  cd "$finish_strict_root"
+  cp "$repo_root/templates/agent.md" agent.md
+  cp "$repo_root/templates/scripts/check-agent-md.sh" scripts/check-agent-md.sh
+  cp "$repo_root/templates/scripts/check-scope.sh" scripts/check-scope.sh
+  cp "$repo_root/templates/scripts/check-policy.sh" scripts/check-policy.sh
+  cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
+  cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
+  chmod +x scripts/*.sh
+  printf '%s\n' \
+    'task:' \
+    '  forbidden_paths:' \
+    '    - "src/billing/**"' \
+    > .agent/task.yml
+  printf '%s\n' \
+    'risk_files:' \
+    '  high:' \
+    '    - "src/auth/**"' \
+    > .agent/policy.yml
+  git config user.email "test@example.com"
+  git config user.name "Test User"
+  git add agent.md .agent/task.yml .agent/policy.yml scripts
+  git commit -q -m "Add harness files"
+  printf '%s\n' 'line one' > src/billing/invoice.js
+  finish_log="$finish_strict_root/agent-finish-strict-failure.log"
+  if bash scripts/agent-finish.sh --strict >"$finish_log" 2>&1; then
+    echo "ERROR: expected finish gate strict failure"
+    exit 1
+  fi
+  assert_contains "$finish_log" "Scope check failed."
+)
+pass "finish gate strict scope failure"
 
 echo
 echo "PASS: validation completed"

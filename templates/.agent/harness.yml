@@ -44,6 +44,7 @@ context:
 
 scripts:
   preflight: scripts/agent-preflight.sh
+  finish: scripts/agent-finish.sh
   verify: scripts/agent-verify.sh
   collect_context: scripts/collect-context.sh
   check_policy: scripts/check-policy.sh
@@ -66,9 +67,13 @@ reviews:
     - domain-risk
 
 verification:
+  final_gate_command: scripts/agent-finish.sh
   required_policy_command: scripts/check-policy.sh
   required_scope_command: scripts/check-scope.sh
   required_command: scripts/agent-verify.sh
+  completion_note: >-
+    scripts/agent-finish.sh is the recommended final gate before claiming
+    completion.
   # Optional repo-defined verification commands run before heuristic checks.
   # required:
   #   - name: lint

@@ -48,12 +48,14 @@ required_reviews:
   - verification-gate
 
 required_before_finish:
+  - scripts/agent-finish.sh
   - scripts/check-policy.sh
   - scripts/check-scope.sh
   - scripts/agent-verify.sh
 
 notes:
   - Customize high-risk patterns for this repository after installation.
+  - "`agent-finish.sh` is the recommended final gate before claiming completion."
   - "`check-policy.sh` defaults to warning mode and supports `--strict`."
   - In strict mode, use the approval env var or approval file for explicit
     high-risk authorization.

@@ -9,6 +9,11 @@
 ## Current Task
 TODO
 
+## Current Superpowers Plan
+- Plan file: TODO
+- Current task: TODO
+- Execution mode: subagent-driven / inline / manual
+
 ## Current State
 TODO
 
@@ -22,6 +27,7 @@ TODO
 - `scripts/check-policy.sh`: TODO
 - `scripts/check-scope.sh`: TODO
 - `scripts/agent-verify.sh`: TODO
+- `scripts/agent-finish.sh`: TODO
 - Notes: TODO
 
 ## Open Issues
