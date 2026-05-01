@@ -3,6 +3,8 @@ version: 1
 mode: lightweight
 
 paths:
+  agent_entrypoint: AGENTS.md
+  claude_entrypoint: CLAUDE.md
   agent_map: agent.md
   handoff: handoff.md
   task_state: .agent/task.yml
@@ -34,10 +36,13 @@ prompting:
 
 context:
   required_files:
+    - AGENTS.md
     - agent.md
     - handoff.md
     - .agent/policy.yml
+    - .agent/task.yml
   optional_files:
+    - CLAUDE.md
     - docs/agent/known-issues.md
     - docs/agent/discoveries.md
     - docs/agent/debug-recipes/
@@ -50,6 +55,8 @@ scripts:
   check_policy: scripts/check-policy.sh
   check_scope: scripts/check-scope.sh
   check_agent_map: scripts/check-agent-md.sh
+  validate_config: scripts/validate-config.sh
+  validate_task: scripts/validate-task.sh
 
 subagents:
   require_context_packet: true
@@ -74,6 +81,8 @@ verification:
   completion_note: >-
     scripts/agent-finish.sh is the recommended final gate before claiming
     completion.
+  evidence_dir: .agent/runs
+  evidence_summary: finish-summary.md
   # Optional repo-defined verification commands run before heuristic checks.
   # required:
   #   - name: lint

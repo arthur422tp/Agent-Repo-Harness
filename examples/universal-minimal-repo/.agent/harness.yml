@@ -1,0 +1,19 @@
+name: Universal Minimal Example
+version: 1
+mode: lightweight
+
+paths:
+  agent_map: agent.md
+  handoff: handoff.md
+  task_state: .agent/task.yml
+
+scripts:
+  preflight: scripts/agent-preflight.sh
+  finish: scripts/agent-finish.sh
+  verify: scripts/agent-verify.sh
+  check_policy: scripts/check-policy.sh
+  check_scope: scripts/check-scope.sh
+
+verification:
+  final_gate_command: scripts/agent-finish.sh
+  allow_unverified_completion: false

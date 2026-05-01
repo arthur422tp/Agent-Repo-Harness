@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-repo-harness.local/schemas/harness.schema.json",
+  "title": "Agent-Repo-Harness configuration",
+  "type": "object",
+  "required": ["name", "version", "mode", "paths", "scripts", "verification"],
+  "properties": {
+    "name": { "type": "string" },
+    "version": { "type": "integer", "minimum": 1 },
+    "mode": { "type": "string" },
+    "paths": {
+      "type": "object",
+      "required": ["agent_map", "handoff", "task_state"],
+      "properties": {
+        "agent_map": { "type": "string" },
+        "handoff": { "type": "string" },
+        "task_state": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "scripts": {
+      "type": "object",
+      "required": ["preflight", "finish", "verify", "check_policy", "check_scope"],
+      "additionalProperties": { "type": "string" }
+    },
+    "verification": {
+      "type": "object",
+      "required": ["final_gate_command"],
+      "properties": {
+        "final_gate_command": { "type": "string" },
+        "allow_unverified_completion": { "type": "boolean" },
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "command"],
+            "properties": {
+              "name": { "type": "string" },
+              "command": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

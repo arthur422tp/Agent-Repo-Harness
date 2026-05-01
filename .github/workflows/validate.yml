@@ -10,3 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: bash validate-harness.sh
+      - name: Verify universal adapter files are tracked
+        run: |
+          test -f templates/AGENTS.md
+          test -f templates/CLAUDE.md
+          test -f adapters/codex/AGENTS.md
+          test -f adapters/codex/codex-start-prompt.md
+          test -f adapters/claude-code/CLAUDE.md
+          test -f docs/codex-usage.md
+          test -f docs/agent-support-matrix.md
+          test -f schemas/harness.schema.json
+          test -f schemas/policy.schema.json
+          test -f schemas/task.schema.json
+          test -f schemas/handoff.schema.json

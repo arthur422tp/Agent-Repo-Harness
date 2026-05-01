@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-repo-harness.local/schemas/policy.schema.json",
+  "title": "Agent-Repo-Harness policy",
+  "type": "object",
+  "required": ["version", "default_mode", "risk_files", "rules"],
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "default_mode": { "enum": ["warn", "strict"] },
+    "approval": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "risk_files": {
+      "type": "object",
+      "properties": {
+        "high": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "high_risk_patterns": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "level", "description"],
+        "properties": {
+          "id": { "type": "string" },
+          "level": { "enum": ["low", "medium", "high"] },
+          "description": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,12 @@
+version: 1
+default_mode: warn
+
+risk_files:
+  high:
+    - ".github/workflows/**"
+    - ".env*"
+
+rules:
+  - id: verify-before-completion
+    level: high
+    description: Run the finish gate before claiming completion.

@@ -32,10 +32,13 @@ find . -maxdepth 3 \( \
 echo
 echo "== Harness files =="
 for f in \
+  AGENTS.md \
+  CLAUDE.md \
   agent.md \
   handoff.md \
   .agent/harness.yml \
   .agent/policy.yml \
+  .agent/task.yml \
   docs/agent/known-issues.md \
   docs/agent/discoveries.md
 do

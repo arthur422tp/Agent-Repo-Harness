@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-repo-harness.local/schemas/task.schema.json",
+  "title": "Agent-Repo-Harness task state",
+  "type": "object",
+  "required": ["task"],
+  "properties": {
+    "task": {
+      "type": "object",
+      "required": ["status", "goal", "allowed_paths", "forbidden_paths"],
+      "properties": {
+        "status": {
+          "enum": ["not_started", "in_progress", "blocked", "ready_for_review", "complete"]
+        },
+        "goal": { "type": "string" },
+        "source_plan": { "type": "string" },
+        "current_task": { "type": "string" },
+        "allowed_paths": {
+          "type": ["array", "null"],
+          "items": { "type": "string" }
+        },
+        "forbidden_paths": {
+          "type": ["array", "null"],
+          "items": { "type": "string" }
+        },
+        "max_changed_files": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "max_diff_lines": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "completion": {
+          "type": "object",
+          "additionalProperties": { "type": "boolean" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "last_verified": {
+      "type": "object",
+      "properties": {
+        "command": { "type": "string" },
+        "result": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "blockers": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,307 +1,136 @@
 # Agent-Repo-Harness
 
-English version: [README.en.md](README.en.md)
+Agent-Repo-Harness is a lightweight repo-local harness framework for AI coding
+agents such as Codex, Claude Code, Superpowers-compatible agents, and generic
+coding agents.
 
-## 這個 Repo 的目標
+It provides a universal core plus adapter files:
 
-Agent-Repo-Harness is a repo-local contract layer for Superpowers-powered
-coding agents. Superpowers defines the development workflow. Agent-Repo-Harness
-defines the repo memory, task boundaries, risk gates, and completion
-requirements.
+- universal repo memory: `agent.md`, `handoff.md`, `.agent/task.yml`
+- universal gates: `scripts/check-policy.sh`, `scripts/check-scope.sh`,
+  `scripts/agent-verify.sh`, `scripts/agent-finish.sh`
+- universal entrypoints: `AGENTS.md`, `CLAUDE.md`
+- adapters: `adapters/codex/`, `adapters/claude-code/`
+- preserved Superpowers-compatible skills: `skills/*`
 
-換句話說：Superpowers 決定 agent 怎麼做事；Agent-Repo-Harness 決定這個 repo
-記住什麼、允許什麼，以及完成前必須檢查什麼。
+The harness keeps stable repo facts separate from task state:
 
-這個 repo 正在把 `Agent-Repo-Guide` 演進成 `Agent-Repo-Harness`，但它不會
-變成 Superpowers replacement 或 agent orchestrator。
+- `agent.md`: stable repo map and operating rules
+- `handoff.md`: current task state and next action
+- `.agent/task.yml`: machine-readable current task scope
 
-## Current Status: v0.2 Superpowers Companion MVP
+## What It Is Not
 
-目前這個 repo 是 **v0.2 Superpowers Companion MVP**。
+Agent-Repo-Harness does not provide:
 
-- 它提供 templates、skills、scripts、examples
-- 它負責 repo-local context、task boundaries、risk policy 與 enforceable
-  verification / policy / scope gates
-- 它**不是**完整 agent runtime
-- 它**不是** Superpowers 的替代品
-- 它**不是** MCP server
+- a full agent runtime
+- an MCP server
+- sandboxing
+- full runtime orchestration
+- semantic correctness guarantees
+- a replacement for Superpowers
 
-最短使用方式可參考
-[docs/USAGE_WITH_AGENTS.md](docs/USAGE_WITH_AGENTS.md)。
-Superpowers 整合細節可參考
-[docs/superpowers-integration.md](docs/superpowers-integration.md)。
+It makes repo expectations explicit and gives agents lightweight gates to run
+before they claim completion.
 
-## Relationship to Superpowers
+## Current Status
 
-- Superpowers controls workflow discipline.
-- Agent-Repo-Harness controls repo-local context and gates.
-- Superpowers decides how work is done.
-- This harness defines what this repo allows, remembers, and requires before
-  completion.
+This repository is evolving from a Superpowers Companion MVP into a universal
+repo-local harness core with agent adapters.
 
-Conceptual split:
-
-```text
-Superpowers
-  = brainstorming / writing-plans / using git worktrees
-  = test-driven-development / subagent-driven-development
-  = requesting reviews / finishing a development branch
-
-Agent-Repo-Harness
-  = agent.md repo map / handoff.md state
-  = .agent/task.yml scope / .agent/policy.yml risk policy
-  = scripts/agent-verify.sh verification
-  = scripts/agent-finish.sh completion gates
-```
+Superpowers remains supported. Existing Superpowers-compatible skills stay in
+place and remain documented.
 
 ## Quick Start
 
-1. 先把 harness 安裝到目標 repo：
+Install the universal templates into a target repo:
 
 ```bash
 bash install-agent-harness.sh --dry-run /path/to/target-repo
 bash install-agent-harness.sh /path/to/target-repo
 ```
 
-2. 填好 `agent.md` 與 `handoff.md`，讓它們反映 target repo 的穩定事實與
-   current task state。
+Then fill in:
 
-3. 讓 Codex / Claude Code 讀取 relevant skills，例如
-   `harness-entrypoint`、`policy-gate`、`verification-gate`。
+- `agent.md`
+- `handoff.md`
+- `.agent/policy.yml`
+- `.agent/task.yml`
 
-4. 在目標 repo 執行 policy、scope、verification gates：
+Run the gates:
 
 ```bash
 bash scripts/agent-preflight.sh
-bash scripts/check-agent-md.sh agent.md
+bash scripts/validate-config.sh
+bash scripts/validate-task.sh
 bash scripts/check-policy.sh
 bash scripts/check-scope.sh
-bash scripts/agent-verify.sh
-bash scripts/agent-finish.sh
+bash scripts/agent-verify.sh --best-effort
+bash scripts/agent-finish.sh --best-effort
 ```
 
-`scripts/check-scope.sh` 在你先為目前 task 配置 `.agent/task.yml` 後最有用；
-fresh install 預設不應因為 harness 自己安裝出的檔案而失敗。若要做嚴格
-task-scoped work，請先填好 `allowed_paths`、`forbidden_paths`、
-`max_changed_files`、`max_diff_lines`；否則它可用來確認目前沒有啟用任何
-task scope limits。
+`agent-finish.sh` writes evidence under `.agent/runs/<timestamp>/`, including
+`finish-summary.md`.
 
-5. 設計、計畫、TDD、執行、review 仍由 Superpowers 處理。
+## Agent Entrypoints
 
-## Prompt / Skill / Repo File 分工
+Codex:
 
-不要在每次使用 Codex 或 Claude Code 時重貼一大段 workflow prompt。
+- install or copy `templates/AGENTS.md` to the target repo root
+- see `docs/codex-usage.md`
+- reusable adapter prompt: `adapters/codex/codex-start-prompt.md`
 
-- `skills/`：放可重複使用的 workflow 規則與操作流程
-- `agent.md`、`handoff.md`、`docs/agent/*`：放這個 target repo 的事實、
-  狀態與長短期記憶
-- 使用者當下的 prompt：只放目前 task 與這次特別限制
+Claude Code:
 
-簡化原則：
+- install or copy `templates/CLAUDE.md` to the target repo root
+- optional project skills live under
+  `adapters/claude-code/.claude/skills/`
 
-- 重複三次以上還會用到的流程，應移到 skill
-- 只屬於這個 repo 的內容，應寫進 repo 檔案，不應每次重新口述
-- 只跟這次任務有關的要求，才放進當次 prompt
+Superpowers:
 
-### 舊寫法：每次都貼長 prompt
+- use the existing Superpowers-compatible skills in `skills/`
+- keep using Superpowers for workflow discipline such as planning, TDD,
+  subagent-driven development, review, and branch finishing
 
-```text
-Use Agent-Repo-Harness for this task.
+Generic agents:
 
-Read agent.md, handoff.md, .agent/harness.yml, and .agent/policy.yml.
-Run scripts/agent-preflight.sh.
-Use Superpowers-compatible workflow.
-Create subagent context packets.
-Apply policy-gate before touching high-risk files.
-Run scripts/check-policy.sh、scripts/check-scope.sh、scripts/agent-verify.sh
-before finishing.
-Update handoff.md if task state changed.
+- read `AGENTS.md`
+- inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`
+- run the scripts directly
 
-Task:
-[task here]
-```
+See [docs/USAGE_WITH_AGENTS.md](docs/USAGE_WITH_AGENTS.md) and
+[docs/agent-support-matrix.md](docs/agent-support-matrix.md).
 
-### 新寫法：只叫對 skill，prompt 保留 task
+## Repository Contents
 
-```text
-Use $harness-entrypoint for this task.
-Use $policy-gate if you touch high-risk files.
-Use $verification-gate before completion.
-Use $handoff-update if task state changes.
-
-Task:
-[task here]
-
-Special constraints:
-[only task-specific constraints here]
-```
-
-如果 subagent 會參與，額外要求：
-
-```text
-Use $subagent-context-packet before dispatching coding or review subagents.
-```
-
-## 現在提供什麼
-
-- `templates/`: `agent.md`、`handoff.md`、`.agent/task.yml` 樣板、
-  `docs/agent/` 長期與短期記憶樣板、`scripts/` 安全預設的
-  preflight / verify / policy / scope / context scripts，以及 `.agent/`
-  harness 與 policy 設定
-- `skills/`: `harness-entrypoint`、`repo-context-bootstrap`、
-  `repo-map-maintenance`、`handoff-update`、`subagent-context-packet`、
-  `policy-gate`、`verification-gate`、`discoveries-memory`、
-  `domain-risk-review`
-- `install-agent-harness.sh`：將 `templates/` 複製到目標 repo
-- `examples/`：minimal agent run 與 RAG contract system
-
-## 與既有 Agent-Repo-Guide 的關係
-
-這次 migration 採用 additive 方式，先保留原本 skill：
-
-- `project-agent-docs`
-- `project-map-agent-md`
-- `update-agent-handoff`
-
-對應關係：
-
-| 舊概念 | 新 harness 模組 |
-| --- | --- |
-| `project-agent-docs` | `harness-entrypoint` + `repo-context-bootstrap` |
-| `project-map-agent-md` | `repo-map-maintenance` |
-| `update-agent-handoff` | `handoff-update` |
-
-在新 skill 完整取代前，不會強制刪除舊內容。
-
-## 安裝方式
-
-把樣板安裝到目標 repo：
-
-```bash
-bash install-agent-harness.sh --dry-run /path/to/target-repo
-bash install-agent-harness.sh /path/to/target-repo
-```
-
-如果目標 repo 已經有同名檔案，installer 預設會跳過，不會覆蓋。
-要覆蓋必須顯式加 `--force`。
-如果你要保留被覆蓋檔案，可搭配 `--backup` 產生 `.bak`。
+- `templates/`: files copied into target repositories
+- `templates/scripts/`: dependency-light gates and validators
+- `skills/`: Superpowers-compatible skills
+- `adapters/`: agent-specific entrypoints and skill layouts
+- `schemas/`: JSON Schemas for harness, policy, task, and handoff structures
+- `examples/`: example installed shapes and task flows
+- `install-agent-harness.sh`: template installer
+- `validate-harness.sh`: repository validation and smoke tests
 
 ## Typical Workflow
 
-1. Install Superpowers.
-2. Install Agent-Repo-Harness into the target repo.
-3. Run `scripts/agent-preflight.sh`.
-4. Use Superpowers to brainstorm and write a plan.
-5. Translate the current Superpowers plan task into `.agent/task.yml`.
-6. Execute with Superpowers subagent-driven development.
-7. Run `scripts/agent-finish.sh`.
-8. Update `handoff.md`.
+1. Open the target repo in the coding agent.
+2. Ask the agent to read `AGENTS.md` or `CLAUDE.md`.
+3. Fill `.agent/task.yml` for scoped work.
+4. Run `scripts/agent-preflight.sh`.
+5. Make changes within task boundaries.
+6. Run `scripts/agent-finish.sh`.
+7. Update `handoff.md` with changed files, verification results, blockers, and
+   next recommended action.
 
-## 典型使用流程
+## Validation
 
-1. 在目標 repo 安裝 Superpowers。
-2. 在目標 repo 安裝 harness 樣板。
-3. 執行 `scripts/agent-preflight.sh`。
-4. 用 Superpowers 做 brainstorming、planning、TDD、實作與 review。
-5. 將目前 Superpowers plan task 翻成 `.agent/task.yml`。
-6. dispatch subagent 前用 `subagent-context-packet` 準備 repo-aware
-   context。
-7. 完成前跑：
+Validate this repository:
 
 ```bash
-scripts/agent-finish.sh
+bash validate-harness.sh
 ```
 
-`scripts/check-scope.sh` 建議在已為當前 task 配置 `.agent/task.yml` 後執行；
-或用它確認目前沒有啟用任何 task scope limits。
-
-8. 更新 `handoff.md` 與 `docs/agent/discoveries.md`。
-9. 若 repo 要把高風險變更變成阻斷 gate，可使用
-   `scripts/check-policy.sh --strict`。
-
-## File Responsibilities
-
-- `agent.md`：穩定的 repo map 與 repo-specific 規則
-- `handoff.md`：只記錄目前 task state
-- `.agent/task.yml`：machine-readable current task state 與 scope 限制
-- `docs/agent/known-issues.md`：長期 gotchas 與重複踩雷點
-- `docs/agent/discoveries.md`：短期 discoveries，供後續 subagent 重用
-- `.agent/harness.yml`：harness 行為與 workflow 要求
-- `.agent/policy.yml`：高風險 pattern 與完成前 gate
-- `scripts/`：preflight、policy、scope、context、verification helpers
-
-## Example Prompts
-
-- `Use $harness-entrypoint before implementing this feature in the current repo.`
-- `Use $harness-entrypoint for this task. Only focus on the retry bug in the
-  ingestion worker and do not change the API schema.`
-- `Use $repo-context-bootstrap to initialize Agent-Repo-Harness files for this project.`
-- `Use $subagent-context-packet before dispatching a coding subagent for the auth fix.`
-- `Use $handoff-update after this session and keep the result concise.`
-- `Use $domain-risk-review on this retrieval pipeline change.`
-
-## Design Principles
-
-- Superpowers 繼續負責開發流程
-- Agent-Repo-Harness 只增加 repo-local context、boundaries、risk policy 與
-  gates，不建立新 runtime
-- stable repo map 與 current task state 必須分離
-- policy、scope、verification 在 completion 前必須明確檢查
-- machine-readable task state 可以驅動 enforceable guardrails
-- discoveries 應被記錄並跨 session 重用
-
-## FAQ
-
-**這會取代 Superpowers 嗎？**
-不會。它是包在 Superpowers 外層的 repo-aware control layer。
-
-**這個 repo 有提供 runtime 或 MCP server 嗎？**
-沒有。這裡只提供 templates、scripts、skills、examples。
-
-**預設 scripts 應該原封不動直接用嗎？**
-不應該。它們是安全預設，安裝到目標 repo 後應再客製。
-
-**`agent.md` 應該放目前 implementation plan 嗎？**
-不應該。plan 應留在 planning docs，不應放進 stable repo map。
-
-## 驗證與限制
-
-目前這個 repo 只驗證：
-
-- shell scripts 語法正確
-- 安裝腳本語法正確
-- 模板檔案存在且 `check-agent-md.sh` 能檢查 `templates/agent.md`
-- `validate-harness.sh` 可重跑安裝與 installed-target smoke checks
-
-尚未做的事：
-
-- 沒有建立完整 agent runtime
-- 沒有建立 MCP server
-- `agent-verify.sh` 預設採 strict mode，並提供 `--best-effort` 給尚未完整
-  配置的 repo 做非阻斷檢查；也可從 `.agent/harness.yml` 讀取 repo
-  自訂 verification commands；目標 repo 仍應自行客製
-- `agent-finish.sh` 是 completion gate wrapper，預設 strict，也支援
-  `--best-effort`
-- `check-policy.sh` 使用的是輕量 pattern matching，不是完整 policy
-  engine
-- `check-scope.sh` 使用簡化 YAML subset parser，對 untracked files 的
-  line counting 採 `wc -l` 近似值
-- 不是 sandbox
-- 不阻止惡意 shell commands
-- 不取代 human code review
-- 不證明 semantic correctness
-- 假設 repo-owned config 是可信的
-
-## 參考與既有資產
-
-- 共享 label 與 guidance 邊界：
-  [references/shared-spec.md](references/shared-spec.md)
-- migration 對照：
-  [references/harness-migration.md](references/harness-migration.md)
-- regression cases：
-  [references/evals/regression-cases.md](references/evals/regression-cases.md)
-- 舊 router skill：[project-agent-docs/SKILL.md](project-agent-docs/SKILL.md)
-- 舊 map maintenance skill：
-  [project-map-agent-md/SKILL.md](project-map-agent-md/SKILL.md)
-- 舊 handoff update skill：
-  [update-agent-handoff/SKILL.md](update-agent-handoff/SKILL.md)
+The validation checks script syntax, YAML and JSON syntax, required harness
+files, install smoke tests, scope and policy behavior, configured verification,
+and finish evidence creation.

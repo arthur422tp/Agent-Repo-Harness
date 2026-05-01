@@ -1,0 +1,24 @@
+task:
+  status: "not_started"
+  goal: "Demonstrate a minimal harness run."
+  allowed_paths:
+    - "README.md"
+    - "agent.md"
+    - "handoff.md"
+    - ".agent/**"
+    - "scripts/**"
+  forbidden_paths:
+    - ".env*"
+  max_changed_files: null
+  max_diff_lines: null
+  completion:
+    requires_policy_check: true
+    requires_scope_check: true
+    requires_verification: true
+    requires_handoff_update: true
+
+last_verified:
+  command: ""
+  result: ""
+
+blockers: []

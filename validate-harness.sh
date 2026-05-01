@@ -61,6 +61,22 @@ run_yaml_syntax_checks() {
   ruby -e 'require "yaml"; ARGV.each { |f| YAML.load_file(f) }' "${yaml_files[@]}"
 }
 
+run_json_syntax_checks() {
+  local json_files=()
+  local file
+
+  while IFS= read -r -d '' file; do
+    json_files+=("$file")
+  done < <(find schemas -type f -name "*.json" -print0)
+
+  if [ "${#json_files[@]}" -eq 0 ]; then
+    echo "ERROR: no JSON schema files found for validation"
+    exit 1
+  fi
+
+  ruby -rjson -e 'ARGV.each { |f| JSON.parse(File.read(f)) }' "${json_files[@]}"
+}
+
 echo "== Validate Agent-Repo-Harness =="
 
 cd "$repo_root"
@@ -73,6 +89,9 @@ bash -n templates/scripts/agent-finish.sh
 for f in templates/scripts/*.sh; do
   bash -n "$f"
 done
+for f in examples/universal-minimal-repo/scripts/*.sh; do
+  bash -n "$f"
+done
 pass "shell syntax checks"
 
 echo
@@ -83,6 +102,46 @@ if command -v ruby >/dev/null 2>&1; then
 else
   echo "WARN: ruby unavailable; skipped YAML syntax checks"
 fi
+
+echo
+echo "== JSON syntax =="
+if command -v ruby >/dev/null 2>&1; then
+  run_json_syntax_checks
+  pass "JSON schema syntax checks"
+else
+  echo "WARN: ruby unavailable; skipped JSON syntax checks"
+fi
+
+echo
+echo "== Required repository files =="
+for required_path in \
+  templates/AGENTS.md \
+  templates/CLAUDE.md \
+  adapters/codex/AGENTS.md \
+  adapters/codex/codex-start-prompt.md \
+  adapters/claude-code/CLAUDE.md \
+  adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md \
+  adapters/claude-code/.claude/skills/policy-gate/SKILL.md \
+  adapters/claude-code/.claude/skills/verification-gate/SKILL.md \
+  adapters/claude-code/.claude/skills/handoff-update/SKILL.md \
+  adapters/claude-code/.claude/skills/subagent-context-packet/SKILL.md \
+  docs/agent-support-matrix.md \
+  docs/codex-usage.md \
+  schemas/harness.schema.json \
+  schemas/policy.schema.json \
+  schemas/task.schema.json \
+  schemas/handoff.schema.json \
+  templates/scripts/validate-config.sh \
+  templates/scripts/validate-task.sh \
+  examples/universal-minimal-repo/AGENTS.md \
+  examples/universal-minimal-repo/CLAUDE.md \
+  examples/universal-minimal-repo/.agent/harness.yml \
+  examples/universal-minimal-repo/.agent/policy.yml \
+  examples/universal-minimal-repo/.agent/task.yml
+do
+  assert_exists "$repo_root/$required_path"
+done
+pass "new universal harness files present"
 
 echo
 echo "== Fresh install target =="
@@ -101,6 +160,8 @@ pass "installer copy"
 echo
 echo "== Installed target checks =="
 for required_path in \
+  AGENTS.md \
+  CLAUDE.md \
   agent.md \
   handoff.md \
   .agent/harness.yml \
@@ -111,7 +172,9 @@ for required_path in \
   scripts/check-agent-md.sh \
   scripts/check-policy.sh \
   scripts/check-scope.sh \
-  scripts/agent-verify.sh
+  scripts/agent-verify.sh \
+  scripts/validate-config.sh \
+  scripts/validate-task.sh
 do
   assert_exists "$target_root/$required_path"
 done
@@ -120,6 +183,8 @@ pass "required files installed"
 (
   cd "$target_root"
   bash scripts/agent-preflight.sh
+  bash scripts/validate-config.sh
+  bash scripts/validate-task.sh
   bash scripts/check-agent-md.sh agent.md
   verify_log="$target_root/agent-verify-pass.log"
   bash scripts/agent-verify.sh --best-effort >"$verify_log" 2>&1
@@ -129,6 +194,12 @@ pass "required files installed"
   bash scripts/agent-finish.sh --best-effort >"$finish_log" 2>&1
   assert_contains "$finish_log" "AGENT_FINISH_RESULT=pass"
   assert_contains "$finish_log" "Agent finish gates passed."
+  assert_contains "$finish_log" "Summary: .agent/runs/"
+  finish_summary_count="$(find "$target_root/.agent/runs" -type f -name "finish-summary.md" | wc -l | tr -d '[:space:]')"
+  if [ "$finish_summary_count" -lt 1 ]; then
+    echo "ERROR: expected agent-finish.sh to create finish-summary.md"
+    exit 1
+  fi
   bash scripts/check-policy.sh .agent/policy.yml
   bash scripts/collect-context.sh >/dev/null
   assert_exists "$target_root/.agent/task.yml"
@@ -377,8 +448,33 @@ git init -q "$finish_strict_root"
     exit 1
   fi
   assert_contains "$finish_log" "Scope check failed."
+  assert_contains "$finish_log" "AGENT_FINISH_RESULT=fail"
+  finish_summary_count="$(find "$finish_strict_root/.agent/runs" -type f -name "finish-summary.md" | wc -l | tr -d '[:space:]')"
+  if [ "$finish_summary_count" -lt 1 ]; then
+    echo "ERROR: expected failing finish gate to create finish-summary.md"
+    exit 1
+  fi
 )
 pass "finish gate strict scope failure"
+
+echo
+echo "== Universal minimal example smoke =="
+example_root="$tmp_root/universal-minimal-repo"
+cp -R examples/universal-minimal-repo "$example_root"
+(
+  cd "$example_root"
+  bash scripts/agent-preflight.sh
+  bash scripts/validate-config.sh
+  bash scripts/validate-task.sh
+  bash scripts/check-policy.sh
+  bash scripts/check-scope.sh
+  bash scripts/agent-verify.sh
+  example_finish_log="$tmp_root/universal-minimal-finish.log"
+  bash scripts/agent-finish.sh >"$example_finish_log" 2>&1
+  assert_contains "$example_finish_log" "AGENT_FINISH_RESULT=pass"
+  assert_contains "$example_finish_log" "Summary: .agent/runs/"
+)
+pass "universal minimal example smoke"
 
 echo
 echo "PASS: validation completed"
