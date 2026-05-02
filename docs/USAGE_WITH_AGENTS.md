@@ -122,6 +122,13 @@ Existing Superpowers-compatible skills remain supported:
 Superpowers remains the workflow discipline layer for planning, TDD,
 subagent-driven development, review, and finishing branches. Agent-Repo-Harness
 adds repo-local context, task boundaries, policy gates, and verification gates.
+Agents using Superpowers should also consult
+[superpowers-integration.md](superpowers-integration.md) for the mapping between
+Superpowers skills and harness contracts.
+
+Subagent packets remain optional. Use `.agent/subagent-packet.yml` and
+`scripts/validate-subagent-packet.sh` when delegating precise work to a fresh
+subagent; packet validation is not part of `scripts/agent-finish.sh` yet.
 
 Short prompt:
 

@@ -259,6 +259,7 @@ for required_path in \
   adapters/claude-code/.claude/skills/subagent-context-packet/SKILL.md \
   docs/agent-support-matrix.md \
   docs/codex-usage.md \
+  docs/superpowers-integration.md \
   schemas/harness.schema.json \
   schemas/policy.schema.json \
   schemas/task.schema.json \

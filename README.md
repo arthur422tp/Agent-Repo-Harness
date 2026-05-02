@@ -51,6 +51,14 @@ repo-local harness core with agent adapters.
 Superpowers remains supported. Existing Superpowers-compatible skills stay in
 place and remain documented.
 
+## Superpowers Integration
+
+Agent-Repo-Harness is designed to work alongside Superpowers. Superpowers
+provides workflow discipline; this harness provides repo-local contracts,
+gates, and evidence.
+
+See [docs/superpowers-integration.md](docs/superpowers-integration.md).
+
 ## Quick Start
 
 Install the universal templates into a target repo:
