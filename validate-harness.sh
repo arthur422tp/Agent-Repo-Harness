@@ -270,6 +270,10 @@ for required_path in \
   templates/.agent/tdd-evidence.yml \
   templates/scripts/validate-subagent-packet.sh \
   templates/.agent/subagent-packet.yml \
+  templates/.agent/subagent-runs/README.md \
+  templates/.agent/subagent-runs/.gitkeep \
+  templates/docs/agent/subagent-result-template.md \
+  templates/scripts/validate-subagent-run.sh \
   examples/universal-minimal-repo/AGENTS.md \
   examples/universal-minimal-repo/CLAUDE.md \
   examples/universal-minimal-repo/.agent/harness.yml \
@@ -306,6 +310,9 @@ for required_path in \
   .agent/task.yml \
   .agent/tdd-evidence.yml \
   .agent/subagent-packet.yml \
+  .agent/subagent-runs/README.md \
+  .agent/subagent-runs/.gitkeep \
+  docs/agent/subagent-result-template.md \
   scripts/agent-preflight.sh \
   scripts/agent-finish.sh \
   scripts/check-agent-md.sh \
@@ -315,7 +322,8 @@ for required_path in \
   scripts/agent-verify.sh \
   scripts/validate-config.sh \
   scripts/validate-task.sh \
-  scripts/validate-subagent-packet.sh
+  scripts/validate-subagent-packet.sh \
+  scripts/validate-subagent-run.sh
 do
   assert_exists "$target_root/$required_path"
 done
@@ -372,6 +380,47 @@ EOF
   fi
   assert_contains "$subagent_invalid_role_log" "role must be one of"
   assert_contains "$subagent_invalid_role_log" "SUBAGENT_PACKET_RESULT=fail"
+  subagent_run_missing_arg_log="$target_root/subagent-run-missing-arg.log"
+  if bash scripts/validate-subagent-run.sh >"$subagent_run_missing_arg_log" 2>&1; then
+    echo "ERROR: expected missing subagent run argument validation failure"
+    exit 1
+  fi
+  assert_contains "$subagent_run_missing_arg_log" "Usage: validate-subagent-run.sh RUN_DIR"
+  assert_contains "$subagent_run_missing_arg_log" "SUBAGENT_RUN_RESULT=fail"
+  subagent_run_missing_dir_log="$target_root/subagent-run-missing-dir.log"
+  if bash scripts/validate-subagent-run.sh \
+    .agent/subagent-runs/missing >"$subagent_run_missing_dir_log" 2>&1
+  then
+    echo "ERROR: expected missing subagent run directory validation failure"
+    exit 1
+  fi
+  assert_contains "$subagent_run_missing_dir_log" "run directory does not exist"
+  assert_contains "$subagent_run_missing_dir_log" "SUBAGENT_RUN_RESULT=fail"
+  mkdir -p .agent/subagent-runs/invalid-status
+  cp .agent/subagent-packet.yml .agent/subagent-runs/invalid-status/packet.yml
+  printf '%s\n' "# Result" > .agent/subagent-runs/invalid-status/result.md
+  printf '%s\n' "INVALID" > .agent/subagent-runs/invalid-status/status.txt
+  subagent_run_invalid_status_log="$target_root/subagent-run-invalid-status.log"
+  if bash scripts/validate-subagent-run.sh \
+    .agent/subagent-runs/invalid-status >"$subagent_run_invalid_status_log" 2>&1
+  then
+    echo "ERROR: expected invalid subagent run status validation failure"
+    exit 1
+  fi
+  assert_contains "$subagent_run_invalid_status_log" "status.txt must contain exactly one of"
+  assert_contains "$subagent_run_invalid_status_log" "SUBAGENT_RUN_RESULT=fail"
+  mkdir -p .agent/subagent-runs/20260502-120000-implementer-phase-1-4
+  cp .agent/subagent-packet.yml \
+    .agent/subagent-runs/20260502-120000-implementer-phase-1-4/packet.yml
+  printf '%s\n' "# Subagent Result" \
+    > .agent/subagent-runs/20260502-120000-implementer-phase-1-4/result.md
+  printf '%s\n' "DONE" \
+    > .agent/subagent-runs/20260502-120000-implementer-phase-1-4/status.txt
+  subagent_run_valid_log="$target_root/subagent-run-valid.log"
+  bash scripts/validate-subagent-run.sh \
+    .agent/subagent-runs/20260502-120000-implementer-phase-1-4 \
+    >"$subagent_run_valid_log" 2>&1
+  assert_contains "$subagent_run_valid_log" "SUBAGENT_RUN_RESULT=pass"
   bash scripts/check-agent-md.sh agent.md
   verify_log="$target_root/agent-verify-pass.log"
   bash scripts/agent-verify.sh --best-effort >"$verify_log" 2>&1

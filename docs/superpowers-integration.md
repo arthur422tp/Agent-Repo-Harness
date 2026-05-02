@@ -19,7 +19,7 @@ results inside the repository.
 | Exploration / ideation | `brainstorming` | `docs/agent/decisions/` |
 | Git isolation | `using-git-worktrees` | `scripts/agent-preflight.sh` |
 | TDD discipline | `test-driven-development` | `.agent/tdd-evidence.yml` + `scripts/check-tdd-evidence.sh` |
-| Subagent orchestration | `subagent-driven-development` | `.agent/subagent-packet.yml` + `scripts/validate-subagent-packet.sh` |
+| Subagent orchestration | `subagent-driven-development` | `.agent/subagent-packet.yml` + `.agent/subagent-runs/<timestamp>-<role>-<task_id>/` |
 | Spec review | `subagent-driven-development` / `requesting-code-review` | subagent packet role: `spec_reviewer` |
 | Quality review | `subagent-driven-development` / `requesting-code-review` | subagent packet role: `quality_reviewer` |
 | Verification | `verification-before-completion` | `scripts/agent-verify.sh` |
@@ -34,10 +34,12 @@ results inside the repository.
 4. Record red/green evidence in `.agent/tdd-evidence.yml` when required.
 5. If delegating work, create `.agent/subagent-packet.yml`.
 6. Validate the packet with `scripts/validate-subagent-packet.sh`.
-7. Run `scripts/check-scope.sh`, `scripts/check-policy.sh`,
+7. Optionally record delegated results under
+   `.agent/subagent-runs/<timestamp>-<role>-<task_id>/`.
+8. Run `scripts/check-scope.sh`, `scripts/check-policy.sh`,
    `scripts/check-tdd-evidence.sh`, and `scripts/agent-verify.sh`.
-8. Run `scripts/agent-finish.sh`.
-9. Update `handoff.md` with results and next action.
+9. Run `scripts/agent-finish.sh`.
+10. Update `handoff.md` with results and next action.
 
 ## Subagent Packet Alignment
 
@@ -55,11 +57,19 @@ text, role, allowed paths, relevant files, required verification, expected
 status enum, and any notes the subagent needs. The packet is optional and is
 validated separately with `scripts/validate-subagent-packet.sh`.
 
+`subagent-driven-development` can be paired with both
+`.agent/subagent-packet.yml` and
+`.agent/subagent-runs/<timestamp>-<role>-<task_id>/`. The packet records the
+handoff context; the run directory records trace evidence after delegation,
+including the copied `packet.yml`, `result.md`, and `status.txt`. This harness
+records that evidence but does not dispatch subagents.
+
 ## What the Harness Should Not Do
 
 - It should not replace Superpowers.
 - It should not decide the whole workflow by itself.
 - It should not make subagent packets mandatory for every task yet.
+- It should not make subagent run evidence mandatory for every task yet.
 - It should not treat evidence files as proof of semantic correctness.
 - It should not hide human judgment or review.
 
@@ -67,6 +77,8 @@ validated separately with `scripts/validate-subagent-packet.sh`.
 
 - This harness does not dispatch subagents.
 - This harness does not integrate subagent packet validation into
+  `scripts/agent-finish.sh` yet.
+- This harness does not integrate subagent run evidence into
   `scripts/agent-finish.sh` yet.
 - This harness does not change when TDD evidence is required.
 - This harness is not a sandbox or runtime orchestrator.

@@ -16,12 +16,15 @@ Use repo files for durable context:
   explicitly require TDD evidence
 - `.agent/subagent-packet.yml`: optional controller-agent to subagent handoff
   context for delegated work
+- `.agent/subagent-runs/`: optional controller-agent evidence from delegated
+  subagent runs
 
 Use scripts for gates:
 
 ```bash
 scripts/agent-preflight.sh
 scripts/validate-subagent-packet.sh
+scripts/validate-subagent-run.sh
 scripts/check-policy.sh
 scripts/check-scope.sh
 scripts/check-tdd-evidence.sh
@@ -44,6 +47,31 @@ role, allowed paths, relevant files, required verification, and expected status
 enum, then run `scripts/validate-subagent-packet.sh` before spawning or
 prompting the subagent. Packets are not mandatory for all tasks and are not part
 of the `agent-finish.sh` completion gate yet.
+
+## Subagent Run Evidence
+
+When a controller delegates work, it can copy the packet into a new directory
+before or after the delegated run:
+
+```text
+.agent/subagent-runs/<timestamp>-<role>-<task_id>/
+  packet.yml
+  result.md
+  status.txt
+```
+
+`result.md` records what the subagent did, including files inspected, files
+changed, verification run, findings, concerns, and recommended next action.
+`status.txt` records the final status as exactly one of `DONE`,
+`DONE_WITH_CONCERNS`, `NEEDS_CONTEXT`, or `BLOCKED`.
+
+Validate the evidence with:
+
+```bash
+bash scripts/validate-subagent-run.sh .agent/subagent-runs/<timestamp>-<role>-<task_id>
+```
+
+This evidence is optional and is not part of `scripts/agent-finish.sh` yet.
 
 Planned JSON evidence format, not implemented in this pass:
 
@@ -129,6 +157,8 @@ Superpowers skills and harness contracts.
 Subagent packets remain optional. Use `.agent/subagent-packet.yml` and
 `scripts/validate-subagent-packet.sh` when delegating precise work to a fresh
 subagent; packet validation is not part of `scripts/agent-finish.sh` yet.
+Pair packets with `.agent/subagent-runs/<timestamp>-<role>-<task_id>/` when
+you want durable trace evidence for what the subagent did.
 
 Short prompt:
 

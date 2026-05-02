@@ -24,6 +24,8 @@ The harness keeps stable repo facts separate from task state:
   `.agent/task.yml` sets `completion.requires_tdd_evidence: true`
 - `.agent/subagent-packet.yml`: optional controller-agent to subagent handoff
   packet for repeatable delegated work
+- `.agent/subagent-runs/`: optional durable evidence from delegated subagent
+  runs; not part of `agent-finish.sh` yet
 
 ## What It Is Not
 
@@ -104,6 +106,12 @@ verification, and expected status values to a fresh subagent. Validate it with
 `scripts/validate-subagent-packet.sh`. It is not part of `agent-finish.sh` yet
 and is not mandatory for ordinary tasks.
 
+Subagent run evidence is also optional. Controller agents can record delegated
+execution results under `.agent/subagent-runs/<timestamp>-<role>-<task_id>/`
+with `packet.yml`, `result.md`, and `status.txt`, then validate the directory
+with `scripts/validate-subagent-run.sh`. This convention records trace evidence
+only; it is not wired into `agent-finish.sh` yet.
+
 ## Agent Entrypoints
 
 Codex:
@@ -129,6 +137,7 @@ Generic agents:
 - read `AGENTS.md`
 - inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`
 - fill `.agent/subagent-packet.yml` only when delegating work to a subagent
+- optionally record delegated results under `.agent/subagent-runs/`
 - run the scripts directly
 
 See [docs/USAGE_WITH_AGENTS.md](docs/USAGE_WITH_AGENTS.md) and
@@ -166,4 +175,5 @@ bash validate-harness.sh
 
 The validation checks script syntax, YAML and JSON syntax, required harness
 files, install smoke tests, scope and policy behavior, configured verification,
-subagent packet validation, TDD evidence behavior, and finish evidence creation.
+subagent packet/run validation, TDD evidence behavior, and finish evidence
+creation.
