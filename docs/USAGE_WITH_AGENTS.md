@@ -12,6 +12,8 @@ Use repo files for durable context:
 - `handoff.md`: current task state
 - `.agent/policy.yml`: high-risk files and approval rules
 - `.agent/task.yml`: current task scope and completion requirements
+- `.agent/tdd-evidence.yml`: red/green/refactor evidence for tasks that
+  explicitly require TDD evidence
 
 Use scripts for gates:
 
@@ -19,13 +21,19 @@ Use scripts for gates:
 scripts/agent-preflight.sh
 scripts/check-policy.sh
 scripts/check-scope.sh
+scripts/check-tdd-evidence.sh
 scripts/agent-verify.sh
 scripts/agent-finish.sh
 ```
 
 `agent-finish.sh` records evidence under `.agent/runs/<timestamp>/`, including
-`finish-summary.md`, per-gate result files, `changed-files.txt`, and
-`git-diff-stat.txt`.
+`finish-summary.md`, per-gate result files, `tdd-evidence-result.txt`,
+`changed-files.txt`, and `git-diff-stat.txt`.
+
+TDD evidence is required only when `.agent/task.yml` contains
+`completion.requires_tdd_evidence: true`. When enabled, agents should fill
+`.agent/tdd-evidence.yml` with the red command/failure, green command/pass, and
+the tests added or changed before running `scripts/agent-finish.sh`.
 
 Planned JSON evidence format, not implemented in this pass:
 

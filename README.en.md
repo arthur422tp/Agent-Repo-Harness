@@ -6,3 +6,7 @@ Codex, Claude Code, Superpowers-compatible agents, and generic coding agents.
 
 Use `scripts/agent-finish.sh` as the canonical completion gate; it writes
 durable run evidence under `.agent/runs/<timestamp>/`.
+
+TDD evidence is required only when `.agent/task.yml` sets
+`completion.requires_tdd_evidence: true`; in that case fill
+`.agent/tdd-evidence.yml` before finishing.

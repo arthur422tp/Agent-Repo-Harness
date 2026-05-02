@@ -44,6 +44,7 @@ summary_file="$run_dir/finish-summary.md"
 check_agent_md_result_file="$run_dir/check-agent-md-result.txt"
 scope_result_file="$run_dir/scope-result.txt"
 policy_result_file="$run_dir/policy-result.txt"
+tdd_evidence_result_file="$run_dir/tdd-evidence-result.txt"
 verify_result_file="$run_dir/verify-result.txt"
 changed_files_file="$run_dir/changed-files.txt"
 diff_stat_file="$run_dir/git-diff-stat.txt"
@@ -53,6 +54,7 @@ last_status=0
 agent_md_status=""
 scope_status=""
 policy_status=""
+tdd_evidence_status=""
 verify_status=""
 
 mkdir -p "$run_dir"
@@ -131,6 +133,7 @@ write_summary() {
     echo "| check-agent-md | $agent_md_status | $check_agent_md_result_file |"
     echo "| check-scope | $scope_status | $scope_result_file |"
     echo "| check-policy | $policy_status | $policy_result_file |"
+    echo "| check-tdd-evidence | $tdd_evidence_status | $tdd_evidence_result_file |"
     echo "| agent-verify | $verify_status | $verify_result_file |"
     echo
     echo "## Changed Files"
@@ -202,6 +205,8 @@ if [ "$mode" = "strict" ]; then
   scope_status="$last_status"
   run_gate "check-policy" "$policy_result_file" bash scripts/check-policy.sh --strict
   policy_status="$last_status"
+  run_gate "check-tdd-evidence" "$tdd_evidence_result_file" bash scripts/check-tdd-evidence.sh
+  tdd_evidence_status="$last_status"
   run_gate "agent-verify" "$verify_result_file" bash scripts/agent-verify.sh --strict
   verify_status="$last_status"
 else
@@ -211,6 +216,8 @@ else
   scope_status="$last_status"
   run_gate "check-policy" "$policy_result_file" bash scripts/check-policy.sh --warn
   policy_status="$last_status"
+  run_gate "check-tdd-evidence" "$tdd_evidence_result_file" bash scripts/check-tdd-evidence.sh
+  tdd_evidence_status="$last_status"
   run_gate "agent-verify" "$verify_result_file" bash scripts/agent-verify.sh --best-effort
   verify_status="$last_status"
 fi

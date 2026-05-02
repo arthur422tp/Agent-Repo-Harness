@@ -1,0 +1,18 @@
+status: required
+
+red_phase:
+  command: ""
+  observed_failure: ""
+
+green_phase:
+  command: ""
+  observed_pass: ""
+
+refactor_phase:
+  command: ""
+  result: ""
+
+tests_added_or_changed:
+  - ""
+
+notes: ""

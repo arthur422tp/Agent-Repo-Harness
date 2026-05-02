@@ -15,6 +15,7 @@ policy_strict_root="$tmp_root/policy-strict"
 verify_config_root="$tmp_root/verify-config"
 finish_strict_root="$tmp_root/finish-strict"
 finish_nongit_root="$tmp_root/finish-nongit"
+tdd_required_failure_root="$tmp_root/tdd-required-failure"
 
 cleanup() {
   rm -rf "$tmp_root"
@@ -96,6 +97,7 @@ assert_run_evidence_files() {
     check-agent-md-result.txt \
     scope-result.txt \
     policy-result.txt \
+    tdd-evidence-result.txt \
     verify-result.txt \
     changed-files.txt \
     git-diff-stat.txt
@@ -118,10 +120,12 @@ assert_finish_summary_contract() {
   assert_file_contains "$root" "finish-summary.md" "| check-agent-md |"
   assert_file_contains "$root" "finish-summary.md" "| check-scope |"
   assert_file_contains "$root" "finish-summary.md" "| check-policy |"
+  assert_file_contains "$root" "finish-summary.md" "| check-tdd-evidence |"
   assert_file_contains "$root" "finish-summary.md" "| agent-verify |"
   assert_file_contains "$root" "finish-summary.md" "check-agent-md-result.txt"
   assert_file_contains "$root" "finish-summary.md" "scope-result.txt"
   assert_file_contains "$root" "finish-summary.md" "policy-result.txt"
+  assert_file_contains "$root" "finish-summary.md" "tdd-evidence-result.txt"
   assert_file_contains "$root" "finish-summary.md" "verify-result.txt"
   assert_file_contains "$root" "finish-summary.md" "changed-files.txt"
   assert_file_contains "$root" "finish-summary.md" "git-diff-stat.txt"
@@ -261,6 +265,8 @@ for required_path in \
   schemas/handoff.schema.json \
   templates/scripts/validate-config.sh \
   templates/scripts/validate-task.sh \
+  templates/scripts/check-tdd-evidence.sh \
+  templates/.agent/tdd-evidence.yml \
   examples/universal-minimal-repo/AGENTS.md \
   examples/universal-minimal-repo/CLAUDE.md \
   examples/universal-minimal-repo/.agent/harness.yml \
@@ -295,11 +301,13 @@ for required_path in \
   .agent/harness.yml \
   .agent/policy.yml \
   .agent/task.yml \
+  .agent/tdd-evidence.yml \
   scripts/agent-preflight.sh \
   scripts/agent-finish.sh \
   scripts/check-agent-md.sh \
   scripts/check-policy.sh \
   scripts/check-scope.sh \
+  scripts/check-tdd-evidence.sh \
   scripts/agent-verify.sh \
   scripts/validate-config.sh \
   scripts/validate-task.sh
@@ -318,6 +326,26 @@ pass "required files installed"
   bash scripts/agent-verify.sh --best-effort >"$verify_log" 2>&1
   assert_contains "$verify_log" "HARNESS_VERIFY_RESULT=pass"
   assert_contains "$verify_log" "Verification passed."
+  cat > .agent/tdd-evidence.yml <<'EOF'
+status: required
+
+red_phase:
+  command: "bash scripts/validate-task.sh"
+  observed_failure: "saw expected failure before implementation"
+
+green_phase:
+  command: "bash scripts/validate-task.sh"
+  observed_pass: "validation passed"
+
+refactor_phase:
+  command: ""
+  result: ""
+
+tests_added_or_changed:
+  - "validate-harness.sh"
+
+notes: ""
+EOF
   finish_log="$target_root/agent-finish-pass.log"
   bash scripts/agent-finish.sh --best-effort >"$finish_log" 2>&1
   assert_contains "$finish_log" "AGENT_FINISH_RESULT=pass"
@@ -337,6 +365,8 @@ pass "required files installed"
   assert_file_contains "$target_root" "scope-result.txt" "Output:"
   assert_file_contains "$target_root" "policy-result.txt" "Exit status: 0"
   assert_file_contains "$target_root" "policy-result.txt" "Output:"
+  assert_file_contains "$target_root" "tdd-evidence-result.txt" "Exit status: 0"
+  assert_file_contains "$target_root" "tdd-evidence-result.txt" "Output:"
   assert_file_contains "$target_root" "verify-result.txt" "Exit status: 0"
   assert_file_contains "$target_root" "verify-result.txt" "Output:"
   assert_file_contains "$target_root" "changed-files.txt" "AGENTS.md"
@@ -567,6 +597,7 @@ git init -q "$finish_strict_root"
   cp "$repo_root/templates/scripts/check-agent-md.sh" scripts/check-agent-md.sh
   cp "$repo_root/templates/scripts/check-scope.sh" scripts/check-scope.sh
   cp "$repo_root/templates/scripts/check-policy.sh" scripts/check-policy.sh
+  cp "$repo_root/templates/scripts/check-tdd-evidence.sh" scripts/check-tdd-evidence.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
   chmod +x scripts/*.sh
@@ -606,12 +637,56 @@ git init -q "$finish_strict_root"
   assert_file_contains "$finish_strict_root" "scope-result.txt" "Output:"
   assert_file_contains "$finish_strict_root" "policy-result.txt" "Exit status: 0"
   assert_file_contains "$finish_strict_root" "policy-result.txt" "Output:"
+  assert_file_contains "$finish_strict_root" "tdd-evidence-result.txt" "Exit status: 0"
+  assert_file_contains "$finish_strict_root" "tdd-evidence-result.txt" "Output:"
   assert_file_contains "$finish_strict_root" "verify-result.txt" "Exit status: 0"
   assert_file_contains "$finish_strict_root" "verify-result.txt" "Output:"
   assert_file_contains "$finish_strict_root" "changed-files.txt" "src/billing/invoice.js"
   assert_file_contains "$finish_strict_root" "git-diff-stat.txt" "# Git diff stat"
 )
 pass "finish gate strict scope failure"
+
+echo
+echo "== Finish gate strict TDD evidence failure =="
+rm -rf "$tdd_required_failure_root"
+mkdir -p "$tdd_required_failure_root/.agent" "$tdd_required_failure_root/scripts"
+git init -q "$tdd_required_failure_root"
+(
+  cd "$tdd_required_failure_root"
+  cp "$repo_root/templates/agent.md" agent.md
+  cp "$repo_root/templates/.agent/tdd-evidence.yml" .agent/tdd-evidence.yml
+  cp "$repo_root/templates/scripts/check-agent-md.sh" scripts/check-agent-md.sh
+  cp "$repo_root/templates/scripts/check-scope.sh" scripts/check-scope.sh
+  cp "$repo_root/templates/scripts/check-policy.sh" scripts/check-policy.sh
+  cp "$repo_root/templates/scripts/check-tdd-evidence.sh" scripts/check-tdd-evidence.sh
+  cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
+  cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
+  chmod +x scripts/*.sh
+  printf '%s\n' \
+    'task:' \
+    '  completion:' \
+    '    requires_tdd_evidence: true' \
+    > .agent/task.yml
+  printf '%s\n' 'risk_files:' '  high: []' > .agent/policy.yml
+  git config user.email "test@example.com"
+  git config user.name "Test User"
+  git add agent.md .agent/task.yml .agent/policy.yml .agent/tdd-evidence.yml scripts
+  git commit -q -m "Add harness files"
+  finish_log="$tdd_required_failure_root/agent-finish-tdd-failure.log"
+  if bash scripts/agent-finish.sh --strict >"$finish_log" 2>&1; then
+    echo "ERROR: expected finish gate TDD evidence failure"
+    exit 1
+  fi
+  assert_contains "$finish_log" "TDD evidence is required."
+  assert_contains "$finish_log" "TDD_EVIDENCE_RESULT=fail"
+  assert_contains "$finish_log" "AGENT_FINISH_RESULT=fail"
+  assert_run_evidence_files "$tdd_required_failure_root"
+  assert_finish_summary_contract "$tdd_required_failure_root" "fail"
+  assert_file_contains "$tdd_required_failure_root" "tdd-evidence-result.txt" "Exit status: 1"
+  assert_file_contains "$tdd_required_failure_root" "tdd-evidence-result.txt" "red_phase.command must be non-empty"
+  assert_file_contains "$tdd_required_failure_root" "verify-result.txt" "Exit status: 0"
+)
+pass "finish gate strict TDD evidence failure"
 
 echo
 echo "== Finish gate without git repository =="
@@ -623,12 +698,14 @@ mkdir -p "$finish_nongit_root/.agent" "$finish_nongit_root/scripts"
   cp "$repo_root/templates/scripts/check-agent-md.sh" scripts/check-agent-md.sh
   cp "$repo_root/templates/scripts/check-scope.sh" scripts/check-scope.sh
   cp "$repo_root/templates/scripts/check-policy.sh" scripts/check-policy.sh
+  cp "$repo_root/templates/scripts/check-tdd-evidence.sh" scripts/check-tdd-evidence.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
   chmod +x scripts/*.sh
   finish_log="$finish_nongit_root/agent-finish-nongit.log"
   bash scripts/agent-finish.sh --best-effort >"$finish_log" 2>&1
   assert_contains "$finish_log" "AGENT_FINISH_RESULT=pass"
+  assert_file_contains "$finish_nongit_root" "tdd-evidence-result.txt" "TDD evidence is not required."
   assert_file_contains "$finish_nongit_root" "changed-files.txt" "Not inside a git repository"
   assert_file_contains "$finish_nongit_root" "git-diff-stat.txt" "Not inside a git repository"
 )

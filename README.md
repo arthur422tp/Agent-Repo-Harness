@@ -8,7 +8,8 @@ It provides a universal core plus adapter files:
 
 - universal repo memory: `agent.md`, `handoff.md`, `.agent/task.yml`
 - universal gates: `scripts/check-policy.sh`, `scripts/check-scope.sh`,
-  `scripts/agent-verify.sh`, `scripts/agent-finish.sh`
+  `scripts/check-tdd-evidence.sh`, `scripts/agent-verify.sh`,
+  `scripts/agent-finish.sh`
 - universal entrypoints: `AGENTS.md`, `CLAUDE.md`
 - adapters: `adapters/codex/`, `adapters/claude-code/`
 - preserved Superpowers-compatible skills: `skills/*`
@@ -18,6 +19,8 @@ The harness keeps stable repo facts separate from task state:
 - `agent.md`: stable repo map and operating rules
 - `handoff.md`: current task state and next action
 - `.agent/task.yml`: machine-readable current task scope
+- `.agent/tdd-evidence.yml`: structured TDD evidence, required only when
+  `.agent/task.yml` sets `completion.requires_tdd_evidence: true`
 
 ## What It Is Not
 
@@ -69,13 +72,19 @@ bash scripts/validate-config.sh
 bash scripts/validate-task.sh
 bash scripts/check-policy.sh
 bash scripts/check-scope.sh
+bash scripts/check-tdd-evidence.sh
 bash scripts/agent-verify.sh --best-effort
 bash scripts/agent-finish.sh --best-effort
 ```
 
 `agent-finish.sh` writes evidence under `.agent/runs/<timestamp>/`, including
-`finish-summary.md`, gate result files, `changed-files.txt`, and
-`git-diff-stat.txt`.
+`finish-summary.md`, gate result files such as `tdd-evidence-result.txt`,
+`changed-files.txt`, and `git-diff-stat.txt`.
+
+TDD evidence is opt-in per task. When `.agent/task.yml` contains
+`completion.requires_tdd_evidence: true`, fill `.agent/tdd-evidence.yml` with
+non-empty red and green phase commands/results plus at least one changed test
+entry before running `scripts/agent-finish.sh`.
 
 ## Agent Entrypoints
 
@@ -138,4 +147,4 @@ bash validate-harness.sh
 
 The validation checks script syntax, YAML and JSON syntax, required harness
 files, install smoke tests, scope and policy behavior, configured verification,
-and finish evidence creation.
+TDD evidence behavior, and finish evidence creation.
