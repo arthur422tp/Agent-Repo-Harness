@@ -41,7 +41,7 @@ esac
 timestamp="$(date -u +"%Y%m%d-%H%M%S")"
 run_dir=".agent/runs/$timestamp"
 summary_file="$run_dir/finish-summary.md"
-agent_md_result_file="$run_dir/agent-md-result.txt"
+check_agent_md_result_file="$run_dir/check-agent-md-result.txt"
 scope_result_file="$run_dir/scope-result.txt"
 policy_result_file="$run_dir/policy-result.txt"
 verify_result_file="$run_dir/verify-result.txt"
@@ -104,13 +104,14 @@ write_summary() {
     echo "- Timestamp: $timestamp"
     echo "- Mode: $mode"
     echo "- Command: scripts/agent-finish.sh $mode_arg"
+    echo "- Run directory: $run_dir"
     echo "- Overall result: $overall_result"
     echo
     echo "## Gate Results"
     echo
     echo "| Check | Exit status | Evidence |"
     echo "| --- | ---: | --- |"
-    echo "| check-agent-md | $agent_md_status | $agent_md_result_file |"
+    echo "| check-agent-md | $agent_md_status | $check_agent_md_result_file |"
     echo "| check-scope | $scope_status | $scope_result_file |"
     echo "| check-policy | $policy_status | $policy_result_file |"
     echo "| agent-verify | $verify_status | $verify_result_file |"
@@ -178,7 +179,7 @@ echo "Mode: $mode"
 echo "Run directory: $run_dir"
 
 if [ "$mode" = "strict" ]; then
-  run_gate "check-agent-md" "$agent_md_result_file" bash scripts/check-agent-md.sh agent.md
+  run_gate "check-agent-md" "$check_agent_md_result_file" bash scripts/check-agent-md.sh agent.md
   agent_md_status="$last_status"
   run_gate "check-scope" "$scope_result_file" bash scripts/check-scope.sh --strict
   scope_status="$last_status"
@@ -187,7 +188,7 @@ if [ "$mode" = "strict" ]; then
   run_gate "agent-verify" "$verify_result_file" bash scripts/agent-verify.sh --strict
   verify_status="$last_status"
 else
-  run_gate "check-agent-md" "$agent_md_result_file" bash scripts/check-agent-md.sh agent.md
+  run_gate "check-agent-md" "$check_agent_md_result_file" bash scripts/check-agent-md.sh agent.md
   agent_md_status="$last_status"
   run_gate "check-scope" "$scope_result_file" bash scripts/check-scope.sh --warn
   scope_status="$last_status"

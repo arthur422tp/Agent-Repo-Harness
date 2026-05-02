@@ -33,6 +33,10 @@ Agent-Repo-Harness does not provide:
 It makes repo expectations explicit and gives agents lightweight gates to run
 before they claim completion.
 
+`scripts/agent-finish.sh` is the canonical completion gate. It runs the local
+scope, policy, and verification checks and records durable evidence for the
+run.
+
 ## Current Status
 
 This repository is evolving from a Superpowers Companion MVP into a universal

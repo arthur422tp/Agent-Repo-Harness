@@ -61,6 +61,26 @@ assert_file_contains() {
   assert_contains "$file" "$expected"
 }
 
+assert_run_evidence_files() {
+  local root="$1"
+  local file
+
+  for file in \
+    finish-summary.md \
+    check-agent-md-result.txt \
+    scope-result.txt \
+    policy-result.txt \
+    verify-result.txt \
+    changed-files.txt \
+    git-diff-stat.txt
+  do
+    if ! find "$root/.agent/runs" -type f -name "$file" | grep -q .; then
+      echo "ERROR: expected run evidence file named: $file"
+      exit 1
+    fi
+  done
+}
+
 run_yaml_syntax_checks() {
   local yaml_files=()
   local file
@@ -93,6 +113,27 @@ run_json_syntax_checks() {
   ruby -rjson -e 'ARGV.each { |f| JSON.parse(File.read(f)) }' "${json_files[@]}"
 }
 
+run_shell_header_checks() {
+  local file
+  local first_line
+  local second_line
+
+  while IFS= read -r file; do
+    first_line="$(sed -n '1p' "$file")"
+    second_line="$(sed -n '2p' "$file")"
+
+    if [ "$first_line" != "#!/usr/bin/env bash" ]; then
+      echo "ERROR: missing bash shebang in $file"
+      exit 1
+    fi
+
+    if [ "$second_line" != "set -euo pipefail" ]; then
+      echo "ERROR: missing set -euo pipefail in $file"
+      exit 1
+    fi
+  done < <(find . -type f -name "*.sh" -not -path "./.git/*" | sort)
+}
+
 echo "== Validate Agent-Repo-Harness =="
 
 cd "$repo_root"
@@ -108,6 +149,7 @@ done
 for f in examples/universal-minimal-repo/scripts/*.sh; do
   bash -n "$f"
 done
+run_shell_header_checks
 pass "shell syntax checks"
 
 echo
@@ -216,8 +258,12 @@ pass "required files installed"
     echo "ERROR: expected agent-finish.sh to create finish-summary.md"
     exit 1
   fi
+  assert_run_evidence_files "$target_root"
   assert_file_contains "$target_root" "finish-summary.md" "Overall result: pass"
+  assert_file_contains "$target_root" "finish-summary.md" "Run directory: .agent/runs/"
+  assert_file_contains "$target_root" "finish-summary.md" "check-agent-md-result.txt"
   assert_file_contains "$target_root" "finish-summary.md" "scope-result.txt"
+  assert_file_contains "$target_root" "check-agent-md-result.txt" "Exit status: 0"
   assert_file_contains "$target_root" "scope-result.txt" "Exit status: 0"
   assert_file_contains "$target_root" "policy-result.txt" "Exit status: 0"
   assert_file_contains "$target_root" "verify-result.txt" "Exit status: 0"
@@ -478,8 +524,11 @@ git init -q "$finish_strict_root"
     exit 1
   fi
   assert_contains "$finish_log" "Run directory: .agent/runs/"
+  assert_run_evidence_files "$finish_strict_root"
   assert_file_contains "$finish_strict_root" "finish-summary.md" "Overall result: fail"
   assert_file_contains "$finish_strict_root" "finish-summary.md" "check-scope"
+  assert_file_contains "$finish_strict_root" "finish-summary.md" "check-agent-md-result.txt"
+  assert_file_contains "$finish_strict_root" "check-agent-md-result.txt" "Exit status: 0"
   assert_file_contains "$finish_strict_root" "scope-result.txt" "Exit status: 1"
   assert_file_contains "$finish_strict_root" "policy-result.txt" "Exit status: 0"
   assert_file_contains "$finish_strict_root" "verify-result.txt" "Exit status: 0"

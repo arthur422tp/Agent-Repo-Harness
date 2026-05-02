@@ -3,12 +3,32 @@
 Agent-Repo-Harness is a repo-local framework for giving coding agents shared
 context, scope boundaries, policy gates, and verification expectations.
 
-| Agent | Entrypoint | Adapter Assets | Notes |
-| --- | --- | --- | --- |
-| Codex | `AGENTS.md` | `adapters/codex/AGENTS.md`, `adapters/codex/codex-start-prompt.md` | Ask Codex to read `AGENTS.md`, inspect harness files, run preflight, respect `.agent/task.yml`, and run `scripts/agent-finish.sh`. |
-| Claude Code | `CLAUDE.md` | `adapters/claude-code/CLAUDE.md`, `.claude/skills/*` | Claude Code can use project skills for harness startup, policy, verification, handoff, and subagent packets. |
-| Superpowers-compatible agents | skills | `skills/*` | Existing Superpowers-compatible skills remain supported and should not be removed. |
-| Generic coding agents | `AGENTS.md` or live prompt | `templates/AGENTS.md`, scripts, repo files | Generic agents can follow the files and scripts directly without adapter-specific skill support. |
+## Supported Agents
+
+Codex:
+- Entrypoint: `AGENTS.md`
+- Adapter assets: `adapters/codex/AGENTS.md`,
+  `adapters/codex/codex-start-prompt.md`
+- Notes: ask Codex to read `AGENTS.md`, inspect harness files, run preflight,
+  respect `.agent/task.yml`, and run `scripts/agent-finish.sh`.
+
+Claude Code:
+- Entrypoint: `CLAUDE.md`
+- Adapter assets: `adapters/claude-code/CLAUDE.md`, `.claude/skills/*`
+- Notes: Claude Code can use project skills for harness startup, policy,
+  verification, handoff, and subagent packets.
+
+Superpowers-compatible agents:
+- Entrypoint: skills
+- Adapter assets: `skills/*`
+- Notes: existing Superpowers-compatible skills remain supported and should not
+  be removed.
+
+Generic coding agents:
+- Entrypoint: `AGENTS.md` or live prompt
+- Adapter assets: `templates/AGENTS.md`, scripts, repo files
+- Notes: generic agents can follow the files and scripts directly without
+  adapter-specific skill support.
 
 ## Non-Goals
 
