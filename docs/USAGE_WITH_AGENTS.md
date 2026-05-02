@@ -14,11 +14,14 @@ Use repo files for durable context:
 - `.agent/task.yml`: current task scope and completion requirements
 - `.agent/tdd-evidence.yml`: red/green/refactor evidence for tasks that
   explicitly require TDD evidence
+- `.agent/subagent-packet.yml`: optional controller-agent to subagent handoff
+  context for delegated work
 
 Use scripts for gates:
 
 ```bash
 scripts/agent-preflight.sh
+scripts/validate-subagent-packet.sh
 scripts/check-policy.sh
 scripts/check-scope.sh
 scripts/check-tdd-evidence.sh
@@ -34,6 +37,13 @@ TDD evidence is required only when `.agent/task.yml` contains
 `completion.requires_tdd_evidence: true`. When enabled, agents should fill
 `.agent/tdd-evidence.yml` with the red command/failure, green command/pass, and
 the tests added or changed before running `scripts/agent-finish.sh`.
+
+Subagent packets are intended for controller-agent to subagent handoffs. A
+controller can fill `.agent/subagent-packet.yml` with the task id, subagent
+role, allowed paths, relevant files, required verification, and expected status
+enum, then run `scripts/validate-subagent-packet.sh` before spawning or
+prompting the subagent. Packets are not mandatory for all tasks and are not part
+of the `agent-finish.sh` completion gate yet.
 
 Planned JSON evidence format, not implemented in this pass:
 
@@ -68,6 +78,7 @@ Recommended start prompt:
 You are working in this repository using Agent-Repo-Harness.
 First read `AGENTS.md`, then follow its instructions.
 Before editing, inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`.
+For delegated work, fill `.agent/subagent-packet.yml` and run `scripts/validate-subagent-packet.sh`.
 Respect task boundaries.
 Before claiming completion, run `scripts/agent-finish.sh`.
 If verification cannot be run, explain exactly why and update `handoff.md`.
@@ -131,10 +142,11 @@ support:
 
 1. Read `AGENTS.md`.
 2. Inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`.
-3. Run `scripts/agent-preflight.sh`.
-4. Modify only files allowed by `.agent/task.yml`.
-5. Run `scripts/agent-finish.sh` before reporting completion.
-6. Update `handoff.md`.
+3. Fill `.agent/subagent-packet.yml` only when handing work to a subagent.
+4. Run `scripts/agent-preflight.sh`.
+5. Modify only files allowed by `.agent/task.yml`.
+6. Run `scripts/agent-finish.sh` before reporting completion.
+7. Update `handoff.md`.
 
 ## Avoid This
 

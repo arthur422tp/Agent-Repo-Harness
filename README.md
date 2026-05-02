@@ -6,7 +6,8 @@ coding agents.
 
 It provides a universal core plus adapter files:
 
-- universal repo memory: `agent.md`, `handoff.md`, `.agent/task.yml`
+- universal repo memory: `agent.md`, `handoff.md`, `.agent/task.yml`,
+  optional `.agent/subagent-packet.yml`
 - universal gates: `scripts/check-policy.sh`, `scripts/check-scope.sh`,
   `scripts/check-tdd-evidence.sh`, `scripts/agent-verify.sh`,
   `scripts/agent-finish.sh`
@@ -21,6 +22,8 @@ The harness keeps stable repo facts separate from task state:
 - `.agent/task.yml`: machine-readable current task scope
 - `.agent/tdd-evidence.yml`: structured TDD evidence, required only when
   `.agent/task.yml` sets `completion.requires_tdd_evidence: true`
+- `.agent/subagent-packet.yml`: optional controller-agent to subagent handoff
+  packet for repeatable delegated work
 
 ## What It Is Not
 
@@ -70,6 +73,7 @@ Run the gates:
 bash scripts/agent-preflight.sh
 bash scripts/validate-config.sh
 bash scripts/validate-task.sh
+bash scripts/validate-subagent-packet.sh
 bash scripts/check-policy.sh
 bash scripts/check-scope.sh
 bash scripts/check-tdd-evidence.sh
@@ -85,6 +89,12 @@ TDD evidence is opt-in per task. When `.agent/task.yml` contains
 `completion.requires_tdd_evidence: true`, fill `.agent/tdd-evidence.yml` with
 non-empty red and green phase commands/results plus at least one changed test
 entry before running `scripts/agent-finish.sh`.
+
+Subagent packets are optional. Fill `.agent/subagent-packet.yml` when a
+controller agent needs to hand precise task text, allowed paths, required
+verification, and expected status values to a fresh subagent. Validate it with
+`scripts/validate-subagent-packet.sh`. It is not part of `agent-finish.sh` yet
+and is not mandatory for ordinary tasks.
 
 ## Agent Entrypoints
 
@@ -110,6 +120,7 @@ Generic agents:
 
 - read `AGENTS.md`
 - inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`
+- fill `.agent/subagent-packet.yml` only when delegating work to a subagent
 - run the scripts directly
 
 See [docs/USAGE_WITH_AGENTS.md](docs/USAGE_WITH_AGENTS.md) and
@@ -147,4 +158,4 @@ bash validate-harness.sh
 
 The validation checks script syntax, YAML and JSON syntax, required harness
 files, install smoke tests, scope and policy behavior, configured verification,
-TDD evidence behavior, and finish evidence creation.
+subagent packet validation, TDD evidence behavior, and finish evidence creation.

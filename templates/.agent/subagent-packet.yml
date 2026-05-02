@@ -1,0 +1,24 @@
+task_id: ""
+role: "implementer"
+task_text: ""
+
+allowed_paths:
+  - ""
+
+forbidden_paths:
+  - ""
+
+relevant_files:
+  - ""
+
+verification_required:
+  - ""
+
+expected_output_contract:
+  status_enum:
+    - DONE
+    - DONE_WITH_CONCERNS
+    - NEEDS_CONTEXT
+    - BLOCKED
+
+notes: ""

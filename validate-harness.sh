@@ -267,6 +267,8 @@ for required_path in \
   templates/scripts/validate-task.sh \
   templates/scripts/check-tdd-evidence.sh \
   templates/.agent/tdd-evidence.yml \
+  templates/scripts/validate-subagent-packet.sh \
+  templates/.agent/subagent-packet.yml \
   examples/universal-minimal-repo/AGENTS.md \
   examples/universal-minimal-repo/CLAUDE.md \
   examples/universal-minimal-repo/.agent/harness.yml \
@@ -302,6 +304,7 @@ for required_path in \
   .agent/policy.yml \
   .agent/task.yml \
   .agent/tdd-evidence.yml \
+  .agent/subagent-packet.yml \
   scripts/agent-preflight.sh \
   scripts/agent-finish.sh \
   scripts/check-agent-md.sh \
@@ -310,7 +313,8 @@ for required_path in \
   scripts/check-tdd-evidence.sh \
   scripts/agent-verify.sh \
   scripts/validate-config.sh \
-  scripts/validate-task.sh
+  scripts/validate-task.sh \
+  scripts/validate-subagent-packet.sh
 do
   assert_exists "$target_root/$required_path"
 done
@@ -321,6 +325,52 @@ pass "required files installed"
   bash scripts/agent-preflight.sh
   bash scripts/validate-config.sh
   bash scripts/validate-task.sh
+  subagent_empty_log="$target_root/subagent-packet-empty.log"
+  if bash scripts/validate-subagent-packet.sh >"$subagent_empty_log" 2>&1; then
+    echo "ERROR: expected empty subagent packet validation failure"
+    exit 1
+  fi
+  assert_contains "$subagent_empty_log" "SUBAGENT_PACKET_RESULT=fail"
+  assert_contains "$subagent_empty_log" "task_id must be non-empty"
+  cat > .agent/subagent-packet.yml <<'EOF'
+task_id: "phase-1.3-a"
+role: "implementer"
+task_text: "Add subagent packet contract."
+
+allowed_paths:
+  - "templates/.agent/subagent-packet.yml"
+  - "templates/scripts/validate-subagent-packet.sh"
+
+forbidden_paths:
+  - ".git/**"
+
+relevant_files:
+  - "validate-harness.sh"
+
+verification_required:
+  - "bash scripts/validate-subagent-packet.sh"
+
+expected_output_contract:
+  status_enum:
+    - DONE
+    - DONE_WITH_CONCERNS
+    - NEEDS_CONTEXT
+    - BLOCKED
+
+notes: ""
+EOF
+  bash scripts/validate-subagent-packet.sh
+  subagent_invalid_role_log="$target_root/subagent-packet-invalid-role.log"
+  sed -e 's/role: "implementer"/role: "invalid_role"/' \
+    .agent/subagent-packet.yml > .agent/subagent-packet-invalid-role.yml
+  if bash scripts/validate-subagent-packet.sh \
+    .agent/subagent-packet-invalid-role.yml >"$subagent_invalid_role_log" 2>&1
+  then
+    echo "ERROR: expected invalid role validation failure"
+    exit 1
+  fi
+  assert_contains "$subagent_invalid_role_log" "role must be one of"
+  assert_contains "$subagent_invalid_role_log" "SUBAGENT_PACKET_RESULT=fail"
   bash scripts/check-agent-md.sh agent.md
   verify_log="$target_root/agent-verify-pass.log"
   bash scripts/agent-verify.sh --best-effort >"$verify_log" 2>&1
