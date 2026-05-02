@@ -73,7 +73,11 @@ write_git_evidence() {
         {
           git diff --name-only HEAD 2>/dev/null || true
           git ls-files --others --exclude-standard 2>/dev/null || true
-        } | awk 'NF' | sort -u
+        } | awk '
+          NF &&
+          $0 !~ /^\.agent\/runs\// &&
+          $0 !~ /^agent-finish-.*\.log$/
+        ' | sort -u
       )"
       if [ -n "$changed_files" ]; then
         printf '%s\n' "$changed_files"

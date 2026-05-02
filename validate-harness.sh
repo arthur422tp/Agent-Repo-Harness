@@ -37,6 +37,17 @@ assert_contains() {
   fi
 }
 
+assert_not_contains() {
+  local file="$1"
+  local unexpected="$2"
+
+  if grep -Fq "$unexpected" "$file"; then
+    echo "ERROR: expected output not to contain: $unexpected"
+    echo "File: $file"
+    exit 1
+  fi
+}
+
 assert_exists() {
   local path="$1"
 
@@ -59,6 +70,21 @@ assert_file_contains() {
   fi
 
   assert_contains "$file" "$expected"
+}
+
+assert_file_not_contains() {
+  local root="$1"
+  local name="$2"
+  local unexpected="$3"
+  local file
+
+  file="$(find "$root/.agent/runs" -type f -name "$name" | head -n 1)"
+  if [ -z "$file" ]; then
+    echo "ERROR: expected run evidence file named: $name"
+    exit 1
+  fi
+
+  assert_not_contains "$file" "$unexpected"
 }
 
 assert_run_evidence_files() {
@@ -313,7 +339,9 @@ pass "required files installed"
   assert_file_contains "$target_root" "policy-result.txt" "Output:"
   assert_file_contains "$target_root" "verify-result.txt" "Exit status: 0"
   assert_file_contains "$target_root" "verify-result.txt" "Output:"
-  assert_file_contains "$target_root" "changed-files.txt" "agent-finish-pass.log"
+  assert_file_contains "$target_root" "changed-files.txt" "AGENTS.md"
+  assert_file_not_contains "$target_root" "changed-files.txt" ".agent/runs/"
+  assert_file_not_contains "$target_root" "changed-files.txt" "agent-finish-pass.log"
   assert_file_contains "$target_root" "git-diff-stat.txt" "# Git diff stat"
   bash scripts/check-policy.sh .agent/policy.yml
   bash scripts/collect-context.sh >/dev/null
