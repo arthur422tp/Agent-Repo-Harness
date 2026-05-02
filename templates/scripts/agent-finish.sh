@@ -58,6 +58,9 @@ verify_status=""
 mkdir -p "$run_dir"
 
 write_git_evidence() {
+  local changed_files
+  local diff_stat
+
   {
     echo "# Changed files"
     echo
@@ -66,7 +69,17 @@ write_git_evidence() {
     elif ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
       echo "Not inside a git repository; changed files could not be collected."
     else
-      git status --short || echo "git status failed; changed files could not be collected."
+      changed_files="$(
+        {
+          git diff --name-only HEAD 2>/dev/null || true
+          git ls-files --others --exclude-standard 2>/dev/null || true
+        } | awk 'NF' | sort -u
+      )"
+      if [ -n "$changed_files" ]; then
+        printf '%s\n' "$changed_files"
+      else
+        echo "No changed files detected."
+      fi
     fi
   } >"$changed_files_file"
 

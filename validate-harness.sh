@@ -81,6 +81,29 @@ assert_run_evidence_files() {
   done
 }
 
+assert_finish_summary_contract() {
+  local root="$1"
+  local expected_result="$2"
+
+  assert_file_contains "$root" "finish-summary.md" "Timestamp:"
+  assert_file_contains "$root" "finish-summary.md" "Mode:"
+  assert_file_contains "$root" "finish-summary.md" "Run directory: .agent/runs/"
+  assert_file_contains "$root" "finish-summary.md" "Overall result: $expected_result"
+  assert_file_contains "$root" "finish-summary.md" "| check-agent-md |"
+  assert_file_contains "$root" "finish-summary.md" "| check-scope |"
+  assert_file_contains "$root" "finish-summary.md" "| check-policy |"
+  assert_file_contains "$root" "finish-summary.md" "| agent-verify |"
+  assert_file_contains "$root" "finish-summary.md" "check-agent-md-result.txt"
+  assert_file_contains "$root" "finish-summary.md" "scope-result.txt"
+  assert_file_contains "$root" "finish-summary.md" "policy-result.txt"
+  assert_file_contains "$root" "finish-summary.md" "verify-result.txt"
+  assert_file_contains "$root" "finish-summary.md" "changed-files.txt"
+  assert_file_contains "$root" "finish-summary.md" "git-diff-stat.txt"
+  assert_file_contains "$root" "finish-summary.md" "## Changed Files"
+  assert_file_contains "$root" "finish-summary.md" "## Git Diff Stat"
+  assert_file_contains "$root" "finish-summary.md" "## Next Recommended Action"
+}
+
 run_yaml_syntax_checks() {
   local yaml_files=()
   local file
@@ -113,22 +136,52 @@ run_json_syntax_checks() {
   ruby -rjson -e 'ARGV.each { |f| JSON.parse(File.read(f)) }' "${json_files[@]}"
 }
 
-run_shell_header_checks() {
+run_shell_format_checks() {
   local file
   local first_line
   local second_line
+  local line_count
+  local max_line_length
 
   while IFS= read -r file; do
+    bash -n "$file"
+
     first_line="$(sed -n '1p' "$file")"
     second_line="$(sed -n '2p' "$file")"
+    line_count="$(wc -l < "$file" | tr -d '[:space:]')"
+    max_line_length="$(awk 'BEGIN { max = 0 } length($0) > max { max = length($0) } END { print max }' "$file")"
 
     if [ "$first_line" != "#!/usr/bin/env bash" ]; then
       echo "ERROR: missing bash shebang in $file"
       exit 1
     fi
 
+    if printf '%s\n' "$first_line" | grep -Fq "set -euo pipefail"; then
+      echo "ERROR: set -euo pipefail must not appear on the shebang line in $file"
+      exit 1
+    fi
+
     if [ "$second_line" != "set -euo pipefail" ]; then
       echo "ERROR: missing set -euo pipefail in $file"
+      exit 1
+    fi
+
+    if [ "$line_count" -lt 3 ]; then
+      echo "ERROR: shell script appears compressed or malformed: $file"
+      exit 1
+    fi
+
+    case "$file" in
+      ./install-agent-harness.sh|./validate-harness.sh|./templates/scripts/*.sh)
+        if [ "$line_count" -lt 10 ]; then
+          echo "ERROR: shell script appears compressed or malformed: $file"
+          exit 1
+        fi
+        ;;
+    esac
+
+    if [ "$max_line_length" -gt 180 ]; then
+      echo "ERROR: shell script has an overlong line; possible compressed formatting: $file"
       exit 1
     fi
   done < <(find . -type f -name "*.sh" -not -path "./.git/*" | sort)
@@ -140,16 +193,7 @@ cd "$repo_root"
 
 echo
 echo "== Shell syntax =="
-bash -n install-agent-harness.sh
-bash -n validate-harness.sh
-bash -n templates/scripts/agent-finish.sh
-for f in templates/scripts/*.sh; do
-  bash -n "$f"
-done
-for f in examples/universal-minimal-repo/scripts/*.sh; do
-  bash -n "$f"
-done
-run_shell_header_checks
+run_shell_format_checks
 pass "shell syntax checks"
 
 echo
@@ -259,14 +303,16 @@ pass "required files installed"
     exit 1
   fi
   assert_run_evidence_files "$target_root"
-  assert_file_contains "$target_root" "finish-summary.md" "Overall result: pass"
-  assert_file_contains "$target_root" "finish-summary.md" "Run directory: .agent/runs/"
-  assert_file_contains "$target_root" "finish-summary.md" "check-agent-md-result.txt"
-  assert_file_contains "$target_root" "finish-summary.md" "scope-result.txt"
+  assert_finish_summary_contract "$target_root" "pass"
+  assert_contains "$finish_log" "Run directory: .agent/runs/"
   assert_file_contains "$target_root" "check-agent-md-result.txt" "Exit status: 0"
+  assert_file_contains "$target_root" "check-agent-md-result.txt" "Output:"
   assert_file_contains "$target_root" "scope-result.txt" "Exit status: 0"
+  assert_file_contains "$target_root" "scope-result.txt" "Output:"
   assert_file_contains "$target_root" "policy-result.txt" "Exit status: 0"
+  assert_file_contains "$target_root" "policy-result.txt" "Output:"
   assert_file_contains "$target_root" "verify-result.txt" "Exit status: 0"
+  assert_file_contains "$target_root" "verify-result.txt" "Output:"
   assert_file_contains "$target_root" "changed-files.txt" "agent-finish-pass.log"
   assert_file_contains "$target_root" "git-diff-stat.txt" "# Git diff stat"
   bash scripts/check-policy.sh .agent/policy.yml
@@ -525,13 +571,17 @@ git init -q "$finish_strict_root"
   fi
   assert_contains "$finish_log" "Run directory: .agent/runs/"
   assert_run_evidence_files "$finish_strict_root"
-  assert_file_contains "$finish_strict_root" "finish-summary.md" "Overall result: fail"
-  assert_file_contains "$finish_strict_root" "finish-summary.md" "check-scope"
-  assert_file_contains "$finish_strict_root" "finish-summary.md" "check-agent-md-result.txt"
+  assert_finish_summary_contract "$finish_strict_root" "fail"
   assert_file_contains "$finish_strict_root" "check-agent-md-result.txt" "Exit status: 0"
+  assert_file_contains "$finish_strict_root" "check-agent-md-result.txt" "Output:"
   assert_file_contains "$finish_strict_root" "scope-result.txt" "Exit status: 1"
+  assert_file_contains "$finish_strict_root" "scope-result.txt" "Output:"
   assert_file_contains "$finish_strict_root" "policy-result.txt" "Exit status: 0"
+  assert_file_contains "$finish_strict_root" "policy-result.txt" "Output:"
   assert_file_contains "$finish_strict_root" "verify-result.txt" "Exit status: 0"
+  assert_file_contains "$finish_strict_root" "verify-result.txt" "Output:"
+  assert_file_contains "$finish_strict_root" "changed-files.txt" "src/billing/invoice.js"
+  assert_file_contains "$finish_strict_root" "git-diff-stat.txt" "# Git diff stat"
 )
 pass "finish gate strict scope failure"
 
