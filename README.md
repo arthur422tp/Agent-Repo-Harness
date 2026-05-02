@@ -70,7 +70,8 @@ bash scripts/agent-finish.sh --best-effort
 ```
 
 `agent-finish.sh` writes evidence under `.agent/runs/<timestamp>/`, including
-`finish-summary.md`.
+`finish-summary.md`, gate result files, `changed-files.txt`, and
+`git-diff-stat.txt`.
 
 ## Agent Entrypoints
 

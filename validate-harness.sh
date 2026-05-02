@@ -14,6 +14,7 @@ scope_forbidden_root="$tmp_root/scope-forbidden"
 policy_strict_root="$tmp_root/policy-strict"
 verify_config_root="$tmp_root/verify-config"
 finish_strict_root="$tmp_root/finish-strict"
+finish_nongit_root="$tmp_root/finish-nongit"
 
 cleanup() {
   rm -rf "$tmp_root"
@@ -43,6 +44,21 @@ assert_exists() {
     echo "ERROR: expected path to exist: $path"
     exit 1
   fi
+}
+
+assert_file_contains() {
+  local root="$1"
+  local name="$2"
+  local expected="$3"
+  local file
+
+  file="$(find "$root/.agent/runs" -type f -name "$name" | head -n 1)"
+  if [ -z "$file" ]; then
+    echo "ERROR: expected run evidence file named: $name"
+    exit 1
+  fi
+
+  assert_contains "$file" "$expected"
 }
 
 run_yaml_syntax_checks() {
@@ -200,6 +216,13 @@ pass "required files installed"
     echo "ERROR: expected agent-finish.sh to create finish-summary.md"
     exit 1
   fi
+  assert_file_contains "$target_root" "finish-summary.md" "Overall result: pass"
+  assert_file_contains "$target_root" "finish-summary.md" "scope-result.txt"
+  assert_file_contains "$target_root" "scope-result.txt" "Exit status: 0"
+  assert_file_contains "$target_root" "policy-result.txt" "Exit status: 0"
+  assert_file_contains "$target_root" "verify-result.txt" "Exit status: 0"
+  assert_file_contains "$target_root" "changed-files.txt" "agent-finish-pass.log"
+  assert_file_contains "$target_root" "git-diff-stat.txt" "# Git diff stat"
   bash scripts/check-policy.sh .agent/policy.yml
   bash scripts/collect-context.sh >/dev/null
   assert_exists "$target_root/.agent/task.yml"
@@ -454,8 +477,35 @@ git init -q "$finish_strict_root"
     echo "ERROR: expected failing finish gate to create finish-summary.md"
     exit 1
   fi
+  assert_contains "$finish_log" "Run directory: .agent/runs/"
+  assert_file_contains "$finish_strict_root" "finish-summary.md" "Overall result: fail"
+  assert_file_contains "$finish_strict_root" "finish-summary.md" "check-scope"
+  assert_file_contains "$finish_strict_root" "scope-result.txt" "Exit status: 1"
+  assert_file_contains "$finish_strict_root" "policy-result.txt" "Exit status: 0"
+  assert_file_contains "$finish_strict_root" "verify-result.txt" "Exit status: 0"
 )
 pass "finish gate strict scope failure"
+
+echo
+echo "== Finish gate without git repository =="
+rm -rf "$finish_nongit_root"
+mkdir -p "$finish_nongit_root/.agent" "$finish_nongit_root/scripts"
+(
+  cd "$finish_nongit_root"
+  cp "$repo_root/templates/agent.md" agent.md
+  cp "$repo_root/templates/scripts/check-agent-md.sh" scripts/check-agent-md.sh
+  cp "$repo_root/templates/scripts/check-scope.sh" scripts/check-scope.sh
+  cp "$repo_root/templates/scripts/check-policy.sh" scripts/check-policy.sh
+  cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
+  cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
+  chmod +x scripts/*.sh
+  finish_log="$finish_nongit_root/agent-finish-nongit.log"
+  bash scripts/agent-finish.sh --best-effort >"$finish_log" 2>&1
+  assert_contains "$finish_log" "AGENT_FINISH_RESULT=pass"
+  assert_file_contains "$finish_nongit_root" "changed-files.txt" "Not inside a git repository"
+  assert_file_contains "$finish_nongit_root" "git-diff-stat.txt" "Not inside a git repository"
+)
+pass "finish gate without git repository"
 
 echo
 echo "== Universal minimal example smoke =="

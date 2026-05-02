@@ -24,13 +24,14 @@ scripts/agent-finish.sh
 ```
 
 `agent-finish.sh` records evidence under `.agent/runs/<timestamp>/`, including
-`finish-summary.md`.
+`finish-summary.md`, per-gate result files, `changed-files.txt`, and
+`git-diff-stat.txt`.
 
 Planned JSON evidence format, not implemented in this pass:
 
 ```json
 {
-  "timestamp": "20260501T120000Z",
+  "timestamp": "20260501-120000",
   "mode": "strict",
   "command": "scripts/agent-finish.sh --strict",
   "result": "pass",
@@ -38,14 +39,14 @@ Planned JSON evidence format, not implemented in this pass:
     {
       "name": "check-scope",
       "exit_code": 0,
-      "log": ".agent/runs/20260501T120000Z/check-scope.log"
+      "log": ".agent/runs/20260501-120000/scope-result.txt"
     }
   ]
 }
 ```
 
-Until JSON output exists, treat `finish-summary.md` and per-gate logs as the
-canonical evidence files.
+Until JSON output exists, treat `finish-summary.md` and the text evidence files
+in the run directory as canonical.
 
 ## Codex
 
