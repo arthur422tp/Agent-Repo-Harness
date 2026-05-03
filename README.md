@@ -77,6 +77,18 @@ Then fill in:
 - `.agent/policy.yml`
 - `.agent/task.yml`
 
+After reviewing and customizing the installed files, commit a clean harness
+baseline before starting feature work:
+
+```bash
+git add .
+git commit -m "Initialize project with Agent-Repo-Harness baseline"
+```
+
+Scope gates compare current changes against git state. Committing the baseline
+keeps newly installed harness scaffold files from being reported as task
+changes.
+
 Run the gates:
 
 ```bash

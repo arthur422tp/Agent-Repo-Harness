@@ -32,6 +32,19 @@ scripts/agent-verify.sh
 scripts/agent-finish.sh
 ```
 
+Scope checks compare current changes against the repository's git state. After
+a fresh harness install, review and customize the scaffold files, then commit a
+clean baseline before starting feature work:
+
+```bash
+git add .
+git commit -m "Initialize project with Agent-Repo-Harness baseline"
+```
+
+If the baseline is not committed, `scripts/check-scope.sh` may count unrelated
+Agent-Repo-Harness scaffold files as changed and make scope warnings look like
+feature-work drift.
+
 `agent-finish.sh` records evidence under `.agent/runs/<timestamp>/`, including
 `finish-summary.md`, per-gate result files, `tdd-evidence-result.txt`,
 `changed-files.txt`, and `git-diff-stat.txt`.
