@@ -9,8 +9,8 @@ It provides a universal core plus adapter files:
 - universal repo memory: `agent.md`, `handoff.md`, `.agent/task.yml`,
   optional `.agent/subagent-packet.yml`
 - universal gates: `scripts/check-policy.sh`, `scripts/check-scope.sh`,
-  `scripts/check-tdd-evidence.sh`, `scripts/agent-verify.sh`,
-  `scripts/agent-finish.sh`
+  `scripts/check-tdd-evidence.sh`, `scripts/check-doc-links.sh`,
+  `scripts/agent-verify.sh`, `scripts/agent-finish.sh`
 - universal entrypoints: `AGENTS.md`, `CLAUDE.md`
 - adapters: `adapters/codex/`, `adapters/claude-code/`
 - preserved Superpowers-compatible skills: `skills/*`
@@ -96,6 +96,7 @@ bash scripts/agent-preflight.sh
 bash scripts/validate-config.sh
 bash scripts/validate-task.sh
 bash scripts/validate-subagent-packet.sh
+bash scripts/check-doc-links.sh
 bash scripts/check-policy.sh
 bash scripts/check-scope.sh
 bash scripts/check-tdd-evidence.sh
@@ -186,6 +187,6 @@ bash validate-harness.sh
 ```
 
 The validation checks script syntax, YAML and JSON syntax, required harness
-files, install smoke tests, scope and policy behavior, configured verification,
-subagent packet/run validation, TDD evidence behavior, and finish evidence
-creation.
+files, install smoke tests, local doc links, scope and policy behavior,
+configured verification, subagent packet/run validation, TDD evidence behavior,
+and finish evidence creation.

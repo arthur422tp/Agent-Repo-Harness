@@ -40,6 +40,18 @@ have_cmd() {
   command -v "$1" >/dev/null 2>&1
 }
 
+find_python() {
+  if have_cmd python3; then
+    printf '%s\n' "python3"
+    return 0
+  fi
+  if have_cmd python; then
+    printf '%s\n' "python"
+    return 0
+  fi
+  return 1
+}
+
 repo_defined_checks_found=0
 
 failures=0
@@ -86,27 +98,25 @@ run_check() {
 
 extract_required_verification_entries() {
   local config_file="$1"
+  local script_dir
+  local reader
+  local python_bin
 
-  awk '
-    /^verification:/ { in_verification=1; next }
-    in_verification && /^[^[:space:]]/ { in_verification=0 }
-    in_verification && /^[[:space:]]*required:[[:space:]]*$/ { in_required=1; next }
-    in_required && substr($0, 1, 4) == "    " && $0 ~ /-[[:space:]]+name:[[:space:]]*/ {
-      line=$0
-      sub(/^[[:space:]]*-[[:space:]]*name:[[:space:]]*/, "", line)
-      gsub(/"/, "", line)
-      name=line
-      next
-    }
-    in_required && substr($0, 1, 6) == "      " && $0 ~ /command:[[:space:]]*/ {
-      line=$0
-      sub(/^[[:space:]]*command:[[:space:]]*/, "", line)
-      gsub(/"/, "", line)
-      printf "%s\t%s\n", name, line
-      next
-    }
-    in_required && /^[[:space:]]{2}[A-Za-z0-9_]+:/ { in_required=0 }
-  ' "$config_file"
+  script_dir="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
+  reader="$script_dir/lib/read-yaml.py"
+
+  if [ ! -f "$reader" ]; then
+    echo "ERROR: YAML reader not found: $reader" >&2
+    return 1
+  fi
+
+  if ! python_bin="$(find_python)"; then
+    echo "ERROR: python is required to read .agent/harness.yml" >&2
+    return 1
+  fi
+
+  "$python_bin" "$reader" "$config_file" verification.required \
+    --optional --list-fields name command
 }
 
 run_configured_verification_checks() {
@@ -115,7 +125,13 @@ run_configured_verification_checks() {
   local label
   local command_string
 
-  entries="$(extract_required_verification_entries "$config_file")"
+  if ! entries="$(extract_required_verification_entries "$config_file")"; then
+    echo
+    echo "FAIL: repo-defined verification config"
+    echo "Reason: could not read verification.required from $config_file"
+    failures=$((failures + 1))
+    return 0
+  fi
   if [ -z "$entries" ]; then
     return 0
   fi

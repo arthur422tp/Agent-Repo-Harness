@@ -55,6 +55,7 @@ scripts:
   check_policy: scripts/check-policy.sh
   check_scope: scripts/check-scope.sh
   check_agent_map: scripts/check-agent-md.sh
+  check_doc_links: scripts/check-doc-links.sh
   validate_config: scripts/validate-config.sh
   validate_task: scripts/validate-task.sh
 

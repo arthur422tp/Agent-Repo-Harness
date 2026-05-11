@@ -9,8 +9,7 @@ Defaults:
   HARNESS_FILE  .agent/harness.yml
   POLICY_FILE   .agent/policy.yml
 
-Performs dependency-light structural checks. If ruby is available, also checks
-YAML syntax.
+Performs dependency-light structural checks using scripts/lib/read-yaml.py.
 EOF
 }
 
@@ -26,6 +25,26 @@ esac
 
 failures=0
 
+have_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+find_python() {
+  if have_cmd python3; then
+    printf '%s\n' "python3"
+    return 0
+  fi
+  if have_cmd python; then
+    printf '%s\n' "python"
+    return 0
+  fi
+  return 1
+}
+
+script_dir="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
+yaml_reader="$script_dir/lib/read-yaml.py"
+python_bin=""
+
 require_file() {
   local file="$1"
   if [ ! -f "$file" ]; then
@@ -39,7 +58,7 @@ require_file() {
 require_key() {
   local file="$1"
   local key="$2"
-  if ! grep -Eq "^[[:space:]]*$key:" "$file"; then
+  if ! "$python_bin" "$yaml_reader" "$file" "$key" >/dev/null 2>&1; then
     echo "FAIL: $file missing key: $key"
     failures=$((failures + 1))
     return 1
@@ -47,21 +66,20 @@ require_key() {
   echo "OK: $file contains $key"
 }
 
-check_yaml() {
-  if command -v ruby >/dev/null 2>&1; then
-    ruby -e 'require "yaml"; ARGV.each { |f| YAML.load_file(f) }' "$@" >/dev/null
-    echo "OK: YAML syntax"
-  else
-    echo "WARN: ruby unavailable; skipped YAML syntax check"
-  fi
-}
-
 echo "== Harness Config Validation =="
+
+if [ ! -f "$yaml_reader" ]; then
+  echo "FAIL: missing YAML reader: $yaml_reader"
+  failures=$((failures + 1))
+elif ! python_bin="$(find_python)"; then
+  echo "FAIL: python is required for config validation"
+  failures=$((failures + 1))
+fi
 
 require_file "$harness_file" || true
 require_file "$policy_file" || true
 
-if [ -f "$harness_file" ]; then
+if [ -f "$harness_file" ] && [ -n "$python_bin" ] && [ -f "$yaml_reader" ]; then
   require_key "$harness_file" "name"
   require_key "$harness_file" "version"
   require_key "$harness_file" "paths"
@@ -69,15 +87,11 @@ if [ -f "$harness_file" ]; then
   require_key "$harness_file" "verification"
 fi
 
-if [ -f "$policy_file" ]; then
+if [ -f "$policy_file" ] && [ -n "$python_bin" ] && [ -f "$yaml_reader" ]; then
   require_key "$policy_file" "version"
   require_key "$policy_file" "default_mode"
   require_key "$policy_file" "risk_files"
   require_key "$policy_file" "rules"
-fi
-
-if [ -f "$harness_file" ] && [ -f "$policy_file" ]; then
-  check_yaml "$harness_file" "$policy_file"
 fi
 
 if [ "$failures" -gt 0 ]; then

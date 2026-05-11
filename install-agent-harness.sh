@@ -113,11 +113,11 @@ while IFS= read -r -d '' path; do
 done < <(find "$template_root" -mindepth 1 -print0 | sort -z)
 
 if [ -d "$target/scripts" ] && \
-  find "$target/scripts" -maxdepth 1 -type f -name "*.sh" | grep -q .
+  find "$target/scripts" -type f -name "*.sh" | grep -q .
 then
   while IFS= read -r -d '' script; do
     chmod +x "$script"
-  done < <(find "$target/scripts" -maxdepth 1 -type f -name "*.sh" -print0)
+  done < <(find "$target/scripts" -type f -name "*.sh" -print0)
 fi
 
 echo "Install complete."
@@ -136,10 +136,11 @@ echo "   cd $target && git commit -m \"Initialize project with Agent-Repo-Harnes
 echo "9. Run: cd $target && bash scripts/agent-preflight.sh"
 echo "10. Run: cd $target && bash scripts/validate-config.sh"
 echo "11. Run: cd $target && bash scripts/validate-task.sh"
-echo "12. Run when using subagents: cd $target && bash scripts/validate-subagent-packet.sh"
-echo "13. Run for subagent evidence: cd $target && bash scripts/validate-subagent-run.sh RUN_DIR"
-echo "14. Run: cd $target && bash scripts/check-policy.sh"
-echo "15. Run: cd $target && bash scripts/check-scope.sh"
-echo "16. Run: cd $target && bash scripts/check-tdd-evidence.sh"
-echo "17. Run: cd $target && bash scripts/agent-verify.sh"
-echo "18. Run before completion: cd $target && bash scripts/agent-finish.sh"
+echo "12. Run: cd $target && bash scripts/check-doc-links.sh"
+echo "13. Run when using subagents: cd $target && bash scripts/validate-subagent-packet.sh"
+echo "14. Run for subagent evidence: cd $target && bash scripts/validate-subagent-run.sh RUN_DIR"
+echo "15. Run: cd $target && bash scripts/check-policy.sh"
+echo "16. Run: cd $target && bash scripts/check-scope.sh"
+echo "17. Run: cd $target && bash scripts/check-tdd-evidence.sh"
+echo "18. Run: cd $target && bash scripts/agent-verify.sh"
+echo "19. Run before completion: cd $target && bash scripts/agent-finish.sh"

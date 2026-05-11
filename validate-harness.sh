@@ -13,9 +13,12 @@ scope_outside_root="$tmp_root/scope-outside"
 scope_forbidden_root="$tmp_root/scope-forbidden"
 policy_strict_root="$tmp_root/policy-strict"
 verify_config_root="$tmp_root/verify-config"
+verify_bad_config_root="$tmp_root/verify-bad-config"
 finish_strict_root="$tmp_root/finish-strict"
 finish_nongit_root="$tmp_root/finish-nongit"
 tdd_required_failure_root="$tmp_root/tdd-required-failure"
+doc_links_failure_root="$tmp_root/doc-links-failure"
+yaml_reader_root="$tmp_root/yaml-reader"
 
 cleanup() {
   rm -rf "$tmp_root"
@@ -56,6 +59,19 @@ assert_exists() {
     echo "ERROR: expected path to exist: $path"
     exit 1
   fi
+}
+
+find_python() {
+  if command -v python3 >/dev/null 2>&1; then
+    printf '%s\n' "python3"
+    return 0
+  fi
+  if command -v python >/dev/null 2>&1; then
+    printf '%s\n' "python"
+    return 0
+  fi
+  echo "ERROR: python is required for validation"
+  exit 1
 }
 
 assert_file_contains() {
@@ -266,6 +282,8 @@ for required_path in \
   schemas/handoff.schema.json \
   templates/scripts/validate-config.sh \
   templates/scripts/validate-task.sh \
+  templates/scripts/lib/read-yaml.py \
+  templates/scripts/check-doc-links.sh \
   templates/scripts/check-tdd-evidence.sh \
   templates/.agent/tdd-evidence.yml \
   templates/scripts/validate-subagent-packet.sh \
@@ -283,6 +301,11 @@ do
   assert_exists "$repo_root/$required_path"
 done
 pass "new universal harness files present"
+
+echo
+echo "== Repository doc links =="
+bash templates/scripts/check-doc-links.sh "$repo_root"
+pass "repository doc links"
 
 echo
 echo "== Fresh install target =="
@@ -320,6 +343,8 @@ for required_path in \
   scripts/check-scope.sh \
   scripts/check-tdd-evidence.sh \
   scripts/agent-verify.sh \
+  scripts/lib/read-yaml.py \
+  scripts/check-doc-links.sh \
   scripts/validate-config.sh \
   scripts/validate-task.sh \
   scripts/validate-subagent-packet.sh \
@@ -334,6 +359,7 @@ pass "required files installed"
   bash scripts/agent-preflight.sh
   bash scripts/validate-config.sh
   bash scripts/validate-task.sh
+  bash scripts/check-doc-links.sh
   subagent_empty_log="$target_root/subagent-packet-empty.log"
   if bash scripts/validate-subagent-packet.sh >"$subagent_empty_log" 2>&1; then
     echo "ERROR: expected empty subagent packet validation failure"
@@ -663,6 +689,59 @@ git init -q "$policy_strict_root"
 pass "strict policy semantics"
 
 echo
+echo "== YAML reader behavior =="
+rm -rf "$yaml_reader_root"
+mkdir -p "$yaml_reader_root"
+(
+  cd "$yaml_reader_root"
+  cat > harness.yml <<'EOF'
+name: "Reader Fixture"
+version: 1
+enabled: true
+verification:
+  required:
+    - name: "quoted check"
+      command: "bash -n scripts/example.sh"
+    - name: bare-check
+      command: printf '%s\n' ok
+EOF
+  reader_log="$yaml_reader_root/read-yaml.log"
+  "$(find_python)" "$repo_root/templates/scripts/lib/read-yaml.py" \
+    harness.yml verification.required --list-fields name command \
+    >"$reader_log" 2>&1
+  assert_contains "$reader_log" $'quoted check\tbash -n scripts/example.sh'
+  assert_contains "$reader_log" $'bare-check\tprintf'
+
+  missing_log="$yaml_reader_root/read-yaml-missing.log"
+  if "$(find_python)" "$repo_root/templates/scripts/lib/read-yaml.py" \
+    harness.yml verification.missing >"$missing_log" 2>&1
+  then
+    echo "ERROR: expected missing path failure"
+    exit 1
+  fi
+  assert_contains "$missing_log" "missing path: verification.missing"
+)
+pass "YAML reader behavior"
+
+echo
+echo "== Doc link validation failure =="
+rm -rf "$doc_links_failure_root"
+mkdir -p "$doc_links_failure_root/docs"
+(
+  cd "$doc_links_failure_root"
+  printf '%s\n' '# Broken' '[missing](missing.md)' '`scripts/missing.sh`' > docs/broken.md
+  doc_link_log="$doc_links_failure_root/doc-links-failure.log"
+  if bash "$repo_root/templates/scripts/check-doc-links.sh" >"$doc_link_log" 2>&1; then
+    echo "ERROR: expected doc link validation failure"
+    exit 1
+  fi
+  assert_contains "$doc_link_log" "missing Markdown link target"
+  assert_contains "$doc_link_log" "missing script reference"
+  assert_contains "$doc_link_log" "DOC_LINKS_RESULT=fail"
+)
+pass "doc link validation failure"
+
+echo
 echo "== Repo-defined verification commands =="
 mkdir -p "$verify_config_root/.agent"
 git init -q "$verify_config_root"
@@ -671,20 +750,51 @@ git init -q "$verify_config_root"
   printf '%s\n' \
     'verification:' \
     '  required:' \
-    '    - name: shell-check' \
-    '      command: bash -n scripts/check-policy.sh' \
+    '    - command: bash -n scripts/check-policy.sh' \
+    '      name: "shell-check"' \
+    '    - name: second-check' \
+    '      command: bash -n scripts/second-check.sh' \
     > .agent/harness.yml
   mkdir -p scripts
   cp "$repo_root/templates/scripts/check-policy.sh" scripts/check-policy.sh
-  chmod +x scripts/check-policy.sh
+  printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' 'exit 0' \
+    > scripts/second-check.sh
+  mkdir -p scripts/lib
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  chmod +x scripts/check-policy.sh scripts/second-check.sh
   verify_log="$verify_config_root/agent-verify-config.log"
   bash "$repo_root/templates/scripts/agent-verify.sh" >"$verify_log" 2>&1
   assert_contains "$verify_log" "Repo-defined verification commands found."
   assert_contains "$verify_log" "RUN: shell-check"
   assert_contains "$verify_log" "PASS: shell-check"
+  assert_contains "$verify_log" "RUN: second-check"
+  assert_contains "$verify_log" "PASS: second-check"
   assert_contains "$verify_log" "HARNESS_VERIFY_RESULT=pass"
 )
 pass "repo-defined verification commands"
+
+echo
+echo "== Repo-defined malformed verification config =="
+mkdir -p "$verify_bad_config_root/.agent"
+git init -q "$verify_bad_config_root"
+(
+  cd "$verify_bad_config_root"
+  printf '%s\n' \
+    'verification:' \
+    '  required: "not a list"' \
+    > .agent/harness.yml
+  mkdir -p scripts/lib
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  verify_log="$verify_bad_config_root/agent-verify-bad-config.log"
+  if bash "$repo_root/templates/scripts/agent-verify.sh" >"$verify_log" 2>&1; then
+    echo "ERROR: expected malformed verification config failure"
+    exit 1
+  fi
+  assert_contains "$verify_log" "FAIL: repo-defined verification config"
+  assert_contains "$verify_log" "could not read verification.required"
+  assert_contains "$verify_log" "HARNESS_VERIFY_RESULT=fail"
+)
+pass "repo-defined malformed verification config"
 
 echo
 echo "== Finish gate strict scope failure =="
