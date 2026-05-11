@@ -3,6 +3,12 @@ set -euo pipefail
 
 echo "== Agent Repo Harness Preflight =="
 
+failures=0
+
+have_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
 in_git_repo=0
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   in_git_repo=1
@@ -30,6 +36,17 @@ find . -maxdepth 3 \( \
 \) -print 2>/dev/null || true
 
 echo
+echo "== Dependencies =="
+if have_cmd python3; then
+  echo "OK: python ($(python3 --version 2>&1))"
+elif have_cmd python; then
+  echo "OK: python ($(python --version 2>&1))"
+else
+  echo "MISSING: python is required for harness YAML validation"
+  failures=$((failures + 1))
+fi
+
+echo
 echo "== Harness files =="
 for f in \
   AGENTS.md \
@@ -52,3 +69,10 @@ done
 echo
 echo "== Scripts =="
 find scripts -maxdepth 1 -type f -name "*.sh" -print 2>/dev/null || true
+
+if [ "$failures" -gt 0 ]; then
+  echo "PREFLIGHT_RESULT=fail"
+  exit 1
+fi
+
+echo "PREFLIGHT_RESULT=pass"

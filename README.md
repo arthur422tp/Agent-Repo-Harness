@@ -63,6 +63,12 @@ See [docs/superpowers-integration.md](docs/superpowers-integration.md).
 
 ## Quick Start
 
+Prerequisites:
+
+- Bash
+- Python (`python3` preferred; `python` accepted)
+- Git for scope, diff, and finish evidence in normal repository workflows
+
 Install the universal templates into a target repo:
 
 ```bash

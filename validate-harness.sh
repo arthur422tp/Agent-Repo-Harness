@@ -19,6 +19,10 @@ finish_nongit_root="$tmp_root/finish-nongit"
 tdd_required_failure_root="$tmp_root/tdd-required-failure"
 doc_links_failure_root="$tmp_root/doc-links-failure"
 yaml_reader_root="$tmp_root/yaml-reader"
+task_config_root="$tmp_root/task-config"
+task_bad_config_root="$tmp_root/task-bad-config"
+task_missing_nested_root="$tmp_root/task-missing-nested"
+task_invalid_types_root="$tmp_root/task-invalid-types"
 
 cleanup() {
   rm -rf "$tmp_root"
@@ -356,7 +360,10 @@ pass "required files installed"
 
 (
   cd "$target_root"
-  bash scripts/agent-preflight.sh
+  preflight_log="$target_root/agent-preflight.log"
+  bash scripts/agent-preflight.sh >"$preflight_log" 2>&1
+  assert_contains "$preflight_log" "== Dependencies =="
+  assert_contains "$preflight_log" "OK: python"
   bash scripts/validate-config.sh
   bash scripts/validate-task.sh
   bash scripts/check-doc-links.sh
@@ -722,6 +729,98 @@ EOF
   assert_contains "$missing_log" "missing path: verification.missing"
 )
 pass "YAML reader behavior"
+
+echo
+echo "== Task validation shared reader behavior =="
+rm -rf "$task_config_root"
+mkdir -p "$task_config_root/.agent" "$task_config_root/scripts/lib"
+(
+  cd "$task_config_root"
+  cp "$repo_root/templates/.agent/task.yml" .agent/task.yml
+  cp "$repo_root/templates/scripts/validate-task.sh" scripts/validate-task.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  task_log="$task_config_root/validate-task-valid.log"
+  bash scripts/validate-task.sh >"$task_log" 2>&1
+  assert_contains "$task_log" "OK: .agent/task.yml contains task.status"
+  assert_contains "$task_log" "OK: .agent/task.yml contains task.completion"
+  assert_contains "$task_log" "TASK_VALIDATION_RESULT=pass"
+)
+pass "valid task config through shared reader"
+
+echo
+echo "== Task validation malformed config failure =="
+rm -rf "$task_bad_config_root"
+mkdir -p "$task_bad_config_root/.agent" "$task_bad_config_root/scripts/lib"
+(
+  cd "$task_bad_config_root"
+  cp "$repo_root/templates/scripts/validate-task.sh" scripts/validate-task.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  printf 'task:\n\tstatus: "in_progress"\n' > .agent/task.yml
+  task_log="$task_bad_config_root/validate-task-bad-config.log"
+  if bash scripts/validate-task.sh >"$task_log" 2>&1; then
+    echo "ERROR: expected malformed task config validation failure"
+    exit 1
+  fi
+  assert_contains "$task_log" "FAIL: .agent/task.yml could not be parsed"
+  assert_contains "$task_log" "tabs are not supported for indentation"
+  assert_contains "$task_log" "TASK_VALIDATION_RESULT=fail"
+)
+pass "malformed task config failure"
+
+echo
+echo "== Task validation nested key failure =="
+rm -rf "$task_missing_nested_root"
+mkdir -p "$task_missing_nested_root/.agent" "$task_missing_nested_root/scripts/lib"
+(
+  cd "$task_missing_nested_root"
+  cp "$repo_root/templates/scripts/validate-task.sh" scripts/validate-task.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  cat > .agent/task.yml <<'EOF'
+status: "in_progress"
+task:
+  goal: "reader should require task.status, not any status key"
+  allowed_paths: []
+  forbidden_paths: []
+  completion: {}
+EOF
+  task_log="$task_missing_nested_root/validate-task-missing-nested.log"
+  if bash scripts/validate-task.sh >"$task_log" 2>&1; then
+    echo "ERROR: expected missing nested task status validation failure"
+    exit 1
+  fi
+  assert_contains "$task_log" "FAIL: .agent/task.yml missing key: task.status"
+  assert_contains "$task_log" "TASK_VALIDATION_RESULT=fail"
+)
+pass "nested task keys checked through shared reader"
+
+echo
+echo "== Task validation type failure =="
+rm -rf "$task_invalid_types_root"
+mkdir -p "$task_invalid_types_root/.agent" "$task_invalid_types_root/scripts/lib"
+(
+  cd "$task_invalid_types_root"
+  cp "$repo_root/templates/scripts/validate-task.sh" scripts/validate-task.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  cat > .agent/task.yml <<'EOF'
+task:
+  status: "almost_done"
+  goal: "type checks should reject invalid task shape"
+  allowed_paths: "src/**"
+  forbidden_paths: []
+  completion:
+    requires_verification: "yes"
+EOF
+  task_log="$task_invalid_types_root/validate-task-invalid-types.log"
+  if bash scripts/validate-task.sh >"$task_log" 2>&1; then
+    echo "ERROR: expected invalid task type validation failure"
+    exit 1
+  fi
+  assert_contains "$task_log" "FAIL: .agent/task.yml task.status must be one of"
+  assert_contains "$task_log" "FAIL: .agent/task.yml task.allowed_paths must be an array or null"
+  assert_contains "$task_log" "FAIL: .agent/task.yml task.completion.requires_verification must be boolean"
+  assert_contains "$task_log" "TASK_VALIDATION_RESULT=fail"
+)
+pass "task type validation failure"
 
 echo
 echo "== Doc link validation failure =="
