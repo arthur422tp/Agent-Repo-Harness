@@ -1,0 +1,10 @@
+approval:
+  # Fill this only after explicit human approval for high-risk changes.
+  # Agents must not create or modify this file unless the user explicitly
+  # instructs them to record an approval.
+  approved_by: ""
+  approved_at: ""
+  task_id: ""
+  reason: ""
+  approved_paths:
+    # - "src/auth/**"

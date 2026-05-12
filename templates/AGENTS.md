@@ -9,6 +9,7 @@ Start here before editing:
 2. Read `.agent/task.yml` for task scope and completion requirements.
 3. Read `.agent/policy.yml` only for policy rules that apply to files you
    expect to touch.
+   For high-risk approval rules, see `docs/agent/policy-approval.md`.
 4. If task flags require them, fill `.agent/acceptance.yml` and
    `.agent/review.yml` before completion.
 5. Run `scripts/agent-preflight.sh` before changing files when available.

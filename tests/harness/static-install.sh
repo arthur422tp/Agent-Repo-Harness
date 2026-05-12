@@ -59,6 +59,7 @@ for required_path in \
   templates/scripts/check-acceptance.sh \
   templates/scripts/check-review-evidence.sh \
   templates/.agent/tdd-evidence.yml \
+  templates/.agent/approvals/high-risk-approved.yml \
   templates/.agent/acceptance.yml \
   templates/.agent/review.yml \
   templates/scripts/validate-subagent-packet.sh \
@@ -66,6 +67,7 @@ for required_path in \
   templates/.agent/subagent-runs/README.md \
   templates/.agent/subagent-runs/.gitkeep \
   templates/docs/agent/context-loading.md \
+  templates/docs/agent/policy-approval.md \
   templates/docs/agent/subagent-result-template.md \
   templates/docs/agent/review.md \
   templates/scripts/validate-subagent-run.sh \
@@ -103,11 +105,13 @@ assert_not_contains "$repo_root/skills/harness-entrypoint/SKILL.md" '   - `.agen
 assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$repo_root/templates/AGENTS.md" "docs/agent/context-loading.md"
+assert_contains "$repo_root/templates/AGENTS.md" "docs/agent/policy-approval.md"
 assert_not_contains "$repo_root/templates/AGENTS.md" "## Context Loading Policy"
 assert_not_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/policy.yml` for high-risk areas and approval rules.'
 assert_contains "$repo_root/templates/CLAUDE.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$repo_root/templates/CLAUDE.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$repo_root/templates/CLAUDE.md" "docs/agent/context-loading.md"
+assert_contains "$repo_root/templates/CLAUDE.md" "docs/agent/policy-approval.md"
 assert_not_contains "$repo_root/templates/CLAUDE.md" "## Context Loading Policy"
 assert_not_contains "$repo_root/templates/CLAUDE.md" '3. Read `.agent/policy.yml`.'
 assert_contains "$repo_root/examples/universal-minimal-repo/AGENTS.md" 'Read `.agent/task.yml` for scope'
@@ -159,10 +163,12 @@ for required_path in \
   .agent/acceptance.yml \
   .agent/review.yml \
   .agent/tdd-evidence.yml \
+  .agent/approvals/high-risk-approved.yml \
   .agent/subagent-packet.yml \
   .agent/subagent-runs/README.md \
   .agent/subagent-runs/.gitkeep \
   docs/agent/context-loading.md \
+  docs/agent/policy-approval.md \
   docs/agent/subagent-result-template.md \
   docs/agent/review.md \
   scripts/agent-preflight.sh \
@@ -188,11 +194,13 @@ pass "required files installed"
 assert_contains "$target_root/AGENTS.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$target_root/AGENTS.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$target_root/AGENTS.md" "docs/agent/context-loading.md"
+assert_contains "$target_root/AGENTS.md" "docs/agent/policy-approval.md"
 assert_not_contains "$target_root/AGENTS.md" "## Context Loading Policy"
 assert_not_contains "$target_root/AGENTS.md" 'Read `.agent/policy.yml` for high-risk areas and approval rules.'
 assert_contains "$target_root/CLAUDE.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$target_root/CLAUDE.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$target_root/CLAUDE.md" "docs/agent/context-loading.md"
+assert_contains "$target_root/CLAUDE.md" "docs/agent/policy-approval.md"
 assert_not_contains "$target_root/CLAUDE.md" "## Context Loading Policy"
 assert_not_contains "$target_root/CLAUDE.md" '3. Read `.agent/policy.yml`.'
 assert_contains "$target_root/docs/agent/context-loading.md" "# Context Loading Policy"

@@ -50,6 +50,9 @@ before they claim completion.
 scope, policy, optional acceptance/review, and verification checks and records
 durable evidence for the run.
 
+Structured high-risk approval is preferred; installed projects document the
+approval contract in `docs/agent/policy-approval.md`.
+
 ## Current Status
 
 This repository is evolving from a Superpowers Companion MVP into a universal
