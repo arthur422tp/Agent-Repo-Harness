@@ -1,4 +1,4 @@
-# Context Loading Policy Implementation Plan
+﻿# Context Loading Policy Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -37,7 +37,7 @@
 - Modify: `templates/CLAUDE.md`
 - Test: `tests/harness/static-install.sh`
 
-- [ ] **Step 1: Add failing assertions for installed entrypoints**
+- [x] **Step 1: Add failing assertions for installed entrypoints**
 
 Edit `tests/harness/static-install.sh` in the installed target checks block, after `assert_exists "$target_root/AGENTS.md"` and `assert_exists "$target_root/CLAUDE.md"` have run, by adding:
 
@@ -50,7 +50,7 @@ Edit `tests/harness/static-install.sh` in the installed target checks block, aft
   assert_contains "$target_root/CLAUDE.md" "Expand only for files directly relevant to the current task."
 ```
 
-- [ ] **Step 2: Run validation to verify the assertions fail**
+- [x] **Step 2: Run validation to verify the assertions fail**
 
 Run:
 
@@ -60,7 +60,7 @@ bash validate-harness.sh
 
 Expected: FAIL in `== Installed target checks ==` because `AGENTS.md` and `CLAUDE.md` do not yet contain `## Context Loading Policy`.
 
-- [ ] **Step 3: Update `templates/AGENTS.md` with the canonical policy**
+- [x] **Step 3: Update `templates/AGENTS.md` with the canonical policy**
 
 Insert this section after the opening "Start here before editing" list and before "During the task":
 
@@ -83,11 +83,11 @@ Expand only for files directly relevant to the current task. Prefer `rg`, file l
 When context grows, summarize what was learned in `handoff.md` or `docs/agent/discoveries.md` and continue from that summary instead of reloading the same raw files.
 ```
 
-- [ ] **Step 4: Update `templates/CLAUDE.md` with the same policy**
+- [x] **Step 4: Update `templates/CLAUDE.md` with the same policy**
 
 Insert the same `## Context Loading Policy` section after Claude's initial startup instructions and before task execution rules. If `templates/CLAUDE.md` uses different headings, keep its existing order and insert the section before the first "During" or "Before completion" guidance.
 
-- [ ] **Step 5: Run validation to verify the entrypoint checks pass**
+- [x] **Step 5: Run validation to verify the entrypoint checks pass**
 
 Run:
 
@@ -97,7 +97,7 @@ bash validate-harness.sh
 
 Expected: PASS through `== Installed target checks ==`; unrelated later failures must be investigated before continuing.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add templates/AGENTS.md templates/CLAUDE.md tests/harness/static-install.sh
@@ -114,7 +114,7 @@ git commit -m "docs: add context loading policy to entrypoints"
 - Modify: `adapters/claude-code/CLAUDE.md`
 - Test: `tests/harness/static-install.sh`
 
-- [ ] **Step 1: Add failing assertions for adapter files**
+- [x] **Step 1: Add failing assertions for adapter files**
 
 In `tests/harness/static-install.sh`, in the repository required files section after the adapter `assert_exists` loop succeeds, add:
 
@@ -124,7 +124,7 @@ assert_contains "$repo_root/adapters/codex/codex-start-prompt.md" "Use staged co
 assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" "## Context Loading Policy"
 ```
 
-- [ ] **Step 2: Run validation to verify the assertions fail**
+- [x] **Step 2: Run validation to verify the assertions fail**
 
 Run:
 
@@ -134,7 +134,7 @@ bash validate-harness.sh
 
 Expected: FAIL because adapter files do not yet contain the staged loading text.
 
-- [ ] **Step 3: Update `adapters/codex/AGENTS.md`**
+- [x] **Step 3: Update `adapters/codex/AGENTS.md`**
 
 Add this section near the top, after the file identifies itself as a Codex adapter:
 
@@ -151,7 +151,7 @@ Use staged context loading before editing:
 Do not load large directories, generated outputs, historical plans, or unrelated docs unless the task specifically depends on them.
 ```
 
-- [ ] **Step 4: Update `adapters/codex/codex-start-prompt.md`**
+- [x] **Step 4: Update `adapters/codex/codex-start-prompt.md`**
 
 Replace the current recommended prompt block with:
 
@@ -166,11 +166,11 @@ Before claiming completion, run `scripts/agent-finish.sh`.
 If verification cannot be run, explain exactly why and update `handoff.md`.
 ```
 
-- [ ] **Step 5: Update `adapters/claude-code/CLAUDE.md`**
+- [x] **Step 5: Update `adapters/claude-code/CLAUDE.md`**
 
 Add the same `## Context Loading Policy` section used for `adapters/codex/AGENTS.md`, replacing "Codex" wording with "Claude Code" only if the surrounding file needs that term for clarity.
 
-- [ ] **Step 6: Run validation**
+- [x] **Step 6: Run validation**
 
 Run:
 
@@ -180,7 +180,7 @@ bash validate-harness.sh
 
 Expected: PASS for adapter assertions and doc link validation.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add adapters/codex/AGENTS.md adapters/codex/codex-start-prompt.md adapters/claude-code/CLAUDE.md tests/harness/static-install.sh
@@ -196,7 +196,7 @@ git commit -m "docs: align adapters with staged context loading"
 - Modify: `skills/repo-context-bootstrap/SKILL.md`
 - Test: `tests/harness/static-install.sh`
 
-- [ ] **Step 1: Add failing assertions for repo memory policy**
+- [x] **Step 1: Add failing assertions for repo memory policy**
 
 In `tests/harness/static-install.sh`, after installed target assertions for `agent.md`, add:
 
@@ -206,7 +206,7 @@ In `tests/harness/static-install.sh`, after installed target assertions for `age
   assert_contains "$repo_root/skills/repo-context-bootstrap/SKILL.md" "Build compact context before broad source inspection."
 ```
 
-- [ ] **Step 2: Run validation to verify the assertions fail**
+- [x] **Step 2: Run validation to verify the assertions fail**
 
 Run:
 
@@ -216,7 +216,7 @@ bash validate-harness.sh
 
 Expected: FAIL because `templates/agent.md` and `skills/repo-context-bootstrap/SKILL.md` do not yet contain these exact policy lines.
 
-- [ ] **Step 3: Update `templates/agent.md`**
+- [x] **Step 3: Update `templates/agent.md`**
 
 Insert after `## Project Overview`:
 
@@ -237,7 +237,7 @@ Use this loading order for ordinary tasks:
 When a repeated discovery matters, add a short `Verified:` or `Inferred:` note here or in `docs/agent/discoveries.md` instead of requiring future agents to rediscover it from raw files.
 ```
 
-- [ ] **Step 4: Update `skills/repo-context-bootstrap/SKILL.md`**
+- [x] **Step 4: Update `skills/repo-context-bootstrap/SKILL.md`**
 
 Replace the current `## Steps` list with:
 
@@ -262,7 +262,7 @@ Keep the existing `## Hard Rules` section, and add this bullet to it:
 - Prefer concise summaries and links over copying raw file contents into repo memory.
 ```
 
-- [ ] **Step 5: Run validation**
+- [x] **Step 5: Run validation**
 
 Run:
 
@@ -272,7 +272,7 @@ bash validate-harness.sh
 
 Expected: PASS for repo memory policy assertions.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add templates/agent.md skills/repo-context-bootstrap/SKILL.md tests/harness/static-install.sh
@@ -287,7 +287,7 @@ git commit -m "docs: make repo memory compact by default"
 - Modify: `templates/scripts/collect-context.sh`
 - Modify: `tests/harness/repo-verification.sh`
 
-- [ ] **Step 1: Add failing tests for compact and full collection modes**
+- [x] **Step 1: Add failing tests for compact and full collection modes**
 
 Append this block to `tests/harness/repo-verification.sh`:
 
@@ -322,7 +322,7 @@ git init -q "$context_root"
 pass "context collection modes"
 ```
 
-- [ ] **Step 2: Run validation to verify the test fails**
+- [x] **Step 2: Run validation to verify the test fails**
 
 Run:
 
@@ -332,7 +332,7 @@ bash validate-harness.sh
 
 Expected: FAIL in `== Context collection modes ==` because `collect-context.sh` does not yet support `--full` or print the policy/mode headings.
 
-- [ ] **Step 3: Replace `templates/scripts/collect-context.sh` with compact/full behavior**
+- [x] **Step 3: Replace `templates/scripts/collect-context.sh` with compact/full behavior**
 
 Use this complete script:
 
@@ -415,7 +415,7 @@ if [ "$mode" = "full" ]; then
 fi
 ```
 
-- [ ] **Step 4: Run validation**
+- [x] **Step 4: Run validation**
 
 Run:
 
@@ -425,7 +425,7 @@ bash validate-harness.sh
 
 Expected: PASS for `== Context collection modes ==` and shell syntax checks.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add templates/scripts/collect-context.sh tests/harness/repo-verification.sh
@@ -443,7 +443,7 @@ git commit -m "feat: add compact context collection mode"
 - Modify: `docs/superpowers-integration.md`
 - Test: `tests/harness/static-install.sh`
 
-- [ ] **Step 1: Add failing assertions for documentation coverage**
+- [x] **Step 1: Add failing assertions for documentation coverage**
 
 In `tests/harness/static-install.sh`, after repository doc link validation passes, add:
 
@@ -454,7 +454,7 @@ assert_contains "$repo_root/docs/codex-usage.md" "staged context loading"
 assert_contains "$repo_root/docs/superpowers-integration.md" "staged context loading"
 ```
 
-- [ ] **Step 2: Run validation to verify documentation assertions fail**
+- [x] **Step 2: Run validation to verify documentation assertions fail**
 
 Run:
 
@@ -464,7 +464,7 @@ bash validate-harness.sh
 
 Expected: FAIL because these docs do not yet include the new policy text.
 
-- [ ] **Step 3: Update `README.md`**
+- [x] **Step 3: Update `README.md`**
 
 Add this section after "Typical Workflow":
 
@@ -482,7 +482,7 @@ Agent-Repo-Harness is designed for staged context loading. Agents should read co
 Then they should expand with `rg`, file lists, and targeted file ranges for the active task. `scripts/collect-context.sh` prints compact startup context by default; `scripts/collect-context.sh --full` includes optional known issues and discoveries for deeper debugging.
 ```
 
-- [ ] **Step 4: Update `docs/USAGE_WITH_AGENTS.md`**
+- [x] **Step 4: Update `docs/USAGE_WITH_AGENTS.md`**
 
 Add this section after "Shared Pattern":
 
@@ -507,7 +507,7 @@ Expand only into files relevant to this task.
 ```
 ````
 
-- [ ] **Step 5: Update `docs/codex-usage.md`**
+- [x] **Step 5: Update `docs/codex-usage.md`**
 
 Find the Codex startup guidance and replace any broad "inspect everything" wording with:
 
@@ -515,7 +515,7 @@ Find the Codex startup guidance and replace any broad "inspect everything" wordi
 Use staged context loading for Codex sessions. Start with `AGENTS.md`, `agent.md`, `handoff.md`, `.agent/task.yml`, and applicable `.agent/policy.yml` entries. Then use `rg` and targeted file ranges for the active task.
 ```
 
-- [ ] **Step 6: Update `docs/superpowers-integration.md`**
+- [x] **Step 6: Update `docs/superpowers-integration.md`**
 
 Add this paragraph in the section that maps Superpowers skills to harness contracts:
 
@@ -523,7 +523,7 @@ Add this paragraph in the section that maps Superpowers skills to harness contra
 Superpowers skills should respect staged context loading. Planning and execution skills can ask for focused evidence, but they should prefer `agent.md`, `handoff.md`, `.agent/task.yml`, `.agent/policy.yml`, and `scripts/collect-context.sh` before loading broad raw source or historical plans.
 ```
 
-- [ ] **Step 7: Run validation**
+- [x] **Step 7: Run validation**
 
 Run:
 
@@ -533,7 +533,7 @@ bash validate-harness.sh
 
 Expected: PASS for documentation assertions and doc link validation.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add README.md docs/USAGE_WITH_AGENTS.md docs/codex-usage.md docs/superpowers-integration.md tests/harness/static-install.sh
@@ -547,7 +547,7 @@ git commit -m "docs: document staged context loading"
 **Files:**
 - Modify: `handoff.md` only if this repository has a live root `handoff.md`; otherwise no handoff file is changed.
 
-- [ ] **Step 1: Run full validation**
+- [x] **Step 1: Run full validation**
 
 Run:
 
@@ -557,7 +557,7 @@ bash validate-harness.sh
 
 Expected: PASS with all harness checks complete.
 
-- [ ] **Step 2: Inspect final diff**
+- [x] **Step 2: Inspect final diff**
 
 Run:
 
@@ -570,7 +570,7 @@ git diff -- tests/harness/static-install.sh tests/harness/repo-verification.sh
 
 Expected: Diff is limited to context loading policy docs, script behavior, and validation assertions.
 
-- [ ] **Step 3: Update handoff if present**
+- [x] **Step 3: Update handoff if present**
 
 If root `handoff.md` exists, append or update its current task state with:
 
@@ -586,7 +586,7 @@ If root `handoff.md` exists, append or update its current task state with:
 - Return to the paused implementation plan under `docs/plans/` and continue from its next unchecked task.
 ```
 
-- [ ] **Step 4: Commit final handoff update if a handoff file changed**
+- [x] **Step 4: Commit final handoff update if a handoff file changed**
 
 Run only if `handoff.md` exists and was modified:
 

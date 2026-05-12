@@ -184,11 +184,15 @@ done
 pass "required files installed"
 
 assert_contains "$target_root/AGENTS.md" "## Context Loading Policy"
+assert_contains "$target_root/AGENTS.md" "Start compact: read summaries and task boundaries before raw source."
+assert_contains "$target_root/AGENTS.md" "Expand only for files directly relevant to the current task."
 assert_contains "$target_root/AGENTS.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$target_root/AGENTS.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$target_root/AGENTS.md" "docs/agent/context-loading.md"
 assert_not_contains "$target_root/AGENTS.md" 'Read `.agent/policy.yml` for high-risk areas and approval rules.'
 assert_contains "$target_root/CLAUDE.md" "## Context Loading Policy"
+assert_contains "$target_root/CLAUDE.md" "Start compact: read summaries and task boundaries before raw source."
+assert_contains "$target_root/CLAUDE.md" "Expand only for files directly relevant to the current task."
 assert_contains "$target_root/CLAUDE.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$target_root/CLAUDE.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$target_root/CLAUDE.md" "docs/agent/context-loading.md"
