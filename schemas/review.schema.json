@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-repo-harness.local/schemas/review.schema.json",
+  "title": "Agent-Repo-Harness review evidence",
+  "type": "object",
+  "required": ["review"],
+  "properties": {
+    "review": {
+      "type": "object",
+      "required": ["required", "status", "reviewer", "evidence", "concerns"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "status": {
+          "enum": [
+            "not_requested",
+            "approved",
+            "approved_with_comments",
+            "changes_requested",
+            "blocked"
+          ]
+        },
+        "reviewer": { "type": "string" },
+        "evidence": { "type": "string" },
+        "concerns": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "required": ["description"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "description": { "type": "string", "minLength": 1 },
+                  "blocking": { "type": "boolean" }
+                },
+                "additionalProperties": true
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

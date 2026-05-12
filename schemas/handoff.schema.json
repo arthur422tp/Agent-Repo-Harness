@@ -29,6 +29,22 @@
         "additionalProperties": false
       }
     },
+    "acceptance": {
+      "type": "object",
+      "properties": {
+        "result": { "type": "string" },
+        "evidence": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "review": {
+      "type": "object",
+      "properties": {
+        "result": { "type": "string" },
+        "evidence": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
     "open_issues": {
       "type": "array",
       "items": { "type": "string" }

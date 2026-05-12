@@ -22,6 +22,8 @@ task:
     requires_policy_check: true
     requires_verification: true
     requires_handoff_update: true
+    requires_acceptance_check: false
+    requires_review_evidence: false
 
 last_verified:
   command: ""

@@ -26,9 +26,19 @@ TODO
 ## Verification
 - `scripts/check-policy.sh`: TODO
 - `scripts/check-scope.sh`: TODO
+- `scripts/check-acceptance.sh`: TODO
+- `scripts/check-review-evidence.sh`: TODO
 - `scripts/agent-verify.sh`: TODO
 - `scripts/agent-finish.sh`: TODO
 - Notes: TODO
+
+## Acceptance
+- Result: TODO
+- Evidence: TODO
+
+## Review
+- Result: TODO
+- Evidence: TODO
 
 ## Open Issues
 - TODO

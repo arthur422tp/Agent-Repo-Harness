@@ -45,6 +45,8 @@ check_agent_md_result_file="$run_dir/check-agent-md-result.txt"
 scope_result_file="$run_dir/scope-result.txt"
 policy_result_file="$run_dir/policy-result.txt"
 tdd_evidence_result_file="$run_dir/tdd-evidence-result.txt"
+acceptance_result_file="$run_dir/acceptance-result.txt"
+review_result_file="$run_dir/review-result.txt"
 verify_result_file="$run_dir/verify-result.txt"
 changed_files_file="$run_dir/changed-files.txt"
 diff_stat_file="$run_dir/git-diff-stat.txt"
@@ -55,6 +57,8 @@ agent_md_status=""
 scope_status=""
 policy_status=""
 tdd_evidence_status=""
+acceptance_status=""
+review_status=""
 verify_status=""
 
 mkdir -p "$run_dir"
@@ -134,6 +138,8 @@ write_summary() {
     echo "| check-scope | $scope_status | $scope_result_file |"
     echo "| check-policy | $policy_status | $policy_result_file |"
     echo "| check-tdd-evidence | $tdd_evidence_status | $tdd_evidence_result_file |"
+    echo "| check-acceptance | $acceptance_status | $acceptance_result_file |"
+    echo "| check-review-evidence | $review_status | $review_result_file |"
     echo "| agent-verify | $verify_status | $verify_result_file |"
     echo
     echo "## Changed Files"
@@ -207,6 +213,10 @@ if [ "$mode" = "strict" ]; then
   policy_status="$last_status"
   run_gate "check-tdd-evidence" "$tdd_evidence_result_file" bash scripts/check-tdd-evidence.sh
   tdd_evidence_status="$last_status"
+  run_gate "check-acceptance" "$acceptance_result_file" bash scripts/check-acceptance.sh
+  acceptance_status="$last_status"
+  run_gate "check-review-evidence" "$review_result_file" bash scripts/check-review-evidence.sh
+  review_status="$last_status"
   run_gate "agent-verify" "$verify_result_file" bash scripts/agent-verify.sh --strict
   verify_status="$last_status"
 else
@@ -218,6 +228,10 @@ else
   policy_status="$last_status"
   run_gate "check-tdd-evidence" "$tdd_evidence_result_file" bash scripts/check-tdd-evidence.sh
   tdd_evidence_status="$last_status"
+  run_gate "check-acceptance" "$acceptance_result_file" bash scripts/check-acceptance.sh
+  acceptance_status="$last_status"
+  run_gate "check-review-evidence" "$review_result_file" bash scripts/check-review-evidence.sh
+  review_status="$last_status"
   run_gate "agent-verify" "$verify_result_file" bash scripts/agent-verify.sh --best-effort
   verify_status="$last_status"
 fi

@@ -2,6 +2,8 @@
 
 Agent-Repo-Harness is a repo-local framework for giving coding agents shared
 context, scope boundaries, policy gates, and verification expectations.
+Optional acceptance and review evidence gates can be enabled per task through
+`.agent/task.yml`.
 
 ## Supported Agents
 
@@ -10,7 +12,8 @@ Codex:
 - Adapter assets: `adapters/codex/AGENTS.md`,
   `adapters/codex/codex-start-prompt.md`
 - Notes: ask Codex to read `AGENTS.md`, inspect harness files, run preflight,
-  respect `.agent/task.yml`, and run `scripts/agent-finish.sh`.
+  respect `.agent/task.yml`, fill optional acceptance/review evidence when the
+  task requires it, and run `scripts/agent-finish.sh`.
 
 Claude Code:
 - Entrypoint: `CLAUDE.md`

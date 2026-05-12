@@ -9,7 +9,9 @@ Start here before editing:
 3. Read `.agent/policy.yml` for high-risk areas and approval rules.
 4. Read `.agent/task.yml` for task scope, allowed paths, forbidden paths, and
    completion requirements.
-5. Run `scripts/agent-preflight.sh` before changing files when available.
+5. If task flags require them, fill `.agent/acceptance.yml` and
+   `.agent/review.yml` before completion.
+6. Run `scripts/agent-preflight.sh` before changing files when available.
 
 During the task:
 
@@ -18,6 +20,8 @@ During the task:
   `max_diff_lines`.
 - Treat `agent.md` as stable repo memory, not a task plan.
 - Treat `handoff.md` and `.agent/task.yml` as current task state.
+- Treat `.agent/acceptance.yml` and `.agent/review.yml` as optional completion
+  evidence when the current task requires them.
 - Use repo-owned scripts and adapter skills instead of long repeated prompts.
 - If Superpowers is installed, preserve its workflow role and use the
   Superpowers-compatible skills in this repo.

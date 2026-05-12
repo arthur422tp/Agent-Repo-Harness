@@ -9,7 +9,9 @@ First steps:
 2. Read `handoff.md`.
 3. Read `.agent/policy.yml`.
 4. Read `.agent/task.yml`.
-5. Run `scripts/agent-preflight.sh` before editing when available.
+5. If task flags require them, fill `.agent/acceptance.yml` and
+   `.agent/review.yml` before completion.
+6. Run `scripts/agent-preflight.sh` before editing when available.
 
 Use the Claude Code project skills under `.claude/skills/` when they are
 installed:
@@ -21,8 +23,9 @@ installed:
 - `subagent-context-packet`: prepare compact context for delegated work.
 
 Keep live prompts short. Put stable repo facts in `agent.md`, current task
-state in `handoff.md` and `.agent/task.yml`, and reusable workflow rules in
-skills.
+state in `handoff.md` and `.agent/task.yml`, optional acceptance/review
+evidence in `.agent/acceptance.yml` and `.agent/review.yml`, and reusable
+workflow rules in skills.
 
 Before final response, run `scripts/agent-finish.sh`. If a gate cannot run,
 state the exact blocker and update `handoff.md`.

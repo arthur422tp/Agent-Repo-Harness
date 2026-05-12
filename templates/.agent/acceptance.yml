@@ -1,0 +1,7 @@
+acceptance:
+  criteria:
+    - id: example-criterion
+      description: ""
+      met: false
+      evidence: ""
+      verification: ""

@@ -22,6 +22,11 @@ The harness keeps stable repo facts separate from task state:
 - `.agent/task.yml`: machine-readable current task scope
 - `.agent/tdd-evidence.yml`: structured TDD evidence, required only when
   `.agent/task.yml` sets `completion.requires_tdd_evidence: true`
+- `.agent/acceptance.yml`: optional acceptance criteria evidence, required
+  only when `.agent/task.yml` sets
+  `completion.requires_acceptance_check: true`
+- `.agent/review.yml`: optional review evidence, required only when
+  `.agent/task.yml` sets `completion.requires_review_evidence: true`
 - `.agent/subagent-packet.yml`: optional controller-agent to subagent handoff
   packet for repeatable delegated work
 - `.agent/subagent-runs/`: optional durable evidence from delegated subagent
@@ -42,8 +47,8 @@ It makes repo expectations explicit and gives agents lightweight gates to run
 before they claim completion.
 
 `scripts/agent-finish.sh` is the canonical completion gate. It runs the local
-scope, policy, and verification checks and records durable evidence for the
-run.
+scope, policy, optional acceptance/review, and verification checks and records
+durable evidence for the run.
 
 ## Current Status
 
@@ -109,18 +114,28 @@ bash scripts/check-doc-links.sh
 bash scripts/check-policy.sh
 bash scripts/check-scope.sh
 bash scripts/check-tdd-evidence.sh
+bash scripts/check-acceptance.sh
+bash scripts/check-review-evidence.sh
 bash scripts/agent-verify.sh --best-effort
 bash scripts/agent-finish.sh --best-effort
 ```
 
 `agent-finish.sh` writes evidence under `.agent/runs/<timestamp>/`, including
 `finish-summary.md`, gate result files such as `tdd-evidence-result.txt`,
-`changed-files.txt`, and `git-diff-stat.txt`.
+`acceptance-result.txt`, `review-result.txt`, `changed-files.txt`, and
+`git-diff-stat.txt`.
 
 TDD evidence is opt-in per task. When `.agent/task.yml` contains
 `completion.requires_tdd_evidence: true`, fill `.agent/tdd-evidence.yml` with
 non-empty red and green phase commands/results plus at least one changed test
 entry before running `scripts/agent-finish.sh`.
+
+Acceptance and review evidence are also opt-in per task. When
+`.agent/task.yml` contains `completion.requires_acceptance_check: true`, fill
+`.agent/acceptance.yml` with at least one met criterion and concrete evidence
+or verification. When it contains `completion.requires_review_evidence: true`,
+fill `.agent/review.yml` with an approving status, reviewer, evidence, and no
+blocking concerns.
 
 Subagent packets are optional. Fill `.agent/subagent-packet.yml` when a
 controller agent needs to hand precise task text, allowed paths, required
@@ -198,4 +213,4 @@ bash validate-harness.sh
 The validation checks script syntax, YAML and JSON syntax, required harness
 files, install smoke tests, local doc links, scope and policy behavior,
 configured verification, subagent packet/run validation, TDD evidence behavior,
-and finish evidence creation.
+acceptance/review gate behavior, and finish evidence creation.
