@@ -101,8 +101,19 @@ git init -q "$context_root"
   printf '%s\n' "high_risk_paths:" "  - secrets/**" > .agent/policy.yml
   compact_log="$context_root/compact.log"
   full_log="$context_root/full.log"
+  bad_args_log="$context_root/bad-args.log"
   bash scripts/collect-context.sh >"$compact_log" 2>&1
   bash scripts/collect-context.sh --full >"$full_log" 2>&1
+  bad_args_status=0
+  bash scripts/collect-context.sh --full unexpected >"$bad_args_log" 2>&1 || bad_args_status=$?
+  if [ "$bad_args_status" -eq 0 ]; then
+    echo "ERROR: expected collect-context.sh to reject trailing args"
+    exit 1
+  fi
+  if [ "$bad_args_status" -ne 2 ]; then
+    echo "ERROR: expected collect-context.sh trailing args exit 2, got $bad_args_status"
+    exit 1
+  fi
   assert_contains "$compact_log" "== Context Loading Policy =="
   assert_contains "$compact_log" "Mode: compact"
   assert_contains "$compact_log" "== Task Scope =="
@@ -110,5 +121,7 @@ git init -q "$context_root"
   assert_contains "$full_log" "Mode: full"
   assert_contains "$full_log" "== Known Issues =="
   assert_contains "$full_log" "== Discoveries =="
+  assert_contains "$bad_args_log" "ERROR: unknown argument: unexpected"
+  assert_contains "$bad_args_log" "Usage: collect-context.sh [--full]"
 )
 pass "context collection modes"

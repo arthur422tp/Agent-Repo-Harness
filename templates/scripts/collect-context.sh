@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+usage="Usage: collect-context.sh [--full]"
+
 mode="compact"
-if [ "${1:-}" = "--full" ]; then
+if [ "$#" -eq 0 ]; then
+  mode="compact"
+elif [ "$#" -eq 1 ] && [ "$1" = "--full" ]; then
   mode="full"
-elif [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+elif [ "$#" -eq 1 ] && { [ "$1" = "-h" ] || [ "$1" = "--help" ]; }; then
   echo "Usage: collect-context.sh [--full]"
   echo "Default compact mode prints startup-critical context only."
   exit 0
-elif [ "${1:-}" != "" ]; then
-  echo "ERROR: unknown argument: $1" >&2
-  echo "Usage: collect-context.sh [--full]" >&2
+else
+  bad_arg="${2:-$1}"
+  echo "ERROR: unknown argument: $bad_arg" >&2
+  echo "$usage" >&2
   exit 2
 fi
 
