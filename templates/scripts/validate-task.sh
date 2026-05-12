@@ -188,8 +188,11 @@ else
   fi
 
   if command -v ruby >/dev/null 2>&1; then
-    ruby -e 'require "yaml"; YAML.load_file(ARGV.fetch(0))' "$task_file" >/dev/null
-    echo "OK: YAML syntax"
+    if ruby -e 'require "yaml"; YAML.load_file(ARGV.fetch(0))' "$task_file" >/dev/null 2>&1; then
+      echo "OK: YAML syntax"
+    else
+      fail "$task_file failed Ruby YAML syntax check"
+    fi
   else
     echo "WARN: ruby unavailable; skipped YAML syntax check"
   fi
