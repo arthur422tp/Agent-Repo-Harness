@@ -202,6 +202,18 @@ See [docs/USAGE_WITH_AGENTS.md](docs/USAGE_WITH_AGENTS.md) and
 7. Update `handoff.md` with changed files, verification results, blockers, and
    next recommended action.
 
+## Context Loading Policy
+
+Agent-Repo-Harness is designed for staged context loading. Agents should read compact, durable context first:
+
+1. `AGENTS.md` or the installed adapter entrypoint
+2. `agent.md`
+3. `handoff.md`
+4. `.agent/task.yml`
+5. applicable entries from `.agent/policy.yml`
+
+Then they should expand with `rg`, file lists, and targeted file ranges for the active task. `scripts/collect-context.sh` prints compact startup context by default; `scripts/collect-context.sh --full` includes optional known issues and discoveries for deeper debugging.
+
 ## Validation
 
 Validate this repository:

@@ -13,6 +13,8 @@ results inside the repository.
 
 ## Responsibility Split
 
+Superpowers skills should respect staged context loading. Planning and execution skills can ask for focused evidence, but they should prefer `agent.md`, `handoff.md`, `.agent/task.yml`, `.agent/policy.yml`, and `scripts/collect-context.sh` before loading broad raw source or historical plans.
+
 | Concern | Superpowers skill | Agent-Repo-Harness component |
 |---|---|---|
 | Planning | `writing-plans` | `.agent/task.yml` |

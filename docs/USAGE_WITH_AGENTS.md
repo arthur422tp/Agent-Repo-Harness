@@ -54,6 +54,25 @@ TDD evidence is required only when `.agent/task.yml` contains
 `.agent/tdd-evidence.yml` with the red command/failure, green command/pass, and
 the tests added or changed before running `scripts/agent-finish.sh`.
 
+## Context Loading Policy
+
+Use staged context loading to keep agent runs token-efficient:
+
+1. Start with durable context: `AGENTS.md`, `agent.md`, `handoff.md`, `.agent/task.yml`, and applicable `.agent/policy.yml` entries.
+2. Run `scripts/collect-context.sh` when available instead of pasting long prompt context.
+3. Expand to raw source only for files directly relevant to the current task.
+4. Prefer `rg`, file lists, symbol search, and targeted file ranges over reading whole directories.
+5. Save repeated discoveries in `docs/agent/discoveries.md` or compact stable facts in `agent.md`.
+
+Short prompt:
+
+```text
+Use staged context loading.
+Read the installed agent entrypoint, stable repo memory, handoff, task scope, and applicable policy first.
+Use `scripts/collect-context.sh` if available.
+Expand only into files relevant to this task.
+```
+
 Subagent packets are intended for controller-agent to subagent handoffs. A
 controller can fill `.agent/subagent-packet.yml` with the task id, subagent
 role, allowed paths, relevant files, required verification, and expected status

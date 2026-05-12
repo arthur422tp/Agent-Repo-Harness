@@ -19,7 +19,7 @@ Reusable start prompt:
 ```text
 You are working in this repository using Agent-Repo-Harness.
 First read `AGENTS.md`, then follow its instructions.
-Before editing, inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`.
+Use staged context loading for Codex sessions. Start with `AGENTS.md`, `agent.md`, `handoff.md`, `.agent/task.yml`, and applicable `.agent/policy.yml` entries. Then use `rg` and targeted file ranges for the active task.
 Respect task boundaries.
 Before claiming completion, run `scripts/agent-finish.sh`.
 If verification cannot be run, explain exactly why and update `handoff.md`.

@@ -98,6 +98,11 @@ echo "== Repository doc links =="
 bash templates/scripts/check-doc-links.sh "$repo_root"
 pass "repository doc links"
 
+assert_contains "$repo_root/README.md" "## Context Loading Policy"
+assert_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" "## Context Loading Policy"
+assert_contains "$repo_root/docs/codex-usage.md" "staged context loading"
+assert_contains "$repo_root/docs/superpowers-integration.md" "staged context loading"
+
 echo
 echo "== Fresh install target =="
 mkdir -p "$target_root"
