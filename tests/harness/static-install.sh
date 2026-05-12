@@ -150,6 +150,9 @@ assert_contains "$target_root/AGENTS.md" "Expand only for files directly relevan
 assert_contains "$target_root/CLAUDE.md" "## Context Loading Policy"
 assert_contains "$target_root/CLAUDE.md" "Start compact: read summaries and task boundaries before raw source."
 assert_contains "$target_root/CLAUDE.md" "Expand only for files directly relevant to the current task."
+assert_contains "$target_root/agent.md" "## Context Loading"
+assert_contains "$target_root/agent.md" "Keep this file compact enough to read at task start."
+assert_contains "$repo_root/skills/repo-context-bootstrap/SKILL.md" "Build compact context before broad source inspection."
 
 (
   cd "$target_root"

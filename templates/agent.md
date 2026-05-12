@@ -5,6 +5,22 @@
 > prompts.
 
 ## Project Overview
+
+## Context Loading
+
+Keep this file compact enough to read at task start. Store stable facts, entrypoints, commands, risks, and links to deeper docs. Do not paste long source excerpts, historical plans, generated output, logs, or one-time task instructions here.
+
+Use this loading order for ordinary tasks:
+
+1. Read `AGENTS.md` or the installed agent entrypoint.
+2. Read this file for stable facts.
+3. Read `handoff.md` for current state.
+4. Read `.agent/task.yml` for scope and completion requirements.
+5. Read only applicable `.agent/policy.yml` rules.
+6. Expand to source files with `rg` and targeted ranges.
+
+When a repeated discovery matters, add a short `Verified:` or `Inferred:` note here or in `docs/agent/discoveries.md` instead of requiring future agents to rediscover it from raw files.
+
 TODO: Describe what this repository does.
 
 ## Architecture Map
