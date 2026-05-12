@@ -3,6 +3,17 @@
 Use this file as the Codex entrypoint for a repository that has
 Agent-Repo-Harness installed.
 
+## Context Loading Policy
+
+Use staged context loading before editing:
+
+1. Read root `AGENTS.md`.
+2. Read `agent.md`, `handoff.md`, `.agent/task.yml`, and only the policy entries in `.agent/policy.yml` that apply to the expected files.
+3. Prefer `scripts/collect-context.sh` for startup context.
+4. Use `rg` and targeted file ranges to expand context for the active task.
+
+Do not load large directories, generated outputs, historical plans, or unrelated docs unless the task specifically depends on them.
+
 ## Required Startup
 
 Before editing, inspect:
