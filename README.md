@@ -83,6 +83,9 @@ Then fill in:
 - `.agent/policy.yml`
 - `.agent/task.yml`
 
+Harness config files use a small shared-reader YAML subset documented in
+[docs/config-format.md](docs/config-format.md).
+
 After reviewing and customizing the installed files, commit a clean harness
 baseline before starting feature work:
 

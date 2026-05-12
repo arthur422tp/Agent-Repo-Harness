@@ -55,40 +55,6 @@ list_changed_files() {
   } | awk 'NF' | sort -u
 }
 
-extract_task_list() {
-  local key="$1"
-
-  awk -v target="$key" '
-    /^task:/ { in_task=1; next }
-    in_task && /^[^[:space:]]/ { in_task=0 }
-    in_task && $0 ~ ("^[[:space:]]*" target ":[[:space:]]*$") { in_list=1; next }
-    in_list && /^[[:space:]]*-[[:space:]]*/ {
-      line=$0
-      sub(/^[[:space:]]*-[[:space:]]*/, "", line)
-      gsub(/"/, "", line)
-      print line
-      next
-    }
-    in_list && $0 !~ /^[[:space:]]*$/ && $0 !~ /^[[:space:]]*-/ { in_list=0 }
-  ' "$task_file"
-}
-
-extract_task_scalar() {
-  local key="$1"
-
-  awk -v target="$key" '
-    /^task:/ { in_task=1; next }
-    in_task && /^[^[:space:]]/ { in_task=0 }
-    in_task && $0 ~ ("^[[:space:]]*" target ":[[:space:]]*") {
-      line=$0
-      sub("^[[:space:]]*" target ":[[:space:]]*", "", line)
-      gsub(/"/, "", line)
-      print line
-      exit
-    }
-  ' "$task_file"
-}
-
 count_untracked_lines() {
   local total=0
   local file
@@ -111,6 +77,83 @@ EOF
   echo "$total"
 }
 
+have_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+find_python() {
+  if have_cmd python3; then
+    printf '%s\n' "python3"
+    return 0
+  fi
+  if have_cmd python; then
+    printf '%s\n' "python"
+    return 0
+  fi
+  return 1
+}
+
+script_dir="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
+reader="$script_dir/lib/read-yaml.py"
+python_bin=""
+
+if [ ! -f "$reader" ]; then
+  echo "ERROR: YAML reader not found: $reader"
+  exit 1
+fi
+
+if ! python_bin="$(find_python)"; then
+  echo "ERROR: python is required for scope config reads"
+  exit 1
+fi
+
+read_task_value() {
+  local path="$1"
+  local output
+
+  if output="$("$python_bin" "$reader" "$task_file" "$path" --optional 2>&1)"; then
+    printf '%s\n' "$output"
+    return 0
+  fi
+
+  echo "ERROR: could not read $path from $task_file" >&2
+  printf '%s\n' "$output" >&2
+  exit 1
+}
+
+read_task_list() {
+  local path="$1"
+  local raw
+  local output
+
+  raw="$(read_task_value "$path")"
+  case "$raw" in
+    ""|null|"{}")
+      return 0
+      ;;
+  esac
+
+  if output="$(printf '%s\n' "$raw" | "$python_bin" -c '
+import json
+import sys
+
+value = json.load(sys.stdin)
+if not isinstance(value, list):
+    raise SystemExit("expected list")
+for item in value:
+    if item is None:
+        continue
+    print(item)
+' 2>&1)"; then
+    printf '%s\n' "$output"
+    return 0
+  fi
+
+  echo "ERROR: $task_file $path must be a list, empty map, null, or missing" >&2
+  printf '%s\n' "$output" >&2
+  exit 1
+}
+
 changed_files="$(list_changed_files)"
 changed_count=0
 violations=0
@@ -130,10 +173,10 @@ if [ -z "$changed_files" ]; then
   exit 0
 fi
 
-allowed_patterns="$(extract_task_list allowed_paths)"
-forbidden_patterns="$(extract_task_list forbidden_paths)"
-max_changed_files="$(extract_task_scalar max_changed_files)"
-max_diff_lines="$(extract_task_scalar max_diff_lines)"
+allowed_patterns="$(read_task_list task.allowed_paths)"
+forbidden_patterns="$(read_task_list task.forbidden_paths)"
+max_changed_files="$(read_task_value task.max_changed_files)"
+max_diff_lines="$(read_task_value task.max_diff_lines)"
 
 case "$max_changed_files" in
   ""|null|~)

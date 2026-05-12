@@ -12,7 +12,12 @@ scope_pass_root="$tmp_root/scope-pass"
 scope_max_files_root="$tmp_root/scope-max-files"
 scope_outside_root="$tmp_root/scope-outside"
 scope_forbidden_root="$tmp_root/scope-forbidden"
+scope_malformed_root="$tmp_root/scope-malformed"
 policy_strict_root="$tmp_root/policy-strict"
+policy_warn_root="$tmp_root/policy-warn"
+policy_file_approval_root="$tmp_root/policy-file-approval"
+policy_legacy_root="$tmp_root/policy-legacy"
+policy_malformed_root="$tmp_root/policy-malformed"
 verify_config_root="$tmp_root/verify-config"
 verify_bad_config_root="$tmp_root/verify-bad-config"
 finish_strict_root="$tmp_root/finish-strict"
@@ -286,6 +291,7 @@ for required_path in \
   adapters/claude-code/.claude/skills/handoff-update/SKILL.md \
   adapters/claude-code/.claude/skills/subagent-context-packet/SKILL.md \
   docs/agent-support-matrix.md \
+  docs/config-format.md \
   docs/codex-usage.md \
   docs/superpowers-integration.md \
   schemas/harness.schema.json \
@@ -641,6 +647,29 @@ git init -q "$scope_forbidden_root"
 pass "scope forbidden-path failure"
 
 echo
+echo "== Scope gate malformed task YAML failure =="
+rm -rf "$scope_malformed_root"
+mkdir -p "$scope_malformed_root/.agent" "$scope_malformed_root/src/retry"
+git init -q "$scope_malformed_root"
+(
+  cd "$scope_malformed_root"
+  printf 'task:\n\tallowed_paths:\n\t  - "src/retry/**"\n' > .agent/task.yml
+  git config user.email "test@example.com"
+  git config user.name "Test User"
+  git add .agent/task.yml
+  git commit -q -m "Add malformed task config"
+  printf '%s\n' 'line one' > src/retry/worker.js
+  scope_log="$scope_malformed_root/scope-malformed.log"
+  if bash "$repo_root/templates/scripts/check-scope.sh" >"$scope_log" 2>&1; then
+    echo "ERROR: expected scope failure for malformed task YAML"
+    exit 1
+  fi
+  assert_contains "$scope_log" "ERROR:"
+  assert_contains "$scope_log" "tabs are not supported for indentation"
+)
+pass "scope malformed task YAML failure"
+
+echo
 echo "== Strict policy semantics =="
 rm -rf "$policy_strict_root"
 mkdir -p "$policy_strict_root/.agent" "$policy_strict_root/src/auth"
@@ -666,6 +695,86 @@ git init -q "$policy_strict_root"
   assert_contains "$strict_approved_log" "Strict policy gate passed with approval."
 )
 pass "strict policy semantics"
+
+echo
+echo "== Policy gate warn-mode high-risk match =="
+rm -rf "$policy_warn_root"
+mkdir -p "$policy_warn_root/.agent" "$policy_warn_root/src/auth"
+git init -q "$policy_warn_root"
+(
+  cd "$policy_warn_root"
+  printf '%s\n' \
+    'risk_files:' \
+    '  high:' \
+    '    - "src/auth/**"' \
+    > .agent/policy.yml
+  printf '%s\n' 'line one' > src/auth/login.js
+  warn_log="$policy_warn_root/policy-warn.log"
+  bash "$repo_root/templates/scripts/check-policy.sh" --warn .agent/policy.yml >"$warn_log" 2>&1
+  assert_contains "$warn_log" "Warnings:"
+  assert_contains "$warn_log" "src/auth/login.js matches policy pattern src/auth/**"
+  assert_contains "$warn_log" "Review recommended before claiming completion."
+)
+pass "policy warn-mode high-risk match"
+
+echo
+echo "== Strict policy file approval =="
+rm -rf "$policy_file_approval_root"
+mkdir -p "$policy_file_approval_root/.agent/approvals" "$policy_file_approval_root/src/auth"
+git init -q "$policy_file_approval_root"
+(
+  cd "$policy_file_approval_root"
+  printf '%s\n' \
+    'risk_files:' \
+    '  high:' \
+    '    - "src/auth/**"' \
+    > .agent/policy.yml
+  printf '%s\n' 'approved' > .agent/approvals/high-risk-approved
+  printf '%s\n' 'line one' > src/auth/login.js
+  approved_log="$policy_file_approval_root/policy-file-approval.log"
+  bash "$repo_root/templates/scripts/check-policy.sh" --strict .agent/policy.yml >"$approved_log" 2>&1
+  assert_contains "$approved_log" "High-risk approval detected from .agent/approvals/high-risk-approved."
+  assert_contains "$approved_log" "Strict policy gate passed with approval."
+)
+pass "strict policy file approval"
+
+echo
+echo "== Policy legacy high_risk_patterns compatibility =="
+rm -rf "$policy_legacy_root"
+mkdir -p "$policy_legacy_root/.agent" "$policy_legacy_root/src/legacy"
+git init -q "$policy_legacy_root"
+(
+  cd "$policy_legacy_root"
+  printf '%s\n' \
+    'high_risk_patterns:' \
+    '  - "src/legacy/**"' \
+    > .agent/policy.yml
+  printf '%s\n' 'line one' > src/legacy/adapter.js
+  legacy_log="$policy_legacy_root/policy-legacy.log"
+  bash "$repo_root/templates/scripts/check-policy.sh" --warn .agent/policy.yml >"$legacy_log" 2>&1
+  assert_contains "$legacy_log" "src/legacy/adapter.js matches policy pattern src/legacy/**"
+  assert_contains "$legacy_log" "Review recommended before claiming completion."
+)
+pass "policy legacy high_risk_patterns compatibility"
+
+echo
+echo "== Policy gate malformed YAML failure =="
+rm -rf "$policy_malformed_root"
+mkdir -p "$policy_malformed_root/.agent" "$policy_malformed_root/src/auth"
+git init -q "$policy_malformed_root"
+(
+  cd "$policy_malformed_root"
+  printf 'risk_files:\n\thigh:\n\t  - "src/auth/**"\n' > .agent/policy.yml
+  printf '%s\n' 'line one' > src/auth/login.js
+  policy_log="$policy_malformed_root/policy-malformed.log"
+  if bash "$repo_root/templates/scripts/check-policy.sh" --warn .agent/policy.yml >"$policy_log" 2>&1; then
+    echo "ERROR: expected policy failure for malformed YAML"
+    exit 1
+  fi
+  assert_contains "$policy_log" "ERROR:"
+  assert_contains "$policy_log" "tabs are not supported for indentation"
+)
+pass "policy malformed YAML failure"
 
 echo
 echo "== YAML reader behavior =="
@@ -862,7 +971,7 @@ pass "repo-defined malformed verification config"
 echo
 echo "== Finish gate strict scope failure =="
 rm -rf "$finish_strict_root"
-mkdir -p "$finish_strict_root/.agent" "$finish_strict_root/scripts" "$finish_strict_root/src/billing"
+mkdir -p "$finish_strict_root/.agent" "$finish_strict_root/scripts/lib" "$finish_strict_root/src/billing"
 git init -q "$finish_strict_root"
 (
   cd "$finish_strict_root"
@@ -873,6 +982,7 @@ git init -q "$finish_strict_root"
   cp "$repo_root/templates/scripts/check-tdd-evidence.sh" scripts/check-tdd-evidence.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
   chmod +x scripts/*.sh
   printf '%s\n' \
     'task:' \
@@ -922,7 +1032,7 @@ pass "finish gate strict scope failure"
 echo
 echo "== Finish gate strict TDD evidence failure =="
 rm -rf "$tdd_required_failure_root"
-mkdir -p "$tdd_required_failure_root/.agent" "$tdd_required_failure_root/scripts"
+mkdir -p "$tdd_required_failure_root/.agent" "$tdd_required_failure_root/scripts/lib"
 git init -q "$tdd_required_failure_root"
 (
   cd "$tdd_required_failure_root"
@@ -934,6 +1044,7 @@ git init -q "$tdd_required_failure_root"
   cp "$repo_root/templates/scripts/check-tdd-evidence.sh" scripts/check-tdd-evidence.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
   chmod +x scripts/*.sh
   printf '%s\n' \
     'task:' \
@@ -964,7 +1075,7 @@ pass "finish gate strict TDD evidence failure"
 echo
 echo "== Finish gate without git repository =="
 rm -rf "$finish_nongit_root"
-mkdir -p "$finish_nongit_root/.agent" "$finish_nongit_root/scripts"
+mkdir -p "$finish_nongit_root/.agent" "$finish_nongit_root/scripts/lib"
 (
   cd "$finish_nongit_root"
   cp "$repo_root/templates/agent.md" agent.md
@@ -974,6 +1085,7 @@ mkdir -p "$finish_nongit_root/.agent" "$finish_nongit_root/scripts"
   cp "$repo_root/templates/scripts/check-tdd-evidence.sh" scripts/check-tdd-evidence.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
   chmod +x scripts/*.sh
   finish_log="$finish_nongit_root/agent-finish-nongit.log"
   bash scripts/agent-finish.sh --best-effort >"$finish_log" 2>&1

@@ -56,22 +56,6 @@ list_changed_files() {
   } | awk 'NF' | sort -u
 }
 
-extract_patterns() {
-  awk '
-    /^high_risk_patterns:/ { in_list=1; next }
-    /^risk_files:/ { in_risk=1; next }
-    in_risk && /^[[:space:]]*high:/ { in_list=1; next }
-    in_list && /^[^[:space:]-]/ { in_list=0 }
-    in_risk && /^[^[:space:]]/ && $0 !~ /^risk_files:/ { in_risk=0 }
-    in_list && /^[[:space:]]*-[[:space:]]*/ {
-      line=$0
-      sub(/^[[:space:]]*-[[:space:]]*/, "", line)
-      gsub(/"/, "", line)
-      print line
-    }
-  ' "$policy_file"
-}
-
 approval_detected=0
 approval_source=""
 
@@ -88,6 +72,113 @@ detect_approval() {
     return 0
   fi
 }
+
+have_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+find_python() {
+  if have_cmd python3; then
+    printf '%s\n' "python3"
+    return 0
+  fi
+  if have_cmd python; then
+    printf '%s\n' "python"
+    return 0
+  fi
+  return 1
+}
+
+script_dir="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
+reader="$script_dir/lib/read-yaml.py"
+python_bin=""
+
+if [ ! -f "$reader" ]; then
+  echo "ERROR: YAML reader not found: $reader"
+  exit 1
+fi
+
+if ! python_bin="$(find_python)"; then
+  echo "ERROR: python is required for policy config reads"
+  exit 1
+fi
+
+if ! parse_output="$("$python_bin" "$reader" "$policy_file" 2>&1)"; then
+  echo "ERROR: could not parse $policy_file"
+  printf '%s\n' "$parse_output"
+  exit 1
+fi
+
+read_policy_value() {
+  local path="$1"
+  local output
+
+  if output="$("$python_bin" "$reader" "$policy_file" "$path" --optional 2>&1)"; then
+    printf '%s\n' "$output"
+    return 0
+  fi
+
+  echo "ERROR: could not read $path from $policy_file" >&2
+  printf '%s\n' "$output" >&2
+  exit 1
+}
+
+read_policy_list() {
+  local path="$1"
+  local raw
+  local output
+
+  raw="$(read_policy_value "$path")"
+  case "$raw" in
+    ""|null|"{}")
+      return 0
+      ;;
+  esac
+
+  if output="$(printf '%s\n' "$raw" | "$python_bin" -c '
+import json
+import sys
+
+value = json.load(sys.stdin)
+if not isinstance(value, list):
+    raise SystemExit("expected list")
+for item in value:
+    if item is None:
+        continue
+    print(item)
+' 2>&1)"; then
+    printf '%s\n' "$output"
+    return 0
+  fi
+
+  echo "ERROR: $policy_file $path must be a list, empty map, null, or missing" >&2
+  printf '%s\n' "$output" >&2
+  exit 1
+}
+
+read_policy_list_into() {
+  local target="$1"
+  local path="$2"
+  local tmp_file
+  local output
+
+  tmp_file="$(mktemp "${TMPDIR:-/tmp}/agent-policy-patterns.XXXXXX")"
+  if ! read_policy_list "$path" >"$tmp_file"; then
+    rm -f "$tmp_file"
+    exit 1
+  fi
+  output="$(cat "$tmp_file")"
+  rm -f "$tmp_file"
+  printf -v "$target" '%s' "$output"
+}
+
+policy_high_patterns=""
+policy_legacy_patterns=""
+read_policy_list_into policy_high_patterns risk_files.high
+read_policy_list_into policy_legacy_patterns high_risk_patterns
+policy_patterns="$(
+  printf '%s\n%s\n' "$policy_high_patterns" "$policy_legacy_patterns" | awk 'NF'
+)"
 
 changed_files="$(list_changed_files)"
 
@@ -118,7 +209,7 @@ while IFS= read -r pattern; do
 $changed_files
 EOF
 done <<EOF
-$(extract_patterns)
+$policy_patterns
 EOF
 
 if [ "$matched" -eq 0 ]; then
