@@ -5,40 +5,14 @@ entrypoint.
 
 First steps:
 
-1. Follow the Context Loading Policy below for the startup budget.
+1. Read `docs/agent/context-loading.md` for the canonical context loading
+   policy.
 2. Read `.agent/task.yml` for task scope and completion requirements.
 3. Read `.agent/policy.yml` only for policy rules that apply to files you
    expect to touch.
 4. If task flags require them, fill `.agent/acceptance.yml` and
    `.agent/review.yml` before completion.
 5. Run `scripts/agent-preflight.sh` before editing when available.
-
-## Context Loading Policy
-
-Start compact: read summaries and task boundaries before raw source.
-
-Default startup budget:
-
-1. Read this file.
-2. Read `agent.md` for stable facts, but treat linked deeper docs as optional until needed.
-3. Read `handoff.md` for current task state.
-4. Read `.agent/task.yml` for allowed paths, forbidden paths, and completion requirements.
-5. Read `.agent/policy.yml` only for policy rules that apply to files you expect to touch.
-6. Run `scripts/collect-context.sh` when available instead of pasting large context into the prompt.
-
-Expand only for files directly relevant to the current task. Prefer `rg`,
-file lists, symbol search, and targeted `sed -n` ranges over reading whole
-directories or long files. Load broad docs, generated files, lockfiles, logs,
-and historical plans only when they answer a concrete question.
-
-When context grows, summarize what was learned in `handoff.md` or
-`docs/agent/discoveries.md` and continue from that summary instead of reloading
-the same raw files.
-
-Use `scripts/collect-context.sh --full` only when debugging stale repo memory,
-policy drift, or handoff gaps.
-
-For full rules, see `docs/agent/context-loading.md`.
 
 Use the Claude Code project skills under `.claude/skills/` when they are
 installed:

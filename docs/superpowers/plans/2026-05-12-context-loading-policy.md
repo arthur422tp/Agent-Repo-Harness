@@ -4,7 +4,9 @@
 
 **Goal:** Add a token-efficient context loading policy to Agent-Repo-Harness so agents load concise durable context first and expand to raw files only when justified.
 
-**Architecture:** Define the policy once in the installed repo entrypoints and stable repo map template, then mirror it in the bootstrap skill, Codex/Claude adapters, usage docs, and the context collection script. Keep the policy textual and shell-only so it remains universal across supported agents.
+**Architecture:** Define the policy once in `templates/docs/agent/context-loading.md`, then keep installed entrypoints short and point them to that canonical document. Adapter docs, usage docs, repo memory guidance, and the context collection script may summarize staged loading where useful, but `templates/AGENTS.md` and `templates/CLAUDE.md` should not duplicate the long policy prose.
+
+**Post-review correction:** The original completed task list below added the full policy prose directly to installed entrypoints and asserted long policy sentences in `tests/harness/static-install.sh`. The current target is shorter entrypoints that reference `docs/agent/context-loading.md`; tests should assert the reference in entrypoints and the full policy in the canonical doc.
 
 **Tech Stack:** Markdown templates, Bash harness scripts, existing shell validation harness.
 
@@ -12,8 +14,8 @@
 
 ## File Structure
 
-- Modify `templates/AGENTS.md`: add the canonical startup context budget and staged loading rules for installed repos.
-- Modify `templates/CLAUDE.md`: mirror the same context loading policy for Claude Code installs.
+- Modify `templates/AGENTS.md`: keep the installed entrypoint short and point to `docs/agent/context-loading.md`.
+- Modify `templates/CLAUDE.md`: keep the Claude Code-compatible entrypoint short and point to `docs/agent/context-loading.md`.
 - Modify `adapters/codex/AGENTS.md`: make Codex-specific guidance point to staged loading before broader inspection.
 - Modify `adapters/codex/codex-start-prompt.md`: replace broad read instructions with budgeted startup instructions.
 - Modify `adapters/claude-code/CLAUDE.md`: mirror the adapter-level staged loading policy.
@@ -24,7 +26,7 @@
 - Modify `docs/USAGE_WITH_AGENTS.md`: add a dedicated "Context Loading Policy" section with copyable prompts.
 - Modify `docs/codex-usage.md`: align Codex usage with the new policy.
 - Modify `docs/superpowers-integration.md`: clarify how Superpowers skills should respect staged context loading.
-- Modify `tests/harness/static-install.sh`: assert required files and installed outputs contain the new policy text.
+- Modify `tests/harness/static-install.sh`: assert required files, short entrypoint references, and installed canonical policy docs.
 - Modify `tests/harness/repo-verification.sh`: add coverage for `collect-context.sh --full` and the default compact output.
 - Run `bash validate-harness.sh`: verify shell syntax, install smoke tests, doc links, and harness behavior.
 

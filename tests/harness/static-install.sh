@@ -103,10 +103,12 @@ assert_not_contains "$repo_root/skills/harness-entrypoint/SKILL.md" '   - `.agen
 assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$repo_root/templates/AGENTS.md" "docs/agent/context-loading.md"
+assert_not_contains "$repo_root/templates/AGENTS.md" "## Context Loading Policy"
 assert_not_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/policy.yml` for high-risk areas and approval rules.'
 assert_contains "$repo_root/templates/CLAUDE.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$repo_root/templates/CLAUDE.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$repo_root/templates/CLAUDE.md" "docs/agent/context-loading.md"
+assert_not_contains "$repo_root/templates/CLAUDE.md" "## Context Loading Policy"
 assert_not_contains "$repo_root/templates/CLAUDE.md" '3. Read `.agent/policy.yml`.'
 assert_contains "$repo_root/examples/universal-minimal-repo/AGENTS.md" 'Read `.agent/task.yml` for scope'
 assert_contains "$repo_root/examples/universal-minimal-repo/AGENTS.md" 'applicable `.agent/policy.yml`'
@@ -183,20 +185,19 @@ do
 done
 pass "required files installed"
 
-assert_contains "$target_root/AGENTS.md" "## Context Loading Policy"
-assert_contains "$target_root/AGENTS.md" "Start compact: read summaries and task boundaries before raw source."
-assert_contains "$target_root/AGENTS.md" "Expand only for files directly relevant to the current task."
 assert_contains "$target_root/AGENTS.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$target_root/AGENTS.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$target_root/AGENTS.md" "docs/agent/context-loading.md"
+assert_not_contains "$target_root/AGENTS.md" "## Context Loading Policy"
 assert_not_contains "$target_root/AGENTS.md" 'Read `.agent/policy.yml` for high-risk areas and approval rules.'
-assert_contains "$target_root/CLAUDE.md" "## Context Loading Policy"
-assert_contains "$target_root/CLAUDE.md" "Start compact: read summaries and task boundaries before raw source."
-assert_contains "$target_root/CLAUDE.md" "Expand only for files directly relevant to the current task."
 assert_contains "$target_root/CLAUDE.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$target_root/CLAUDE.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$target_root/CLAUDE.md" "docs/agent/context-loading.md"
+assert_not_contains "$target_root/CLAUDE.md" "## Context Loading Policy"
 assert_not_contains "$target_root/CLAUDE.md" '3. Read `.agent/policy.yml`.'
+assert_contains "$target_root/docs/agent/context-loading.md" "# Context Loading Policy"
+assert_contains "$target_root/docs/agent/context-loading.md" "Start compact."
+assert_contains "$target_root/docs/agent/context-loading.md" "Expand only to files directly relevant to the current task."
 assert_contains "$target_root/agent.md" "## Context Loading"
 assert_contains "$target_root/agent.md" "Keep this file compact enough to read at task start."
 assert_contains "$repo_root/skills/repo-context-bootstrap/SKILL.md" "Build compact context before broad source inspection."
