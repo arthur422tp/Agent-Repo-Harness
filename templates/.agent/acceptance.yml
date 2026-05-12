@@ -1,5 +1,8 @@
 acceptance:
   criteria:
+    # Replace this placeholder when task.completion.requires_acceptance_check is true.
+    # Each required criterion must have a non-empty id and description, met: true,
+    # and either evidence or verification filled with a concrete reference.
     - id: example-criterion
       description: ""
       met: false

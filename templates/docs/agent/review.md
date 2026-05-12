@@ -9,8 +9,26 @@ task:
     requires_review_evidence: true
 ```
 
+`task.completion.requires_review_evidence` is the task-level switch that makes
+`scripts/check-review-evidence.sh` inspect `.agent/review.yml`. If the switch
+is absent or not `true`, the check passes without requiring review evidence.
+
+`review.required` is the evidence-file acknowledgement that the required review
+was actually performed. When the task-level switch is `true`,
+`review.required` must also be `true`; leaving it `false` or omitting it blocks
+finish.
+
 When required, fill `.agent/review.yml` before running
-`scripts/agent-finish.sh`.
+`scripts/agent-finish.sh`:
+
+```yaml
+review:
+  required: true
+  status: approved
+  reviewer: "Human Reviewer"
+  evidence: "PR review approved on 2026-05-12."
+  concerns: []
+```
 
 ## Status Values
 

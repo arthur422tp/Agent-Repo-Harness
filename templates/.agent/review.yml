@@ -1,4 +1,7 @@
 review:
+  # Set required: true only when task.completion.requires_review_evidence is true.
+  # Required review evidence must use status approved or approved_with_comments,
+  # name the reviewer, include durable evidence, and have no blocking concerns.
   required: false
   status: not_requested
   reviewer: ""

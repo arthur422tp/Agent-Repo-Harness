@@ -9,18 +9,15 @@
       "type": "object",
       "required": ["required", "status", "reviewer", "evidence", "concerns"],
       "properties": {
-        "required": { "type": "boolean" },
+        "required": { "const": true },
         "status": {
           "enum": [
-            "not_requested",
             "approved",
-            "approved_with_comments",
-            "changes_requested",
-            "blocked"
+            "approved_with_comments"
           ]
         },
-        "reviewer": { "type": "string" },
-        "evidence": { "type": "string" },
+        "reviewer": { "type": "string", "pattern": "\\S" },
+        "evidence": { "type": "string", "pattern": "\\S" },
         "concerns": {
           "type": "array",
           "items": {
@@ -28,13 +25,18 @@
               { "type": "string" },
               {
                 "type": "object",
-                "required": ["description"],
                 "properties": {
                   "id": { "type": "string" },
-                  "description": { "type": "string", "minLength": 1 },
+                  "description": { "type": "string" },
                   "blocking": { "type": "boolean" }
                 },
-                "additionalProperties": true
+                "additionalProperties": true,
+                "not": {
+                  "required": ["blocking"],
+                  "properties": {
+                    "blocking": { "const": true }
+                  }
+                }
               }
             ]
           }

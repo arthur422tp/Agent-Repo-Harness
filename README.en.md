@@ -19,6 +19,11 @@ TDD evidence is required only when `.agent/task.yml` sets
 `completion.requires_tdd_evidence: true`; in that case fill
 `.agent/tdd-evidence.yml` before finishing.
 
+Acceptance and review evidence are also task opt-ins. Fill
+`.agent/acceptance.yml` only when
+`completion.requires_acceptance_check: true`, and fill `.agent/review.yml` only
+when `completion.requires_review_evidence: true`.
+
 Subagent packets are optional controller-agent to subagent handoff files. Fill
 `.agent/subagent-packet.yml` and run `scripts/validate-subagent-packet.sh` only
 when delegating precise context to a fresh subagent; this is not part of

@@ -11,36 +11,37 @@
       "properties": {
         "criteria": {
           "type": "array",
+          "description": "Acceptance criteria. Criterion id values must be unique; check-acceptance.sh enforces id uniqueness because standard JSON Schema cannot express uniqueness by one object member without extensions.",
           "minItems": 1,
           "items": {
             "type": "object",
             "required": ["id", "description", "met"],
             "properties": {
-              "id": { "type": "string", "minLength": 1 },
-              "description": { "type": "string", "minLength": 1 },
-              "met": { "type": "boolean" },
+              "id": { "type": "string", "pattern": "\\S" },
+              "description": { "type": "string", "pattern": "\\S" },
+              "met": { "const": true },
               "evidence": { "type": "string" },
               "verification": { "type": "string" }
             },
-            "additionalProperties": false,
+            "additionalProperties": true,
             "anyOf": [
               {
                 "required": ["evidence"],
                 "properties": {
-                  "evidence": { "type": "string", "minLength": 1 }
+                  "evidence": { "type": "string", "pattern": "\\S" }
                 }
               },
               {
                 "required": ["verification"],
                 "properties": {
-                  "verification": { "type": "string", "minLength": 1 }
+                  "verification": { "type": "string", "pattern": "\\S" }
                 }
               }
             ]
           }
         }
       },
-      "additionalProperties": false
+      "additionalProperties": true
     }
   },
   "additionalProperties": true
