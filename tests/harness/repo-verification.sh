@@ -19,6 +19,7 @@ mkdir -p "$doc_links_failure_root/docs"
 pass "doc link validation failure"
 
 echo
+
 echo "== Repo-defined verification commands =="
 mkdir -p "$verify_config_root/.agent"
 git init -q "$verify_config_root"
@@ -84,3 +85,30 @@ git init -q "$verify_bad_config_root"
 pass "repo-defined malformed verification config"
 
 echo
+echo "== Context collection modes =="
+context_root="$tmp_root/context-collection"
+mkdir -p "$context_root/.agent" "$context_root/docs/agent" "$context_root/scripts/lib"
+git init -q "$context_root"
+(
+  cd "$context_root"
+  cp "$repo_root/templates/scripts/collect-context.sh" scripts/collect-context.sh
+  chmod +x scripts/collect-context.sh
+  printf '%s\n' "# Agent" "stable line" > agent.md
+  printf '%s\n' "# Handoff" "current state" > handoff.md
+  printf '%s\n' "# Known" "known issue" > docs/agent/known-issues.md
+  printf '%s\n' "# Discoveries" "discovery" > docs/agent/discoveries.md
+  printf '%s\n' "status: active" "allowed_paths:" "  - src/**" > .agent/task.yml
+  printf '%s\n' "high_risk_paths:" "  - secrets/**" > .agent/policy.yml
+  compact_log="$context_root/compact.log"
+  full_log="$context_root/full.log"
+  bash scripts/collect-context.sh >"$compact_log" 2>&1
+  bash scripts/collect-context.sh --full >"$full_log" 2>&1
+  assert_contains "$compact_log" "== Context Loading Policy =="
+  assert_contains "$compact_log" "Mode: compact"
+  assert_contains "$compact_log" "== Task Scope =="
+  assert_contains "$compact_log" "== Policy =="
+  assert_contains "$full_log" "Mode: full"
+  assert_contains "$full_log" "== Known Issues =="
+  assert_contains "$full_log" "== Discoveries =="
+)
+pass "context collection modes"
