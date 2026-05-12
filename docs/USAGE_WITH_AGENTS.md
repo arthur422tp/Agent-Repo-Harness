@@ -137,7 +137,7 @@ Recommended start prompt:
 ```text
 You are working in this repository using Agent-Repo-Harness.
 First read `AGENTS.md`, then follow its instructions.
-Before editing, inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`.
+Use staged context loading: inspect `agent.md`, `handoff.md`, `.agent/task.yml`, and applicable `.agent/policy.yml` entries before expanding to raw source.
 For delegated work, fill `.agent/subagent-packet.yml` and run `scripts/validate-subagent-packet.sh`.
 Respect task boundaries.
 Before claiming completion, run `scripts/agent-finish.sh`.
@@ -210,7 +210,7 @@ Generic coding agents can use the harness without adapter-specific skill
 support:
 
 1. Read `AGENTS.md`.
-2. Inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`.
+2. Inspect `agent.md`, `handoff.md`, `.agent/task.yml`, and applicable `.agent/policy.yml` entries.
 3. Fill `.agent/subagent-packet.yml` only when handing work to a subagent.
 4. Run `scripts/agent-preflight.sh`.
 5. Modify only files allowed by `.agent/task.yml`.

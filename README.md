@@ -172,7 +172,8 @@ Superpowers:
 Generic agents:
 
 - read `AGENTS.md`
-- inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`
+- inspect `agent.md`, `handoff.md`, `.agent/task.yml`, and applicable
+  `.agent/policy.yml` entries
 - fill `.agent/subagent-packet.yml` only when delegating work to a subagent
 - optionally record delegated results under `.agent/subagent-runs/`
 - run the scripts directly
@@ -210,7 +211,7 @@ Agent-Repo-Harness is designed for staged context loading. Agents should read co
 2. `agent.md`
 3. `handoff.md`
 4. `.agent/task.yml`
-5. applicable entries from `.agent/policy.yml`
+5. applicable `.agent/policy.yml` entries
 
 Then they should expand with `rg`, file lists, and targeted file ranges for the active task. `scripts/collect-context.sh` prints compact startup context by default; `scripts/collect-context.sh --full` includes optional known issues and discoveries for deeper debugging.
 
