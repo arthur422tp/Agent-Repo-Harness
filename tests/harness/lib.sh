@@ -37,6 +37,11 @@ acceptance_missing_evidence_root="$tmp_root/acceptance-missing-evidence"
 review_skip_root="$tmp_root/review-skip"
 review_pass_root="$tmp_root/review-pass"
 review_blocked_root="$tmp_root/review-blocked"
+review_required_false_root="$tmp_root/review-required-false"
+review_required_missing_root="$tmp_root/review-required-missing"
+review_missing_concerns_root="$tmp_root/review-missing-concerns"
+review_null_concerns_root="$tmp_root/review-null-concerns"
+review_scalar_concerns_root="$tmp_root/review-scalar-concerns"
 
 cleanup() {
   rm -rf "$tmp_root"
@@ -263,4 +268,3 @@ run_shell_format_checks() {
     fi
   done < <(find . -type f -name "*.sh" -not -path "./.git/*" | sort)
 }
-

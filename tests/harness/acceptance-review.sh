@@ -158,6 +158,154 @@ mkdir -p "$review_pass_root/.agent" "$review_pass_root/scripts/lib"
 pass "review evidence required approved"
 
 echo
+echo "== Review evidence gate required false failure =="
+rm -rf "$review_required_false_root"
+mkdir -p "$review_required_false_root/.agent" "$review_required_false_root/scripts/lib"
+(
+  cd "$review_required_false_root"
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  printf '%s\n' \
+    'task:' \
+    '  completion:' \
+    '    requires_review_evidence: true' \
+    > .agent/task.yml
+  printf '%s\n' \
+    'review:' \
+    '  required: false' \
+    '  status: approved' \
+    '  reviewer: "Human Reviewer"' \
+    '  evidence: "PR review approved on 2026-05-12."' \
+    '  concerns: []' \
+    > .agent/review.yml
+  review_log="$review_required_false_root/review-required-false.log"
+  if bash "$repo_root/templates/scripts/check-review-evidence.sh" >"$review_log" 2>&1; then
+    echo "ERROR: expected review evidence failure for review.required false"
+    exit 1
+  fi
+  assert_contains "$review_log" "review.required must be true when review evidence is required"
+  assert_contains "$review_log" "REVIEW_EVIDENCE_RESULT=fail"
+)
+pass "review evidence required false failure"
+
+echo
+echo "== Review evidence gate missing required failure =="
+rm -rf "$review_required_missing_root"
+mkdir -p "$review_required_missing_root/.agent" "$review_required_missing_root/scripts/lib"
+(
+  cd "$review_required_missing_root"
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  printf '%s\n' \
+    'task:' \
+    '  completion:' \
+    '    requires_review_evidence: true' \
+    > .agent/task.yml
+  printf '%s\n' \
+    'review:' \
+    '  status: approved' \
+    '  reviewer: "Human Reviewer"' \
+    '  evidence: "PR review approved on 2026-05-12."' \
+    '  concerns: []' \
+    > .agent/review.yml
+  review_log="$review_required_missing_root/review-required-missing.log"
+  if bash "$repo_root/templates/scripts/check-review-evidence.sh" >"$review_log" 2>&1; then
+    echo "ERROR: expected review evidence failure for missing review.required"
+    exit 1
+  fi
+  assert_contains "$review_log" "review.required must be true when review evidence is required"
+  assert_contains "$review_log" "REVIEW_EVIDENCE_RESULT=fail"
+)
+pass "review evidence missing required failure"
+
+echo
+echo "== Review evidence gate missing concerns failure =="
+rm -rf "$review_missing_concerns_root"
+mkdir -p "$review_missing_concerns_root/.agent" "$review_missing_concerns_root/scripts/lib"
+(
+  cd "$review_missing_concerns_root"
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  printf '%s\n' \
+    'task:' \
+    '  completion:' \
+    '    requires_review_evidence: true' \
+    > .agent/task.yml
+  printf '%s\n' \
+    'review:' \
+    '  required: true' \
+    '  status: approved' \
+    '  reviewer: "Human Reviewer"' \
+    '  evidence: "PR review approved on 2026-05-12."' \
+    > .agent/review.yml
+  review_log="$review_missing_concerns_root/review-missing-concerns.log"
+  if bash "$repo_root/templates/scripts/check-review-evidence.sh" >"$review_log" 2>&1; then
+    echo "ERROR: expected review evidence failure for missing review.concerns"
+    exit 1
+  fi
+  assert_contains "$review_log" "review.concerns must be a list"
+  assert_contains "$review_log" "REVIEW_EVIDENCE_RESULT=fail"
+)
+pass "review evidence missing concerns failure"
+
+echo
+echo "== Review evidence gate null concerns failure =="
+rm -rf "$review_null_concerns_root"
+mkdir -p "$review_null_concerns_root/.agent" "$review_null_concerns_root/scripts/lib"
+(
+  cd "$review_null_concerns_root"
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  printf '%s\n' \
+    'task:' \
+    '  completion:' \
+    '    requires_review_evidence: true' \
+    > .agent/task.yml
+  printf '%s\n' \
+    'review:' \
+    '  required: true' \
+    '  status: approved' \
+    '  reviewer: "Human Reviewer"' \
+    '  evidence: "PR review approved on 2026-05-12."' \
+    '  concerns: null' \
+    > .agent/review.yml
+  review_log="$review_null_concerns_root/review-null-concerns.log"
+  if bash "$repo_root/templates/scripts/check-review-evidence.sh" >"$review_log" 2>&1; then
+    echo "ERROR: expected review evidence failure for null review.concerns"
+    exit 1
+  fi
+  assert_contains "$review_log" "review.concerns must be a list"
+  assert_contains "$review_log" "REVIEW_EVIDENCE_RESULT=fail"
+)
+pass "review evidence null concerns failure"
+
+echo
+echo "== Review evidence gate scalar concerns failure =="
+rm -rf "$review_scalar_concerns_root"
+mkdir -p "$review_scalar_concerns_root/.agent" "$review_scalar_concerns_root/scripts/lib"
+(
+  cd "$review_scalar_concerns_root"
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  printf '%s\n' \
+    'task:' \
+    '  completion:' \
+    '    requires_review_evidence: true' \
+    > .agent/task.yml
+  printf '%s\n' \
+    'review:' \
+    '  required: true' \
+    '  status: approved' \
+    '  reviewer: "Human Reviewer"' \
+    '  evidence: "PR review approved on 2026-05-12."' \
+    '  concerns: "none"' \
+    > .agent/review.yml
+  review_log="$review_scalar_concerns_root/review-scalar-concerns.log"
+  if bash "$repo_root/templates/scripts/check-review-evidence.sh" >"$review_log" 2>&1; then
+    echo "ERROR: expected review evidence failure for scalar review.concerns"
+    exit 1
+  fi
+  assert_contains "$review_log" "review.concerns must be a list"
+  assert_contains "$review_log" "REVIEW_EVIDENCE_RESULT=fail"
+)
+pass "review evidence scalar concerns failure"
+
+echo
 echo "== Review evidence gate blocking concern failure =="
 rm -rf "$review_blocked_root"
 mkdir -p "$review_blocked_root/.agent" "$review_blocked_root/scripts/lib"

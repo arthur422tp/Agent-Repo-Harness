@@ -145,6 +145,9 @@ review = data.get("review") if isinstance(data, dict) else None
 if not isinstance(review, dict):
     fail("review must be a map")
 else:
+    if review.get("required") is not True:
+        fail("review.required must be true when review evidence is required")
+
     status = review.get("status")
     if status not in allowed_statuses:
         fail("review.status must be one of: not_requested, approved, approved_with_comments, changes_requested, blocked")
@@ -156,9 +159,7 @@ else:
     if not nonempty(review.get("evidence")):
         fail("review.evidence must be non-empty")
 
-    concerns = review.get("concerns", [])
-    if concerns is None:
-        concerns = []
+    concerns = review.get("concerns")
     if not isinstance(concerns, list):
         fail("review.concerns must be a list")
     else:

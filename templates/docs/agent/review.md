@@ -37,6 +37,7 @@ finish even if the top-level status is otherwise acceptable.
 
 ```yaml
 review:
+  required: true
   status: approved_with_comments
   reviewer: "Human Reviewer"
   evidence: "PR review approved on 2026-05-12."
