@@ -88,8 +88,10 @@ done
 pass "new universal harness files present"
 
 assert_contains "$repo_root/adapters/codex/AGENTS.md" "## Context Loading Policy"
+assert_contains "$repo_root/adapters/codex/AGENTS.md" 'applicable `.agent/policy.yml` entries'
 assert_contains "$repo_root/adapters/codex/codex-start-prompt.md" "Use staged context loading"
 assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" "## Context Loading Policy"
+assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" 'applicable `.agent/policy.yml` entries'
 
 echo
 echo "== Repository doc links =="

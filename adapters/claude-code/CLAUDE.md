@@ -20,8 +20,8 @@ Read these files before editing:
 
 - `agent.md`
 - `handoff.md`
-- `.agent/policy.yml`
 - `.agent/task.yml`
+- applicable `.agent/policy.yml` entries, as described in the Context Loading Policy
 
 Run:
 
