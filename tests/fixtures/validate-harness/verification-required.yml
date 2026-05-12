@@ -1,0 +1,6 @@
+verification:
+  required:
+    - command: bash -n scripts/check-policy.sh
+      name: "shell-check"
+    - name: second-check
+      command: bash -n scripts/second-check.sh

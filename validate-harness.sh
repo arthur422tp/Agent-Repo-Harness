@@ -2,6 +2,7 @@
 set -euo pipefail
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
+fixture_root="$repo_root/tests/fixtures/validate-harness"
 tmp_root="$(mktemp -d "${TMPDIR:-/tmp}/agent-harness-validate.XXXXXX")"
 target_root="$tmp_root/target"
 warnings_root="$tmp_root/warnings"
@@ -63,6 +64,13 @@ assert_exists() {
     echo "ERROR: expected path to exist: $path"
     exit 1
   fi
+}
+
+copy_fixture() {
+  local name="$1"
+  local target="$2"
+
+  cp "$fixture_root/$name" "$target"
 }
 
 find_python() {
@@ -296,6 +304,15 @@ for required_path in \
   templates/.agent/subagent-runs/.gitkeep \
   templates/docs/agent/subagent-result-template.md \
   templates/scripts/validate-subagent-run.sh \
+  tests/fixtures/validate-harness/broken-doc-links.md \
+  tests/fixtures/validate-harness/subagent-packet-valid.yml \
+  tests/fixtures/validate-harness/task-invalid-types.yml \
+  tests/fixtures/validate-harness/task-root-status.yml \
+  tests/fixtures/validate-harness/tdd-evidence-complete.yml \
+  tests/fixtures/validate-harness/verification-required-bad.yml \
+  tests/fixtures/validate-harness/verification-required-multiline.yml \
+  tests/fixtures/validate-harness/verification-required.yml \
+  tests/fixtures/validate-harness/yaml-reader-harness.yml \
   examples/universal-minimal-repo/AGENTS.md \
   examples/universal-minimal-repo/CLAUDE.md \
   examples/universal-minimal-repo/.agent/harness.yml \
@@ -374,33 +391,7 @@ pass "required files installed"
   fi
   assert_contains "$subagent_empty_log" "SUBAGENT_PACKET_RESULT=fail"
   assert_contains "$subagent_empty_log" "task_id must be non-empty"
-  cat > .agent/subagent-packet.yml <<'EOF'
-task_id: "phase-1.3-a"
-role: "implementer"
-task_text: "Add subagent packet contract."
-
-allowed_paths:
-  - "templates/.agent/subagent-packet.yml"
-  - "templates/scripts/validate-subagent-packet.sh"
-
-forbidden_paths:
-  - ".git/**"
-
-relevant_files:
-  - "validate-harness.sh"
-
-verification_required:
-  - "bash scripts/validate-subagent-packet.sh"
-
-expected_output_contract:
-  status_enum:
-    - DONE
-    - DONE_WITH_CONCERNS
-    - NEEDS_CONTEXT
-    - BLOCKED
-
-notes: ""
-EOF
+  copy_fixture subagent-packet-valid.yml .agent/subagent-packet.yml
   bash scripts/validate-subagent-packet.sh
   subagent_invalid_role_log="$target_root/subagent-packet-invalid-role.log"
   sed -e 's/role: "implementer"/role: "invalid_role"/' \
@@ -459,26 +450,7 @@ EOF
   bash scripts/agent-verify.sh --best-effort >"$verify_log" 2>&1
   assert_contains "$verify_log" "HARNESS_VERIFY_RESULT=pass"
   assert_contains "$verify_log" "Verification passed."
-  cat > .agent/tdd-evidence.yml <<'EOF'
-status: required
-
-red_phase:
-  command: "bash scripts/validate-task.sh"
-  observed_failure: "saw expected failure before implementation"
-
-green_phase:
-  command: "bash scripts/validate-task.sh"
-  observed_pass: "validation passed"
-
-refactor_phase:
-  command: ""
-  result: ""
-
-tests_added_or_changed:
-  - "validate-harness.sh"
-
-notes: ""
-EOF
+  copy_fixture tdd-evidence-complete.yml .agent/tdd-evidence.yml
   finish_log="$target_root/agent-finish-pass.log"
   bash scripts/agent-finish.sh --best-effort >"$finish_log" 2>&1
   assert_contains "$finish_log" "AGENT_FINISH_RESULT=pass"
@@ -701,23 +673,20 @@ rm -rf "$yaml_reader_root"
 mkdir -p "$yaml_reader_root"
 (
   cd "$yaml_reader_root"
-  cat > harness.yml <<'EOF'
-name: "Reader Fixture"
-version: 1
-enabled: true
-verification:
-  required:
-    - name: "quoted check"
-      command: "bash -n scripts/example.sh"
-    - name: bare-check
-      command: printf '%s\n' ok
-EOF
+  copy_fixture yaml-reader-harness.yml harness.yml
   reader_log="$yaml_reader_root/read-yaml.log"
   "$(find_python)" "$repo_root/templates/scripts/lib/read-yaml.py" \
     harness.yml verification.required --list-fields name command \
     >"$reader_log" 2>&1
   assert_contains "$reader_log" $'quoted check\tbash -n scripts/example.sh'
   assert_contains "$reader_log" $'bare-check\tprintf'
+
+  jsonl_log="$yaml_reader_root/read-yaml-jsonl.log"
+  "$(find_python)" "$repo_root/templates/scripts/lib/read-yaml.py" \
+    harness.yml verification.required --list-fields-jsonl name command \
+    >"$jsonl_log" 2>&1
+  assert_contains "$jsonl_log" '"name": "quoted check"'
+  assert_contains "$jsonl_log" '"command": "bash -n scripts/example.sh"'
 
   missing_log="$yaml_reader_root/read-yaml-missing.log"
   if "$(find_python)" "$repo_root/templates/scripts/lib/read-yaml.py" \
@@ -775,14 +744,7 @@ mkdir -p "$task_missing_nested_root/.agent" "$task_missing_nested_root/scripts/l
   cd "$task_missing_nested_root"
   cp "$repo_root/templates/scripts/validate-task.sh" scripts/validate-task.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
-  cat > .agent/task.yml <<'EOF'
-status: "in_progress"
-task:
-  goal: "reader should require task.status, not any status key"
-  allowed_paths: []
-  forbidden_paths: []
-  completion: {}
-EOF
+  copy_fixture task-root-status.yml .agent/task.yml
   task_log="$task_missing_nested_root/validate-task-missing-nested.log"
   if bash scripts/validate-task.sh >"$task_log" 2>&1; then
     echo "ERROR: expected missing nested task status validation failure"
@@ -801,15 +763,7 @@ mkdir -p "$task_invalid_types_root/.agent" "$task_invalid_types_root/scripts/lib
   cd "$task_invalid_types_root"
   cp "$repo_root/templates/scripts/validate-task.sh" scripts/validate-task.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
-  cat > .agent/task.yml <<'EOF'
-task:
-  status: "almost_done"
-  goal: "type checks should reject invalid task shape"
-  allowed_paths: "src/**"
-  forbidden_paths: []
-  completion:
-    requires_verification: "yes"
-EOF
+  copy_fixture task-invalid-types.yml .agent/task.yml
   task_log="$task_invalid_types_root/validate-task-invalid-types.log"
   if bash scripts/validate-task.sh >"$task_log" 2>&1; then
     echo "ERROR: expected invalid task type validation failure"
@@ -828,7 +782,7 @@ rm -rf "$doc_links_failure_root"
 mkdir -p "$doc_links_failure_root/docs"
 (
   cd "$doc_links_failure_root"
-  printf '%s\n' '# Broken' '[missing](missing.md)' '`scripts/missing.sh`' > docs/broken.md
+  copy_fixture broken-doc-links.md docs/broken.md
   doc_link_log="$doc_links_failure_root/doc-links-failure.log"
   if bash "$repo_root/templates/scripts/check-doc-links.sh" >"$doc_link_log" 2>&1; then
     echo "ERROR: expected doc link validation failure"
@@ -846,14 +800,7 @@ mkdir -p "$verify_config_root/.agent"
 git init -q "$verify_config_root"
 (
   cd "$verify_config_root"
-  printf '%s\n' \
-    'verification:' \
-    '  required:' \
-    '    - command: bash -n scripts/check-policy.sh' \
-    '      name: "shell-check"' \
-    '    - name: second-check' \
-    '      command: bash -n scripts/second-check.sh' \
-    > .agent/harness.yml
+  copy_fixture verification-required.yml .agent/harness.yml
   mkdir -p scripts
   cp "$repo_root/templates/scripts/check-policy.sh" scripts/check-policy.sh
   printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' 'exit 0' \
@@ -873,15 +820,32 @@ git init -q "$verify_config_root"
 pass "repo-defined verification commands"
 
 echo
+echo "== Repo-defined multiline verification command =="
+verify_multiline_root="$tmp_root/verify-multiline-config"
+mkdir -p "$verify_multiline_root/.agent"
+git init -q "$verify_multiline_root"
+(
+  cd "$verify_multiline_root"
+  copy_fixture verification-required-multiline.yml .agent/harness.yml
+  mkdir -p scripts/lib
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  verify_log="$verify_multiline_root/agent-verify-multiline.log"
+  bash "$repo_root/templates/scripts/agent-verify.sh" >"$verify_log" 2>&1
+  assert_contains "$verify_log" "RUN: multiline-check"
+  assert_contains "$verify_log" "PASS: multiline-check"
+  assert_contains "$verify_log" "HARNESS_VERIFY_RESULT=pass"
+  assert_contains "$verify_multiline_root/verification-output.txt" "first"
+  assert_contains "$verify_multiline_root/verification-output.txt" "second"
+)
+pass "repo-defined multiline verification command"
+
+echo
 echo "== Repo-defined malformed verification config =="
 mkdir -p "$verify_bad_config_root/.agent"
 git init -q "$verify_bad_config_root"
 (
   cd "$verify_bad_config_root"
-  printf '%s\n' \
-    'verification:' \
-    '  required: "not a list"' \
-    > .agent/harness.yml
+  copy_fixture verification-required-bad.yml .agent/harness.yml
   mkdir -p scripts/lib
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
   verify_log="$verify_bad_config_root/agent-verify-bad-config.log"

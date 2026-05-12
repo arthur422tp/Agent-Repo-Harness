@@ -1,0 +1,9 @@
+name: "Reader Fixture"
+version: 1
+enabled: true
+verification:
+  required:
+    - name: "quoted check"
+      command: "bash -n scripts/example.sh"
+    - name: bare-check
+      command: printf '%s\n' ok

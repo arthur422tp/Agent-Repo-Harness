@@ -6,8 +6,8 @@ usage() {
 Usage: check-doc-links.sh [ROOT]
 
 Checks local Markdown links and local scripts/*.sh references under ROOT.
-External links, mailto links, pure anchors, and docs/plans/*.md future-plan
-references are ignored.
+External links, mailto links, pure anchors, docs/plans/*.md future-plan
+references, and tests/fixtures/*.md validation fixtures are ignored.
 EOF
 }
 
@@ -82,6 +82,7 @@ markdown_files = sorted(
     if ".git" not in path.parts
     and ".agent/runs" not in str(path)
     and path.relative_to(root).parts[:2] != ("docs", "plans")
+    and path.relative_to(root).parts[:2] != ("tests", "fixtures")
 )
 
 for markdown_file in markdown_files:

@@ -266,6 +266,12 @@ def main() -> int:
         help="print selected fields from each list item as tab-separated rows",
     )
     parser.add_argument(
+        "--list-fields-jsonl",
+        nargs="+",
+        metavar="FIELD",
+        help="print selected scalar fields from each list item as JSON lines for structured consumption",
+    )
+    parser.add_argument(
         "--require-key",
         action="append",
         default=[],
@@ -293,6 +299,32 @@ def main() -> int:
     except YamlSubsetError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
+
+    if args.list_fields_jsonl:
+        if not isinstance(value, list):
+            print(f"ERROR: path is not a list: {args.path}", file=sys.stderr)
+            return 1
+        for item in value:
+            if not isinstance(item, dict):
+                print("ERROR: list item is not a map", file=sys.stderr)
+                return 1
+            output = {}
+            for field in args.list_fields_jsonl:
+                if field not in item:
+                    print(f"ERROR: list item missing field: {field}", file=sys.stderr)
+                    return 1
+                field_value = item[field]
+                if field_value is not None and not isinstance(
+                    field_value, (str, int, float, bool)
+                ):
+                    print(
+                        f"ERROR: list item field is not scalar: {field}",
+                        file=sys.stderr,
+                    )
+                    return 1
+                output[field] = field_value
+            print(json.dumps(output, sort_keys=True))
+        return 0
 
     if args.list_fields:
         if not isinstance(value, list):

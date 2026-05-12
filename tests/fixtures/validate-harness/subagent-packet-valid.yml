@@ -1,0 +1,25 @@
+task_id: "phase-1.3-a"
+role: "implementer"
+task_text: "Add subagent packet contract."
+
+allowed_paths:
+  - "templates/.agent/subagent-packet.yml"
+  - "templates/scripts/validate-subagent-packet.sh"
+
+forbidden_paths:
+  - ".git/**"
+
+relevant_files:
+  - "validate-harness.sh"
+
+verification_required:
+  - "bash scripts/validate-subagent-packet.sh"
+
+expected_output_contract:
+  status_enum:
+    - DONE
+    - DONE_WITH_CONCERNS
+    - NEEDS_CONTEXT
+    - BLOCKED
+
+notes: ""

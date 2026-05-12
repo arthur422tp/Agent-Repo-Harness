@@ -1,0 +1,18 @@
+status: required
+
+red_phase:
+  command: "bash scripts/validate-task.sh"
+  observed_failure: "saw expected failure before implementation"
+
+green_phase:
+  command: "bash scripts/validate-task.sh"
+  observed_pass: "validation passed"
+
+refactor_phase:
+  command: ""
+  result: ""
+
+tests_added_or_changed:
+  - "validate-harness.sh"
+
+notes: ""

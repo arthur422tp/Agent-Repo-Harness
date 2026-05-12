@@ -462,7 +462,10 @@ bash templates/scripts/check-template-sync.sh
 
 ## 6. Validation Strategy
 
-Use `validate-harness.sh` as the CI entrypoint and expand it with focused fixtures:
+Use `validate-harness.sh` as the CI entrypoint and expand it with focused fixtures.
+Keep reusable validation fixtures under `tests/fixtures/validate-harness/` so the
+top-level shell runner stays focused on orchestration instead of embedded sample
+documents.
 
 - Unit-style script checks:
   - `scripts/lib/read-yaml.py` reads scalars, lists, nested maps, booleans, nulls, and quoted strings from harness-owned config.
@@ -531,6 +534,7 @@ Use `validate-harness.sh` as the CI entrypoint and expand it with focused fixtur
 **Acceptance criteria:**
 
 - `.agent/harness.yml` `verification.required` commands are read through `scripts/lib/read-yaml.py`.
+- Multiline repo-defined verification commands are either preserved and run completely or rejected clearly.
 - Existing `validate-harness.sh` tests still pass.
 - A fixture with two repo-defined verification commands runs both commands in order.
 - A fixture with malformed or unsupported verification config fails clearly.
@@ -559,7 +563,7 @@ bash templates/scripts/check-doc-links.sh
 - What statuses should block review completion by default: only `changes_requested`, or also `needs_context` and `concerns`?
 - Should `DONE_WITH_CONCERNS` subagent runs pass by default, warn by default, or be task-configurable?
 - How should `handoff.md` freshness be checked without creating a circular dependency with `agent-finish.sh`, which produces the run directory that handoff should reference?
-- Where should fixture tests live long term: embedded in `validate-harness.sh`, under `tests/fixtures/`, or under `examples/`?
+- How much additional fixture orchestration should remain in `validate-harness.sh` versus move into helper scripts under `validate/`?
 - Should `docs/agent/*` freshness metadata be required in installed target repos, or only in this harness repository?
 - How much adapter lifecycle guidance belongs in prompt files versus Claude Code skills versus `docs/agent/failure-recovery.md`?
 - Should examples be exact installed snapshots, teaching examples with allowed deltas, or both?

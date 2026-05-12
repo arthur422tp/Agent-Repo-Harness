@@ -1,0 +1,6 @@
+status: "in_progress"
+task:
+  goal: "reader should require task.status, not any status key"
+  allowed_paths: []
+  forbidden_paths: []
+  completion: {}

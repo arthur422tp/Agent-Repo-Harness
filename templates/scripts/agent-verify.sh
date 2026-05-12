@@ -115,15 +115,18 @@ extract_required_verification_entries() {
     return 1
   fi
 
+  # JSON lines preserve multiline command values; tab-separated rows do not.
   "$python_bin" "$reader" "$config_file" verification.required \
-    --optional --list-fields name command
+    --optional --list-fields-jsonl name command
 }
 
 run_configured_verification_checks() {
   local config_file="$1"
   local entries
+  local entry_json
   local label
   local command_string
+  local python_bin
 
   if ! entries="$(extract_required_verification_entries "$config_file")"; then
     echo
@@ -142,7 +145,29 @@ run_configured_verification_checks() {
   echo "Config: $config_file"
   echo "Repo-defined verification commands found."
 
-  while IFS=$'\t' read -r label command_string; do
+  if ! python_bin="$(find_python)"; then
+    echo "FAIL: repo-defined verification config"
+    echo "Reason: python is required to decode verification commands"
+    failures=$((failures + 1))
+    return 0
+  fi
+
+  while IFS= read -r entry_json; do
+    [ -n "${entry_json:-}" ] || continue
+
+    if ! label="$(printf '%s\n' "$entry_json" | "$python_bin" -c 'import json,sys; print(json.load(sys.stdin)["name"])')"; then
+      echo "FAIL: repo-defined verification config"
+      echo "Reason: could not decode verification command name"
+      failures=$((failures + 1))
+      continue
+    fi
+    if ! command_string="$(printf '%s\n' "$entry_json" | "$python_bin" -c 'import json,sys; print(json.load(sys.stdin)["command"])')"; then
+      echo "FAIL: repo-defined verification config"
+      echo "Reason: could not decode verification command"
+      failures=$((failures + 1))
+      continue
+    fi
+
     [ -n "${label:-}" ] || continue
     [ -n "${command_string:-}" ] || continue
 

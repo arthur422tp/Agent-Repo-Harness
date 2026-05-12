@@ -1,0 +1,6 @@
+verification:
+  required:
+    - name: multiline-check
+      command: |
+        printf '%s\n' first >> verification-output.txt
+        printf '%s\n' second >> verification-output.txt

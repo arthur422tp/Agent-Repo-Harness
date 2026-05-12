@@ -1,0 +1,7 @@
+task:
+  status: "almost_done"
+  goal: "type checks should reject invalid task shape"
+  allowed_paths: "src/**"
+  forbidden_paths: []
+  completion:
+    requires_verification: "yes"
