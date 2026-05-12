@@ -18,8 +18,9 @@ task and any special constraints.
 1. Read project harness files:
    - `agent.md`
    - `handoff.md`
+   - `.agent/task.yml`
    - `.agent/harness.yml`
-   - `.agent/policy.yml`
+   - applicable `.agent/policy.yml` entries
    - `docs/agent/known-issues.md` if relevant
    - `docs/agent/discoveries.md` if relevant
 
