@@ -92,6 +92,10 @@ assert_contains "$repo_root/adapters/codex/AGENTS.md" 'applicable `.agent/policy
 assert_contains "$repo_root/adapters/codex/codex-start-prompt.md" "Use staged context loading"
 assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" "## Context Loading Policy"
 assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" 'applicable `.agent/policy.yml` entries'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'Read `.agent/task.yml` for active task scope.'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'Read applicable `.agent/policy.yml` entries'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'before broad source inspection.'
+assert_not_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'Read `.agent/policy.yml` for high-risk areas and approvals.'
 assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_not_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/policy.yml` for high-risk areas and approval rules.'

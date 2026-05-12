@@ -13,8 +13,9 @@ installed.
 1. Read `CLAUDE.md` or `AGENTS.md` if present.
 2. Read `agent.md` for stable repo facts.
 3. Read `handoff.md` for current task state.
-4. Read `.agent/policy.yml` for high-risk areas and approvals.
-5. Read `.agent/task.yml` for active task scope.
+4. Read `.agent/task.yml` for active task scope.
+5. Read applicable `.agent/policy.yml` entries for high-risk areas and
+   approvals before broad source inspection.
 6. Run `scripts/agent-preflight.sh` if it exists.
 
 Keep reusable workflow in skills and keep task-specific instructions in the
