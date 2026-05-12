@@ -144,6 +144,13 @@ do
 done
 pass "required files installed"
 
+assert_contains "$target_root/AGENTS.md" "## Context Loading Policy"
+assert_contains "$target_root/AGENTS.md" "Start compact: read summaries and task boundaries before raw source."
+assert_contains "$target_root/AGENTS.md" "Expand only for files directly relevant to the current task."
+assert_contains "$target_root/CLAUDE.md" "## Context Loading Policy"
+assert_contains "$target_root/CLAUDE.md" "Start compact: read summaries and task boundaries before raw source."
+assert_contains "$target_root/CLAUDE.md" "Expand only for files directly relevant to the current task."
+
 (
   cd "$target_root"
   preflight_log="$target_root/agent-preflight.log"
