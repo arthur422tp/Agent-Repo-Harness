@@ -1,5 +1,6 @@
 # AGENTS.md
 
-Read `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`
-before editing. Run `scripts/agent-preflight.sh` first and
+Read `agent.md` and `handoff.md`. Read `.agent/task.yml` for scope and
+completion requirements, then read only applicable `.agent/policy.yml` entries
+for files you expect to touch. Run `scripts/agent-preflight.sh` first and
 `scripts/agent-finish.sh` before completion.

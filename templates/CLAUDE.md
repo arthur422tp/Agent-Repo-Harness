@@ -7,8 +7,9 @@ First steps:
 
 1. Read `agent.md`.
 2. Read `handoff.md`.
-3. Read `.agent/policy.yml`.
-4. Read `.agent/task.yml`.
+3. Read `.agent/task.yml` for task scope and completion requirements.
+4. Read `.agent/policy.yml` only for policy rules that apply to files you
+   expect to touch.
 5. If task flags require them, fill `.agent/acceptance.yml` and
    `.agent/review.yml` before completion.
 6. Run `scripts/agent-preflight.sh` before editing when available.
