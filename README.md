@@ -159,6 +159,10 @@ Codex:
 - install or copy `templates/AGENTS.md` to the target repo root
 - see `docs/codex-usage.md`
 - reusable adapter prompt: `adapters/codex/codex-start-prompt.md`
+- optional lifecycle prompts only, not auto-installed into target repos:
+  `adapters/codex/codex-repair-prompt.md`,
+  `adapters/codex/codex-verify-prompt.md`,
+  `adapters/codex/codex-handoff-prompt.md`
 
 Claude Code:
 
