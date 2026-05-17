@@ -113,6 +113,12 @@ assert_contains "$repo_root/adapters/codex/AGENTS.md" 'applicable `.agent/policy
 assert_contains "$repo_root/adapters/codex/codex-start-prompt.md" "Use staged context loading"
 assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'finish-summary.md'
 assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'failing gates'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'scope-result.txt'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'policy-result.txt'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'tdd-evidence-result.txt'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'review-result.txt'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'do not fabricate'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'explicit human approval'
 assert_contains "$repo_root/adapters/codex/codex-verify-prompt.md" 'agent-finish.sh --strict'
 assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'handoff.md'
 assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'finish-summary.md'
