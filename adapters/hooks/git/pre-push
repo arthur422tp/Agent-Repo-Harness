@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ ! -d scripts ]; then
+  echo "ERROR: Agent-Repo-Harness pre-push must run from a repo root with scripts/."
+  exit 1
+fi
+
+run_gate() {
+  echo "RUN: $*"
+  "$@"
+}
+
+echo "Agent-Repo-Harness pre-push: running strict finish gate."
+run_gate bash scripts/agent-finish.sh --strict
+echo "Agent-Repo-Harness pre-push: passed."

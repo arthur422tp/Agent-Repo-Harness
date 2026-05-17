@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ ! -d scripts ]; then
+  echo "ERROR: Agent-Repo-Harness pre-commit must run from a repo root with scripts/."
+  exit 1
+fi
+
+run_gate() {
+  echo "RUN: $*"
+  "$@"
+}
+
+run_optional_gate() {
+  if [ ! -f "$2" ]; then
+    echo "SKIP: $2 not found."
+    return 0
+  fi
+
+  run_gate "$@"
+}
+
+echo "Agent-Repo-Harness pre-commit: running lightweight gates."
+run_gate bash scripts/validate-config.sh
+run_gate bash scripts/validate-task.sh
+run_optional_gate bash scripts/check-doc-links.sh
+run_gate bash scripts/check-policy.sh --warn
+run_gate bash scripts/check-scope.sh --strict
+echo "Agent-Repo-Harness pre-commit: passed."

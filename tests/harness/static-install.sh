@@ -41,6 +41,9 @@ for required_path in \
   adapters/claude-code/.claude/skills/verification-gate/SKILL.md \
   adapters/claude-code/.claude/skills/handoff-update/SKILL.md \
   adapters/claude-code/.claude/skills/subagent-context-packet/SKILL.md \
+  adapters/hooks/README.md \
+  adapters/hooks/git/pre-commit \
+  adapters/hooks/git/pre-push \
   docs/agent-support-matrix.md \
   docs/config-format.md \
   docs/codex-usage.md \
@@ -89,6 +92,18 @@ do
   assert_exists "$repo_root/$required_path"
 done
 pass "new universal harness files present"
+
+for hook_path in \
+  adapters/hooks/git/pre-commit \
+  adapters/hooks/git/pre-push
+do
+  bash -n "$repo_root/$hook_path"
+  if [ ! -x "$repo_root/$hook_path" ]; then
+    echo "ERROR: expected hook adapter to be executable: $hook_path"
+    exit 1
+  fi
+done
+pass "Git hook adapters are valid"
 
 assert_contains "$repo_root/adapters/codex/AGENTS.md" "## Context Loading Policy"
 assert_contains "$repo_root/adapters/codex/AGENTS.md" 'applicable `.agent/policy.yml` entries'
@@ -190,6 +205,13 @@ do
   assert_exists "$target_root/$required_path"
 done
 pass "required files installed"
+
+assert_not_exists "$target_root/adapters/hooks/README.md"
+assert_not_exists "$target_root/adapters/hooks/git/pre-commit"
+assert_not_exists "$target_root/adapters/hooks/git/pre-push"
+assert_not_exists "$target_root/.git/hooks/pre-commit"
+assert_not_exists "$target_root/.git/hooks/pre-push"
+pass "hook adapters are not installed automatically"
 
 assert_contains "$target_root/AGENTS.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$target_root/AGENTS.md" 'Read `.agent/policy.yml` only for policy rules that apply'

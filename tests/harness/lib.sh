@@ -84,6 +84,15 @@ assert_exists() {
   fi
 }
 
+assert_not_exists() {
+  local path="$1"
+
+  if [ -e "$path" ]; then
+    echo "ERROR: expected path not to exist: $path"
+    exit 1
+  fi
+}
+
 copy_fixture() {
   local name="$1"
   local target="$2"
