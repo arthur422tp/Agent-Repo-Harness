@@ -11,6 +11,7 @@ Start with staged context loading:
    - `scope-result.txt` for `check-scope`
    - `policy-result.txt` for `check-policy`
    - `tdd-evidence-result.txt` for `check-tdd-evidence`
+   - `subagent-evidence-result.txt` for `check-subagent-evidence`
    - `acceptance-result.txt` for `check-acceptance`
    - `review-result.txt` for `check-review-evidence`
    - `verify-result.txt` for `agent-verify`
@@ -21,6 +22,7 @@ Recovery playbook by gate:
 - `check-scope`: make the smallest change that brings the work back inside the approved task scope. Do not broaden task scope without explicit human approval.
 - `check-policy`: fix the concrete policy violation named in `policy-result.txt`. Do not create or modify high-risk approval files unless the user explicitly instructs it.
 - `check-tdd-evidence`: restore real red/green evidence or rerun the required test flow. Do not fabricate TDD red/green evidence.
+- `check-subagent-evidence`: repair missing or invalid delegated-work evidence named in `subagent-evidence-result.txt`. Do not invent subagent runs, statuses, packets, or results.
 - `check-acceptance`: satisfy the stated acceptance gap with the smallest implementation or documentation change needed.
 - `check-review-evidence`: update review evidence honestly. Do not fabricate review approval or fake reviewer sign-off.
 - `agent-verify`: fix the specific verification failure reported in `verify-result.txt` and rerun the relevant checks.

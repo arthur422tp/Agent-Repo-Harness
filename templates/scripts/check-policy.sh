@@ -246,6 +246,7 @@ fi
 
 structured_approval_detected=0
 
+# Helper may print structured approval errors; strict-mode failure messaging stays here.
 detect_high_risk_approval || true
 
 if [ "$approval_detected" -eq 1 ]; then

@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Sourced by check-policy.sh. Requires caller to define python_bin, reader,
+# matched_files_file, read_yaml_value(), read_yaml_list(), approval_detected,
+# and approval_source.
+
 structured_approval_file=".agent/approvals/high-risk-approved.yml"
 legacy_approval_file=".agent/approvals/high-risk-approved"
 

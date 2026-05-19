@@ -45,6 +45,9 @@ assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'failing gate
 assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'scope-result.txt'
 assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'policy-result.txt'
 assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'tdd-evidence-result.txt'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'check-subagent-evidence'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'subagent-evidence-result.txt'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'Do not invent subagent runs'
 assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'review-result.txt'
 assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'do not fabricate'
 assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'explicit human approval'
@@ -82,4 +85,5 @@ assert_contains "$repo_root/adapters/claude-code/.claude/skills/verify-harness-c
 assert_contains "$repo_root/adapters/claude-code/.claude/skills/handoff-update/SKILL.md" 'finish-summary.md'
 assert_contains "$repo_root/adapters/claude-code/.claude/skills/handoff-update/SKILL.md" 'Repair outcome'
 assert_not_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'Read `.agent/policy.yml` for high-risk areas and approvals.'
+assert_contains "$repo_root/templates/scripts/lib/policy-approval.sh" 'Requires caller to define'
 pass "adapter prompts and skills stay in sync"
