@@ -15,6 +15,7 @@ git init -q "$finish_acceptance_review_root"
   cp "$repo_root/templates/scripts/check-tdd-evidence.sh" scripts/check-tdd-evidence.sh
   cp "$repo_root/templates/scripts/check-acceptance.sh" scripts/check-acceptance.sh
   cp "$repo_root/templates/scripts/check-review-evidence.sh" scripts/check-review-evidence.sh
+  cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
@@ -60,6 +61,7 @@ git init -q "$finish_acceptance_review_root"
   assert_file_contains "$finish_acceptance_review_root" "acceptance-result.txt" "OK: criterion finish-evidence"
   assert_file_contains "$finish_acceptance_review_root" "review-result.txt" "Review evidence is required."
   assert_file_contains "$finish_acceptance_review_root" "review-result.txt" "OK: review evidence"
+  assert_file_contains "$finish_acceptance_review_root" "subagent-evidence-result.txt" "Subagent evidence is not required."
 )
 pass "finish gate acceptance and review evidence"
 
@@ -77,6 +79,7 @@ git init -q "$finish_strict_root"
   cp "$repo_root/templates/scripts/check-tdd-evidence.sh" scripts/check-tdd-evidence.sh
   cp "$repo_root/templates/scripts/check-acceptance.sh" scripts/check-acceptance.sh
   cp "$repo_root/templates/scripts/check-review-evidence.sh" scripts/check-review-evidence.sh
+  cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
@@ -123,6 +126,8 @@ git init -q "$finish_strict_root"
   assert_file_contains "$finish_strict_root" "acceptance-result.txt" "Acceptance check is not required."
   assert_file_contains "$finish_strict_root" "review-result.txt" "Exit status: 0"
   assert_file_contains "$finish_strict_root" "review-result.txt" "Review evidence is not required."
+  assert_file_contains "$finish_strict_root" "subagent-evidence-result.txt" "Exit status: 0"
+  assert_file_contains "$finish_strict_root" "subagent-evidence-result.txt" "Subagent evidence is not required."
   assert_file_contains "$finish_strict_root" "verify-result.txt" "Exit status: 0"
   assert_file_contains "$finish_strict_root" "verify-result.txt" "Output:"
   assert_file_contains "$finish_strict_root" "changed-files.txt" "src/billing/invoice.js"
@@ -145,6 +150,7 @@ git init -q "$tdd_required_failure_root"
   cp "$repo_root/templates/scripts/check-tdd-evidence.sh" scripts/check-tdd-evidence.sh
   cp "$repo_root/templates/scripts/check-acceptance.sh" scripts/check-acceptance.sh
   cp "$repo_root/templates/scripts/check-review-evidence.sh" scripts/check-review-evidence.sh
+  cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
@@ -173,9 +179,58 @@ git init -q "$tdd_required_failure_root"
   assert_file_contains "$tdd_required_failure_root" "tdd-evidence-result.txt" "red_phase.command must be non-empty"
   assert_file_contains "$tdd_required_failure_root" "acceptance-result.txt" "Acceptance check is not required."
   assert_file_contains "$tdd_required_failure_root" "review-result.txt" "Review evidence is not required."
+  assert_file_contains "$tdd_required_failure_root" "subagent-evidence-result.txt" "Subagent evidence is not required."
   assert_file_contains "$tdd_required_failure_root" "verify-result.txt" "Exit status: 0"
 )
 pass "finish gate strict TDD evidence failure"
+
+echo
+echo "== Finish gate strict subagent evidence failure =="
+subagent_required_failure_root="$tmp_root/subagent-required-failure"
+rm -rf "$subagent_required_failure_root"
+mkdir -p "$subagent_required_failure_root/.agent" "$subagent_required_failure_root/scripts/lib"
+git init -q "$subagent_required_failure_root"
+(
+  cd "$subagent_required_failure_root"
+  cp "$repo_root/templates/agent.md" agent.md
+  cp "$repo_root/templates/.agent/subagent-packet.yml" .agent/subagent-packet.yml
+  cp "$repo_root/templates/scripts/check-agent-md.sh" scripts/check-agent-md.sh
+  cp "$repo_root/templates/scripts/check-scope.sh" scripts/check-scope.sh
+  cp "$repo_root/templates/scripts/check-policy.sh" scripts/check-policy.sh
+  cp "$repo_root/templates/scripts/check-tdd-evidence.sh" scripts/check-tdd-evidence.sh
+  cp "$repo_root/templates/scripts/check-acceptance.sh" scripts/check-acceptance.sh
+  cp "$repo_root/templates/scripts/check-review-evidence.sh" scripts/check-review-evidence.sh
+  cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
+  cp "$repo_root/templates/scripts/validate-subagent-packet.sh" scripts/validate-subagent-packet.sh
+  cp "$repo_root/templates/scripts/validate-subagent-run.sh" scripts/validate-subagent-run.sh
+  cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
+  cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  chmod +x scripts/*.sh
+  printf '%s\n' \
+    'task:' \
+    '  completion:' \
+    '    requires_subagent_evidence: true' \
+    > .agent/task.yml
+  printf '%s\n' 'risk_files:' '  high: []' > .agent/policy.yml
+  git config user.email "test@example.com"
+  git config user.name "Test User"
+  git add agent.md .agent/task.yml .agent/policy.yml .agent/subagent-packet.yml scripts
+  git commit -q -m "Add harness files"
+  finish_log="$subagent_required_failure_root/agent-finish-subagent-failure.log"
+  if bash scripts/agent-finish.sh --strict >"$finish_log" 2>&1; then
+    echo "ERROR: expected finish gate subagent evidence failure"
+    exit 1
+  fi
+  assert_contains "$finish_log" "Subagent evidence is required."
+  assert_contains "$finish_log" "SUBAGENT_EVIDENCE_RESULT=fail"
+  assert_contains "$finish_log" "AGENT_FINISH_RESULT=fail"
+  assert_run_evidence_files "$subagent_required_failure_root"
+  assert_finish_summary_contract "$subagent_required_failure_root" "fail"
+  assert_file_contains "$subagent_required_failure_root" "subagent-evidence-result.txt" "Exit status: 1"
+  assert_file_contains "$subagent_required_failure_root" "subagent-evidence-result.txt" "no valid subagent run evidence found"
+)
+pass "finish gate strict subagent evidence failure"
 
 echo
 echo "== Finish gate without git repository =="
@@ -190,6 +245,7 @@ mkdir -p "$finish_nongit_root/.agent" "$finish_nongit_root/scripts/lib"
   cp "$repo_root/templates/scripts/check-tdd-evidence.sh" scripts/check-tdd-evidence.sh
   cp "$repo_root/templates/scripts/check-acceptance.sh" scripts/check-acceptance.sh
   cp "$repo_root/templates/scripts/check-review-evidence.sh" scripts/check-review-evidence.sh
+  cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
@@ -200,6 +256,7 @@ mkdir -p "$finish_nongit_root/.agent" "$finish_nongit_root/scripts/lib"
   assert_file_contains "$finish_nongit_root" "tdd-evidence-result.txt" "TDD evidence is not required."
   assert_file_contains "$finish_nongit_root" "acceptance-result.txt" "Acceptance check is not required."
   assert_file_contains "$finish_nongit_root" "review-result.txt" "Review evidence is not required."
+  assert_file_contains "$finish_nongit_root" "subagent-evidence-result.txt" "Subagent evidence is not required."
   assert_file_contains "$finish_nongit_root" "changed-files.txt" "Not inside a git repository"
   assert_file_contains "$finish_nongit_root" "git-diff-stat.txt" "Not inside a git repository"
 )

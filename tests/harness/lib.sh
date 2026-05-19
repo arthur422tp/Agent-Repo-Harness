@@ -155,6 +155,7 @@ assert_run_evidence_files() {
     tdd-evidence-result.txt \
     acceptance-result.txt \
     review-result.txt \
+    subagent-evidence-result.txt \
     verify-result.txt \
     changed-files.txt \
     git-diff-stat.txt
@@ -180,6 +181,7 @@ assert_finish_summary_contract() {
   assert_file_contains "$root" "finish-summary.md" "| check-tdd-evidence |"
   assert_file_contains "$root" "finish-summary.md" "| check-acceptance |"
   assert_file_contains "$root" "finish-summary.md" "| check-review-evidence |"
+  assert_file_contains "$root" "finish-summary.md" "| check-subagent-evidence |"
   assert_file_contains "$root" "finish-summary.md" "| agent-verify |"
   assert_file_contains "$root" "finish-summary.md" "check-agent-md-result.txt"
   assert_file_contains "$root" "finish-summary.md" "scope-result.txt"
@@ -187,6 +189,7 @@ assert_finish_summary_contract() {
   assert_file_contains "$root" "finish-summary.md" "tdd-evidence-result.txt"
   assert_file_contains "$root" "finish-summary.md" "acceptance-result.txt"
   assert_file_contains "$root" "finish-summary.md" "review-result.txt"
+  assert_file_contains "$root" "finish-summary.md" "subagent-evidence-result.txt"
   assert_file_contains "$root" "finish-summary.md" "verify-result.txt"
   assert_file_contains "$root" "finish-summary.md" "changed-files.txt"
   assert_file_contains "$root" "finish-summary.md" "git-diff-stat.txt"

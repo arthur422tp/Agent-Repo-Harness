@@ -47,6 +47,7 @@ policy_result_file="$run_dir/policy-result.txt"
 tdd_evidence_result_file="$run_dir/tdd-evidence-result.txt"
 acceptance_result_file="$run_dir/acceptance-result.txt"
 review_result_file="$run_dir/review-result.txt"
+subagent_evidence_result_file="$run_dir/subagent-evidence-result.txt"
 verify_result_file="$run_dir/verify-result.txt"
 changed_files_file="$run_dir/changed-files.txt"
 diff_stat_file="$run_dir/git-diff-stat.txt"
@@ -59,6 +60,7 @@ policy_status=""
 tdd_evidence_status=""
 acceptance_status=""
 review_status=""
+subagent_evidence_status=""
 verify_status=""
 
 mkdir -p "$run_dir"
@@ -140,6 +142,7 @@ write_summary() {
     echo "| check-tdd-evidence | $tdd_evidence_status | $tdd_evidence_result_file |"
     echo "| check-acceptance | $acceptance_status | $acceptance_result_file |"
     echo "| check-review-evidence | $review_status | $review_result_file |"
+    echo "| check-subagent-evidence | $subagent_evidence_status | $subagent_evidence_result_file |"
     echo "| agent-verify | $verify_status | $verify_result_file |"
     echo
     echo "## Changed Files"
@@ -217,6 +220,8 @@ if [ "$mode" = "strict" ]; then
   acceptance_status="$last_status"
   run_gate "check-review-evidence" "$review_result_file" bash scripts/check-review-evidence.sh
   review_status="$last_status"
+  run_gate "check-subagent-evidence" "$subagent_evidence_result_file" bash scripts/check-subagent-evidence.sh
+  subagent_evidence_status="$last_status"
   run_gate "agent-verify" "$verify_result_file" bash scripts/agent-verify.sh --strict
   verify_status="$last_status"
 else
@@ -232,6 +237,8 @@ else
   acceptance_status="$last_status"
   run_gate "check-review-evidence" "$review_result_file" bash scripts/check-review-evidence.sh
   review_status="$last_status"
+  run_gate "check-subagent-evidence" "$subagent_evidence_result_file" bash scripts/check-subagent-evidence.sh
+  subagent_evidence_status="$last_status"
   run_gate "agent-verify" "$verify_result_file" bash scripts/agent-verify.sh --best-effort
   verify_status="$last_status"
 fi

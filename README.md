@@ -119,14 +119,15 @@ bash scripts/check-scope.sh
 bash scripts/check-tdd-evidence.sh
 bash scripts/check-acceptance.sh
 bash scripts/check-review-evidence.sh
+bash scripts/check-subagent-evidence.sh
 bash scripts/agent-verify.sh --best-effort
 bash scripts/agent-finish.sh --best-effort
 ```
 
 `agent-finish.sh` writes evidence under `.agent/runs/<timestamp>/`, including
 `finish-summary.md`, gate result files such as `tdd-evidence-result.txt`,
-`acceptance-result.txt`, `review-result.txt`, `changed-files.txt`, and
-`git-diff-stat.txt`.
+`acceptance-result.txt`, `review-result.txt`,
+`subagent-evidence-result.txt`, `changed-files.txt`, and `git-diff-stat.txt`.
 
 TDD evidence is opt-in per task. When `.agent/task.yml` contains
 `completion.requires_tdd_evidence: true`, fill `.agent/tdd-evidence.yml` with
@@ -149,8 +150,13 @@ and is not mandatory for ordinary tasks.
 Subagent run evidence is also optional. Controller agents can record delegated
 execution results under `.agent/subagent-runs/<timestamp>-<role>-<task_id>/`
 with `packet.yml`, `result.md`, and `status.txt`, then validate the directory
-with `scripts/validate-subagent-run.sh`. This convention records trace evidence
-only; it is not wired into `agent-finish.sh` yet.
+with `scripts/validate-subagent-run.sh`.
+
+Subagent evidence remains optional by default. It only becomes a completion
+gate when `.agent/task.yml` contains
+`completion.requires_subagent_evidence: true`. In that opt-in mode,
+`scripts/check-subagent-evidence.sh` and `scripts/agent-finish.sh` require at
+least one valid subagent run directory under `.agent/subagent-runs/`.
 
 ## Agent Entrypoints
 

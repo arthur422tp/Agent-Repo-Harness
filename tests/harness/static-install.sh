@@ -64,6 +64,7 @@ for required_path in \
   templates/scripts/check-tdd-evidence.sh \
   templates/scripts/check-acceptance.sh \
   templates/scripts/check-review-evidence.sh \
+  templates/scripts/check-subagent-evidence.sh \
   templates/.agent/tdd-evidence.yml \
   templates/.agent/approvals/high-risk-approved.yml \
   templates/.agent/acceptance.yml \
@@ -224,6 +225,7 @@ for required_path in \
   scripts/check-tdd-evidence.sh \
   scripts/check-acceptance.sh \
   scripts/check-review-evidence.sh \
+  scripts/check-subagent-evidence.sh \
   scripts/agent-verify.sh \
   scripts/lib/read-yaml.py \
   scripts/check-doc-links.sh \
@@ -332,6 +334,40 @@ assert_contains "$repo_root/skills/repo-context-bootstrap/SKILL.md" "Build compa
     .agent/subagent-runs/20260502-120000-implementer-phase-1-4 \
     >"$subagent_run_valid_log" 2>&1
   assert_contains "$subagent_run_valid_log" "SUBAGENT_RUN_RESULT=pass"
+  subagent_evidence_skip_log="$target_root/subagent-evidence-skip.log"
+  bash scripts/check-subagent-evidence.sh >"$subagent_evidence_skip_log" 2>&1
+  assert_contains "$subagent_evidence_skip_log" "Subagent evidence is not required."
+  assert_contains "$subagent_evidence_skip_log" "SUBAGENT_EVIDENCE_RESULT=skip"
+  printf '%s\n' \
+    'task:' \
+    '  status: "in_progress"' \
+    '  goal: "Validate subagent evidence gate."' \
+    '  allowed_paths: []' \
+    '  forbidden_paths: []' \
+    '  completion:' \
+    '    requires_subagent_evidence: true' \
+    > .agent/task.yml
+  rm -rf .agent/subagent-runs
+  mkdir -p .agent/subagent-runs
+  subagent_evidence_fail_log="$target_root/subagent-evidence-fail.log"
+  if bash scripts/check-subagent-evidence.sh >"$subagent_evidence_fail_log" 2>&1; then
+    echo "ERROR: expected required subagent evidence failure"
+    exit 1
+  fi
+  assert_contains "$subagent_evidence_fail_log" "Subagent evidence is required."
+  assert_contains "$subagent_evidence_fail_log" "FAIL: no valid subagent run evidence found"
+  assert_contains "$subagent_evidence_fail_log" "SUBAGENT_EVIDENCE_RESULT=fail"
+  mkdir -p .agent/subagent-runs/20260502-120000-implementer-phase-1-4
+  cp .agent/subagent-packet.yml \
+    .agent/subagent-runs/20260502-120000-implementer-phase-1-4/packet.yml
+  printf '%s\n' "# Subagent Result" \
+    > .agent/subagent-runs/20260502-120000-implementer-phase-1-4/result.md
+  printf '%s\n' "DONE" \
+    > .agent/subagent-runs/20260502-120000-implementer-phase-1-4/status.txt
+  subagent_evidence_pass_log="$target_root/subagent-evidence-pass.log"
+  bash scripts/check-subagent-evidence.sh >"$subagent_evidence_pass_log" 2>&1
+  assert_contains "$subagent_evidence_pass_log" "Subagent evidence is required."
+  assert_contains "$subagent_evidence_pass_log" "SUBAGENT_EVIDENCE_RESULT=pass"
   bash scripts/check-agent-md.sh agent.md
   verify_log="$target_root/agent-verify-pass.log"
   bash scripts/agent-verify.sh --best-effort >"$verify_log" 2>&1
@@ -363,6 +399,8 @@ assert_contains "$repo_root/skills/repo-context-bootstrap/SKILL.md" "Build compa
   assert_file_contains "$target_root" "acceptance-result.txt" "Acceptance check is not required."
   assert_file_contains "$target_root" "review-result.txt" "Exit status: 0"
   assert_file_contains "$target_root" "review-result.txt" "Review evidence is not required."
+  assert_file_contains "$target_root" "subagent-evidence-result.txt" "Exit status: 0"
+  assert_file_contains "$target_root" "subagent-evidence-result.txt" "Subagent evidence is required."
   assert_file_contains "$target_root" "verify-result.txt" "Exit status: 0"
   assert_file_contains "$target_root" "verify-result.txt" "Output:"
   assert_file_contains "$target_root" "changed-files.txt" "AGENTS.md"

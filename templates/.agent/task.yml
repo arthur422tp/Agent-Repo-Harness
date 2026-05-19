@@ -24,6 +24,9 @@ task:
     requires_handoff_update: true
     requires_acceptance_check: false
     requires_review_evidence: false
+    requires_subagent_evidence: false
+    # Set true only when this task must prove delegated execution via at least
+    # one validated .agent/subagent-runs/<run>/ directory.
 
 last_verified:
   command: ""
