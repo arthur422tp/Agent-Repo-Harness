@@ -33,5 +33,10 @@ General repair rules:
 
 After the fix:
 1. Rerun `scripts/agent-finish.sh`.
-2. Update `handoff.md` with the latest run directory, failure cause, fix applied, and any remaining blockers.
+2. Classify the rerun outcome as exactly one of:
+   - `REPAIRED_AND_PASSED`
+   - `REPAIRED_BUT_STILL_FAILING`
+   - `BLOCKED_NEEDS_HUMAN`
+   - `SCOPE_OR_POLICY_NEEDS_APPROVAL`
+3. Update `handoff.md` with the repair outcome, latest run directory, failure cause, fix applied, and any remaining blockers.
 ```

@@ -17,7 +17,9 @@ Use Agent-Repo-Harness with Codex as a short repo-local contract.
 Optional lifecycle prompts are also available under `adapters/codex/`:
 
 - `codex-repair-prompt.md` for focused post-failure repair after
-  `scripts/agent-finish.sh`
+  `scripts/agent-finish.sh`, including a repair outcome convention
+  (`REPAIRED_AND_PASSED`, `REPAIRED_BUT_STILL_FAILING`,
+  `BLOCKED_NEEDS_HUMAN`, or `SCOPE_OR_POLICY_NEEDS_APPROVAL`)
 - `codex-verify-prompt.md` for strict completion verification
 - `codex-handoff-prompt.md` for concise durable `handoff.md` updates
 

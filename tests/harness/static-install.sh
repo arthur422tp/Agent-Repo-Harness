@@ -119,9 +119,24 @@ assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'tdd-evidence
 assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'review-result.txt'
 assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'do not fabricate'
 assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'explicit human approval'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'REPAIRED_AND_PASSED'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'REPAIRED_BUT_STILL_FAILING'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'BLOCKED_NEEDS_HUMAN'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'SCOPE_OR_POLICY_NEEDS_APPROVAL'
+assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'exactly one of'
 assert_contains "$repo_root/adapters/codex/codex-verify-prompt.md" 'agent-finish.sh --strict'
 assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'handoff.md'
 assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'finish-summary.md'
+assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'Repair outcome'
+assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'Latest run directory'
+assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'Failing gate before repair'
+assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'Fix applied'
+assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'Remaining blocker'
+assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'Next action'
+assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'REPAIRED_AND_PASSED'
+assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'REPAIRED_BUT_STILL_FAILING'
+assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'BLOCKED_NEEDS_HUMAN'
+assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'SCOPE_OR_POLICY_NEEDS_APPROVAL'
 assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" "## Context Loading Policy"
 assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" 'applicable `.agent/policy.yml` entries'
 assert_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'Read `.agent/task.yml` for active task scope.'
@@ -163,6 +178,7 @@ assert_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'applicable `.agent/polic
 assert_not_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'Before editing, inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`.'
 assert_not_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'Inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`.'
 assert_contains "$repo_root/docs/codex-usage.md" "staged context loading"
+assert_contains "$repo_root/docs/codex-usage.md" "repair outcome"
 assert_contains "$repo_root/docs/superpowers-integration.md" "staged context loading"
 
 echo
