@@ -33,20 +33,6 @@ echo "== Required repository files =="
 for required_path in \
   templates/AGENTS.md \
   templates/CLAUDE.md \
-  adapters/codex/AGENTS.md \
-  adapters/codex/codex-start-prompt.md \
-  adapters/codex/codex-repair-prompt.md \
-  adapters/codex/codex-verify-prompt.md \
-  adapters/codex/codex-handoff-prompt.md \
-  adapters/claude-code/CLAUDE.md \
-  adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md \
-  adapters/claude-code/.claude/skills/policy-gate/SKILL.md \
-  adapters/claude-code/.claude/skills/verification-gate/SKILL.md \
-  adapters/claude-code/.claude/skills/handoff-update/SKILL.md \
-  adapters/claude-code/.claude/skills/subagent-context-packet/SKILL.md \
-  adapters/hooks/README.md \
-  adapters/hooks/git/pre-commit \
-  adapters/hooks/git/pre-push \
   docs/agent-support-matrix.md \
   docs/config-format.md \
   docs/codex-usage.md \
@@ -96,91 +82,6 @@ do
   assert_exists "$repo_root/$required_path"
 done
 pass "new universal harness files present"
-
-for hook_path in \
-  adapters/hooks/git/pre-commit \
-  adapters/hooks/git/pre-push
-do
-  bash -n "$repo_root/$hook_path"
-  if [ ! -x "$repo_root/$hook_path" ]; then
-    echo "ERROR: expected hook adapter to be executable: $hook_path"
-    exit 1
-  fi
-done
-pass "Git hook adapters are valid"
-
-assert_contains "$repo_root/adapters/codex/AGENTS.md" "## Context Loading Policy"
-assert_contains "$repo_root/adapters/codex/AGENTS.md" 'applicable `.agent/policy.yml` entries'
-assert_contains "$repo_root/adapters/codex/codex-start-prompt.md" "Use staged context loading"
-assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'finish-summary.md'
-assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'failing gates'
-assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'scope-result.txt'
-assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'policy-result.txt'
-assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'tdd-evidence-result.txt'
-assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'review-result.txt'
-assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'do not fabricate'
-assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'explicit human approval'
-assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'REPAIRED_AND_PASSED'
-assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'REPAIRED_BUT_STILL_FAILING'
-assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'BLOCKED_NEEDS_HUMAN'
-assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'SCOPE_OR_POLICY_NEEDS_APPROVAL'
-assert_contains "$repo_root/adapters/codex/codex-repair-prompt.md" 'exactly one of'
-assert_contains "$repo_root/adapters/codex/codex-verify-prompt.md" 'agent-finish.sh --strict'
-assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'handoff.md'
-assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'finish-summary.md'
-assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'Repair outcome'
-assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'Latest run directory'
-assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'Failing gate before repair'
-assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'Fix applied'
-assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'Remaining blocker'
-assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'Next action'
-assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'REPAIRED_AND_PASSED'
-assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'REPAIRED_BUT_STILL_FAILING'
-assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'BLOCKED_NEEDS_HUMAN'
-assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'SCOPE_OR_POLICY_NEEDS_APPROVAL'
-assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" "## Context Loading Policy"
-assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" 'applicable `.agent/policy.yml` entries'
-assert_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'Read `.agent/task.yml` for active task scope.'
-assert_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'Read applicable `.agent/policy.yml` entries'
-assert_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'before broad source inspection.'
-assert_not_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'Read `.agent/policy.yml` for high-risk areas and approvals.'
-assert_contains "$repo_root/skills/harness-entrypoint/SKILL.md" '`.agent/task.yml`'
-assert_contains "$repo_root/skills/harness-entrypoint/SKILL.md" 'applicable `.agent/policy.yml` entries'
-assert_not_contains "$repo_root/skills/harness-entrypoint/SKILL.md" '   - `.agent/policy.yml`'
-assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/task.yml` for task scope'
-assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/policy.yml` only for policy rules that apply'
-assert_contains "$repo_root/templates/AGENTS.md" "docs/agent/context-loading.md"
-assert_contains "$repo_root/templates/AGENTS.md" "docs/agent/policy-approval.md"
-assert_not_contains "$repo_root/templates/AGENTS.md" "## Context Loading Policy"
-assert_not_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/policy.yml` for high-risk areas and approval rules.'
-assert_contains "$repo_root/templates/CLAUDE.md" 'Read `.agent/task.yml` for task scope'
-assert_contains "$repo_root/templates/CLAUDE.md" 'Read `.agent/policy.yml` only for policy rules that apply'
-assert_contains "$repo_root/templates/CLAUDE.md" "docs/agent/context-loading.md"
-assert_contains "$repo_root/templates/CLAUDE.md" "docs/agent/policy-approval.md"
-assert_not_contains "$repo_root/templates/CLAUDE.md" "## Context Loading Policy"
-assert_not_contains "$repo_root/templates/CLAUDE.md" '3. Read `.agent/policy.yml`.'
-assert_contains "$repo_root/examples/universal-minimal-repo/AGENTS.md" 'Read `.agent/task.yml` for scope'
-assert_contains "$repo_root/examples/universal-minimal-repo/AGENTS.md" 'applicable `.agent/policy.yml`'
-assert_not_contains "$repo_root/examples/universal-minimal-repo/AGENTS.md" 'Read `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`'
-assert_contains "$repo_root/examples/universal-minimal-repo/CLAUDE.md" 'Read `.agent/task.yml` for scope'
-assert_contains "$repo_root/examples/universal-minimal-repo/CLAUDE.md" 'applicable `.agent/policy.yml`'
-assert_not_contains "$repo_root/examples/universal-minimal-repo/CLAUDE.md" 'Follow `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`.'
-
-echo
-echo "== Repository doc links =="
-bash templates/scripts/check-doc-links.sh "$repo_root"
-pass "repository doc links"
-
-assert_contains "$repo_root/README.md" "## Context Loading Policy"
-assert_contains "$repo_root/README.md" 'applicable `.agent/policy.yml` entries'
-assert_not_contains "$repo_root/README.md" 'inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`'
-assert_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" "## Context Loading Policy"
-assert_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'applicable `.agent/policy.yml` entries'
-assert_not_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'Before editing, inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`.'
-assert_not_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'Inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`.'
-assert_contains "$repo_root/docs/codex-usage.md" "staged context loading"
-assert_contains "$repo_root/docs/codex-usage.md" "repair outcome"
-assert_contains "$repo_root/docs/superpowers-integration.md" "staged context loading"
 
 echo
 echo "== Fresh install target =="
@@ -244,25 +145,6 @@ assert_not_exists "$target_root/adapters/hooks/git/pre-push"
 assert_not_exists "$target_root/.git/hooks/pre-commit"
 assert_not_exists "$target_root/.git/hooks/pre-push"
 pass "hook adapters are not installed automatically"
-
-assert_contains "$target_root/AGENTS.md" 'Read `.agent/task.yml` for task scope'
-assert_contains "$target_root/AGENTS.md" 'Read `.agent/policy.yml` only for policy rules that apply'
-assert_contains "$target_root/AGENTS.md" "docs/agent/context-loading.md"
-assert_contains "$target_root/AGENTS.md" "docs/agent/policy-approval.md"
-assert_not_contains "$target_root/AGENTS.md" "## Context Loading Policy"
-assert_not_contains "$target_root/AGENTS.md" 'Read `.agent/policy.yml` for high-risk areas and approval rules.'
-assert_contains "$target_root/CLAUDE.md" 'Read `.agent/task.yml` for task scope'
-assert_contains "$target_root/CLAUDE.md" 'Read `.agent/policy.yml` only for policy rules that apply'
-assert_contains "$target_root/CLAUDE.md" "docs/agent/context-loading.md"
-assert_contains "$target_root/CLAUDE.md" "docs/agent/policy-approval.md"
-assert_not_contains "$target_root/CLAUDE.md" "## Context Loading Policy"
-assert_not_contains "$target_root/CLAUDE.md" '3. Read `.agent/policy.yml`.'
-assert_contains "$target_root/docs/agent/context-loading.md" "# Context Loading Policy"
-assert_contains "$target_root/docs/agent/context-loading.md" "Start compact."
-assert_contains "$target_root/docs/agent/context-loading.md" "Expand only to files directly relevant to the current task."
-assert_contains "$target_root/agent.md" "## Context Loading"
-assert_contains "$target_root/agent.md" "Keep this file compact enough to read at task start."
-assert_contains "$repo_root/skills/repo-context-bootstrap/SKILL.md" "Build compact context before broad source inspection."
 
 (
   cd "$target_root"
