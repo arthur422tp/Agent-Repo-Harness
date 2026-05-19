@@ -19,7 +19,8 @@ Claude Code:
 - Entrypoint: `CLAUDE.md`
 - Adapter assets: `adapters/claude-code/CLAUDE.md`, `.claude/skills/*`
 - Notes: Claude Code can use project skills for harness startup, policy,
-  verification, handoff, and subagent packets.
+  repair after failed gates, strict verification, handoff updates, and
+  subagent packets.
 
 Superpowers-compatible agents:
 - Entrypoint: skills

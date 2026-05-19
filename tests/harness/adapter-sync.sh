@@ -13,6 +13,8 @@ for required_path in \
   adapters/claude-code/CLAUDE.md \
   adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md \
   adapters/claude-code/.claude/skills/policy-gate/SKILL.md \
+  adapters/claude-code/.claude/skills/repair-failed-harness-run/SKILL.md \
+  adapters/claude-code/.claude/skills/verify-harness-completion/SKILL.md \
   adapters/claude-code/.claude/skills/verification-gate/SKILL.md \
   adapters/claude-code/.claude/skills/handoff-update/SKILL.md \
   adapters/claude-code/.claude/skills/subagent-context-packet/SKILL.md \
@@ -69,5 +71,15 @@ assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" 'applicable `.agent/
 assert_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'Read `.agent/task.yml` for active task scope.'
 assert_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'Read applicable `.agent/policy.yml` entries'
 assert_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'before broad source inspection.'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/repair-failed-harness-run/SKILL.md" 'finish-summary.md'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/repair-failed-harness-run/SKILL.md" 'failing gates'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/repair-failed-harness-run/SKILL.md" 'check-subagent-evidence'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/repair-failed-harness-run/SKILL.md" 'do not fabricate'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/repair-failed-harness-run/SKILL.md" 'explicit human approval'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/repair-failed-harness-run/SKILL.md" 'REPAIRED_AND_PASSED'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/repair-failed-harness-run/SKILL.md" 'BLOCKED_NEEDS_HUMAN'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/verify-harness-completion/SKILL.md" 'agent-finish.sh --strict'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/handoff-update/SKILL.md" 'finish-summary.md'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/handoff-update/SKILL.md" 'Repair outcome'
 assert_not_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'Read `.agent/policy.yml` for high-risk areas and approvals.'
 pass "adapter prompts and skills stay in sync"
