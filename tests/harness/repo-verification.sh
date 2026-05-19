@@ -32,6 +32,7 @@ git init -q "$verify_config_root"
     > scripts/second-check.sh
   mkdir -p scripts/lib
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  cp "$repo_root/templates/scripts/lib/policy-approval.sh" scripts/lib/policy-approval.sh
   chmod +x scripts/check-policy.sh scripts/second-check.sh
   verify_log="$verify_config_root/agent-verify-config.log"
   bash "$repo_root/templates/scripts/agent-verify.sh" >"$verify_log" 2>&1

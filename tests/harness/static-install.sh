@@ -46,6 +46,7 @@ for required_path in \
   templates/scripts/validate-config.sh \
   templates/scripts/validate-task.sh \
   templates/scripts/lib/read-yaml.py \
+  templates/scripts/lib/policy-approval.sh \
   templates/scripts/check-doc-links.sh \
   templates/scripts/check-tdd-evidence.sh \
   templates/scripts/check-acceptance.sh \
@@ -129,6 +130,7 @@ for required_path in \
   scripts/check-subagent-evidence.sh \
   scripts/agent-verify.sh \
   scripts/lib/read-yaml.py \
+  scripts/lib/policy-approval.sh \
   scripts/check-doc-links.sh \
   scripts/validate-config.sh \
   scripts/validate-task.sh \
