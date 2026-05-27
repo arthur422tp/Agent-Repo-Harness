@@ -43,7 +43,40 @@ Agent-Repo-Harness is not:
 - a semantic correctness guarantee
 
 It makes completion expectations explicit; it does not decide whether a
-feature is correct beyond the checks configured by the repository.
+feature is correct beyond the checks configured by the repository. See
+[Guardrails, Not A Sandbox](#guardrails-not-a-sandbox) for the operational
+boundary.
+
+## Platform Support
+
+Agent-Repo-Harness targets Unix-like shell environments. Its primary supported
+environments are Linux, macOS, WSL, and Git Bash. Native PowerShell support is
+not currently a goal.
+
+## Verification Strategy
+
+`scripts/agent-verify.sh` includes convenience heuristics for common Node, Go,
+Python, and Docker Compose repositories. Real projects should prefer
+repo-owned verification commands in `.agent/harness.yml`, for example:
+
+```yaml
+verification:
+  required:
+    - name: "unit tests"
+      command: "uv run pytest tests/unit"
+    - name: "lint"
+      command: "uv run ruff check ."
+```
+
+When project-specific tooling differs from the default heuristics, the
+repo-defined verification commands are the source of truth.
+
+## Guardrails, Not A Sandbox
+
+Scope and policy gates are process guardrails, not security boundaries. They
+inspect Git changes and repo-local policy patterns; they do not isolate the
+filesystem, network, secrets, or command side effects, and they do not
+guarantee semantic correctness.
 
 ## How It Works
 

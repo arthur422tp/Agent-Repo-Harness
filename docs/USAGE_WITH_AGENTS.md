@@ -54,6 +54,20 @@ TDD evidence is required only when `.agent/task.yml` contains
 `.agent/tdd-evidence.yml` with the red command/failure, green command/pass, and
 the tests added or changed before running `scripts/agent-finish.sh`.
 
+## Operational Boundaries
+
+The harness targets Unix-like shell environments, primarily Linux, macOS, WSL,
+and Git Bash. Native PowerShell support is not currently a goal.
+
+`scripts/agent-verify.sh` provides convenience heuristics for common project
+shapes. When a repository declares project-specific verification commands in
+`.agent/harness.yml`, those commands are the source of truth.
+
+Scope and policy gates are process guardrails, not security boundaries. They
+inspect Git changes and repo-local policy patterns; they do not isolate the
+filesystem, network, secrets, or command side effects, and do not guarantee
+semantic correctness.
+
 ## Context Loading Policy
 
 Use staged context loading to keep agent runs token-efficient:
@@ -221,4 +235,5 @@ support:
 
 Do not repeat the full harness workflow in every task prompt. Do not put a
 current implementation plan in `agent.md`. Do not treat the harness as a
-sandbox, runtime orchestrator, MCP server, or semantic correctness guarantee.
+runtime orchestrator or MCP server; see [Operational Boundaries](#operational-boundaries)
+for its guardrail and verification limits.
