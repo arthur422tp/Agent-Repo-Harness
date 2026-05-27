@@ -1,5 +1,7 @@
 # Agent-Repo-Harness
 
+[![CI](https://github.com/arthur422tp/Agent-Repo-Harness/actions/workflows/ci.yml/badge.svg)](https://github.com/arthur422tp/Agent-Repo-Harness/actions/workflows/ci.yml)
+
 **Agent-Repo-Harness is a repo-local completion gate for AI coding agents.**
 
 It gives Codex, Claude Code, and generic AI coding agents a small set of
@@ -222,7 +224,8 @@ agent workflows and support boundaries.
 
 ## Validation
 
-Validate this repository:
+Validation runs in CI on every push and pull request. Run the same repository
+validation locally with:
 
 ```bash
 bash validate-harness.sh
