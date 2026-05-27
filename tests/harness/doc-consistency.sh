@@ -9,6 +9,16 @@ echo "== Repository doc links =="
 bash templates/scripts/check-doc-links.sh "$repo_root"
 pass "repository doc links"
 
+assert_exists "$repo_root/VERSION"
+assert_exists "$repo_root/CHANGELOG.md"
+assert_exists "$repo_root/docs/versioning.md"
+assert_contains "$repo_root/VERSION" "0.1.0"
+assert_contains "$repo_root/README.md" "CHANGELOG.md"
+assert_contains "$repo_root/README.md" "docs/versioning.md"
+assert_contains "$repo_root/CHANGELOG.md" "v0.1.0"
+assert_contains "$repo_root/docs/versioning.md" "Backward compatibility is best-effort before v1.0."
+pass "release version documentation is present and referenced"
+
 assert_contains "$repo_root/README.md" "## Context Loading Policy"
 assert_contains "$repo_root/README.md" 'applicable `.agent/policy.yml` entries'
 assert_not_contains "$repo_root/README.md" 'inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`'

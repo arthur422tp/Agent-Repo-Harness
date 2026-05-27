@@ -19,6 +19,14 @@ and records durable evidence for the run. Updating `handoff.md` with that
 outcome is a documented workflow step, not a check enforced by the finish
 gate.
 
+## Versioning
+
+Current version: `0.1.0`.
+
+See [CHANGELOG.md](CHANGELOG.md) for changes and
+[docs/versioning.md](docs/versioning.md) for versioning and upgrade
+expectations.
+
 ## Try It in Three Steps
 
 1. Preview and install the harness into a target repository.
