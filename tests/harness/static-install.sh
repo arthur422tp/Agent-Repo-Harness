@@ -94,9 +94,21 @@ dry_run_log="$tmp_root/install-dry-run.log"
 bash install-agent-harness.sh --dry-run "$target_root" >"$dry_run_log" 2>&1
 assert_contains "$dry_run_log" "DRY-RUN copy:"
 assert_contains "$dry_run_log" "Install complete."
+assert_contains "$dry_run_log" "Next:"
+assert_contains "$dry_run_log" "cd $target_root"
+assert_contains "$dry_run_log" ".agent/task.yml"
+assert_contains "$dry_run_log" "bash scripts/agent-finish.sh --best-effort"
+assert_contains "$dry_run_log" "Advanced gates"
 pass "installer dry run"
 
-bash install-agent-harness.sh "$target_root"
+install_log="$tmp_root/install.log"
+bash install-agent-harness.sh "$target_root" >"$install_log" 2>&1
+assert_contains "$install_log" "Install complete."
+assert_contains "$install_log" "Next:"
+assert_contains "$install_log" "cd $target_root"
+assert_contains "$install_log" ".agent/task.yml"
+assert_contains "$install_log" "bash scripts/agent-finish.sh --best-effort"
+assert_contains "$install_log" "Advanced gates"
 pass "installer copy"
 
 echo
