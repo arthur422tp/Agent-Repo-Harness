@@ -74,6 +74,7 @@ for required_path in \
   tests/fixtures/validate-harness/verification-required-multiline.yml \
   tests/fixtures/validate-harness/verification-required.yml \
   tests/fixtures/validate-harness/yaml-reader-harness.yml \
+  examples/strict-tdd-task.yml \
   examples/universal-minimal-repo/AGENTS.md \
   examples/universal-minimal-repo/CLAUDE.md \
   examples/universal-minimal-repo/.agent/harness.yml \
@@ -140,6 +141,9 @@ do
   assert_exists "$target_root/$required_path"
 done
 pass "required files installed"
+
+assert_contains "$target_root/.agent/task.yml" 'requires_tdd_evidence: false'
+pass "installed default TDD evidence gate is opt-in"
 
 assert_not_exists "$target_root/adapters/hooks/README.md"
 assert_not_exists "$target_root/adapters/hooks/git/pre-commit"

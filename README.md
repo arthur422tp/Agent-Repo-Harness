@@ -31,10 +31,6 @@ bash scripts/agent-finish.sh --best-effort
 ```
 For real tasks, edit .agent/task.yml, then run scripts/agent-finish.sh again.
 
-Note: the installed default task requires TDD evidence, so this first
-`scripts/agent-finish.sh --best-effort` run can report missing evidence until
-you fill or configure the task evidence.
-
 ## What It Is Not
 
 Agent-Repo-Harness is not:

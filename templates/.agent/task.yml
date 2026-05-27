@@ -17,7 +17,8 @@ task:
   # max_diff_lines: 250
 
   completion:
-    requires_tdd_evidence: true
+    # Set true for teams or tasks that require recorded TDD evidence.
+    requires_tdd_evidence: false
     requires_scope_check: true
     requires_policy_check: true
     requires_verification: true

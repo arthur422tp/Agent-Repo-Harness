@@ -1,0 +1,14 @@
+task:
+  status: "not_started"
+  goal: "Run a task with strict TDD evidence enabled."
+  allowed_paths: []
+  forbidden_paths: []
+  completion:
+    # Use this for teams or tasks that require recorded TDD evidence.
+    requires_tdd_evidence: true
+
+last_verified:
+  command: ""
+  result: ""
+
+blockers: []
