@@ -123,7 +123,8 @@ fi
 echo "Install complete."
 echo
 echo "Next:"
-echo "1. cd $target"
+escaped_target="$(printf '%q' "$target")"
+echo "1. cd $escaped_target"
 echo "2. Review .agent/task.yml and adjust the task goal/scope."
 echo "3. Run bash scripts/agent-finish.sh --best-effort."
 echo "Advanced gates, policy approval, adapters, and subagent workflows are documented in README.md and docs/."

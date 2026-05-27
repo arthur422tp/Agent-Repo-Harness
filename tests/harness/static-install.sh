@@ -85,30 +85,59 @@ do
 done
 pass "new universal harness files present"
 
+assert_installer_completion_block() {
+  local log_file="$1"
+  local target_path="$2"
+  local expected_block
+  local actual_block
+
+  expected_block=$(cat <<EOF
+Install complete.
+
+Next:
+1. cd $(printf '%q' "$target_path")
+2. Review .agent/task.yml and adjust the task goal/scope.
+3. Run bash scripts/agent-finish.sh --best-effort.
+Advanced gates, policy approval, adapters, and subagent workflows are documented in README.md and docs/.
+EOF
+)
+
+  actual_block="$(awk 'found {print} /^Install complete\.$/{found=1; print}' "$log_file" | head -n 7)"
+
+  if [ "$actual_block" != "$expected_block" ]; then
+    echo "ERROR: installer completion block mismatch"
+    echo "--- expected ---"
+    printf '%s\n' "$expected_block"
+    echo "--- actual ---"
+    printf '%s\n' "$actual_block"
+    echo "--- full log ---"
+    cat "$log_file"
+    return 1
+  fi
+
+  if grep -Fq "Next steps:" "$log_file"; then
+    echo "ERROR: old installer completion trailer was present"
+    echo "--- full log ---"
+    cat "$log_file"
+    return 1
+  fi
+}
+
 echo
 echo "== Fresh install target =="
+target_root="$tmp_root/install target"
 mkdir -p "$target_root"
 git init -q "$target_root"
 
 dry_run_log="$tmp_root/install-dry-run.log"
 bash install-agent-harness.sh --dry-run "$target_root" >"$dry_run_log" 2>&1
 assert_contains "$dry_run_log" "DRY-RUN copy:"
-assert_contains "$dry_run_log" "Install complete."
-assert_contains "$dry_run_log" "Next:"
-assert_contains "$dry_run_log" "cd $target_root"
-assert_contains "$dry_run_log" ".agent/task.yml"
-assert_contains "$dry_run_log" "bash scripts/agent-finish.sh --best-effort"
-assert_contains "$dry_run_log" "Advanced gates"
+assert_installer_completion_block "$dry_run_log" "$target_root"
 pass "installer dry run"
 
 install_log="$tmp_root/install.log"
 bash install-agent-harness.sh "$target_root" >"$install_log" 2>&1
-assert_contains "$install_log" "Install complete."
-assert_contains "$install_log" "Next:"
-assert_contains "$install_log" "cd $target_root"
-assert_contains "$install_log" ".agent/task.yml"
-assert_contains "$install_log" "bash scripts/agent-finish.sh --best-effort"
-assert_contains "$install_log" "Advanced gates"
+assert_installer_completion_block "$install_log" "$target_root"
 pass "installer copy"
 
 echo
