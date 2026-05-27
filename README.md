@@ -1,5 +1,7 @@
 # Agent-Repo-Harness
 
+[English](README.md) | [繁體中文](README.zh-TW.md)
+
 [![CI](https://github.com/arthur422tp/Agent-Repo-Harness/actions/workflows/ci.yml/badge.svg)](https://github.com/arthur422tp/Agent-Repo-Harness/actions/workflows/ci.yml)
 
 **Agent-Repo-Harness is a repo-local completion gate for AI coding agents.**
