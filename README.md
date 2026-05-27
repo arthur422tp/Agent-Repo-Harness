@@ -27,6 +27,9 @@ See [CHANGELOG.md](CHANGELOG.md) for changes and
 [docs/versioning.md](docs/versioning.md) for versioning and upgrade
 expectations.
 
+For public repository metadata and the `v0.1.0` release checklist, see
+[docs/public-packaging.md](docs/public-packaging.md).
+
 ## Try It in Three Steps
 
 1. Preview and install the harness into a target repository.
