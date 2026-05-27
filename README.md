@@ -1,75 +1,71 @@
 # Agent-Repo-Harness
 
-Agent-Repo-Harness is a lightweight repo-local harness framework for AI coding
-agents such as Codex, Claude Code, Superpowers-compatible agents, and generic
-coding agents.
+**Agent-Repo-Harness is a repo-local completion gate for AI coding agents.**
 
-It provides a universal core plus adapter files:
+It gives Codex, Claude Code, and generic AI coding agents a small set of
+repo-owned contracts and scripts to check work before claiming it is complete.
+It helps AI coding agents avoid claiming completion without:
 
-- universal repo memory: `agent.md`, `handoff.md`, `.agent/task.yml`,
-  optional `.agent/subagent-packet.yml`
-- universal gates: `scripts/check-policy.sh`, `scripts/check-scope.sh`,
-  `scripts/check-tdd-evidence.sh`, `scripts/check-doc-links.sh`,
-  `scripts/agent-verify.sh`, `scripts/agent-finish.sh`
-- universal entrypoints: `AGENTS.md`, `CLAUDE.md`
-- adapters: `adapters/codex/`, `adapters/claude-code/`
-- preserved Superpowers-compatible skills: `skills/*`
+- staying inside task scope
+- passing policy checks
+- running verification
+- leaving durable handoff evidence
 
-The harness keeps stable repo facts separate from task state:
+`scripts/agent-finish.sh` is the canonical completion gate. It checks local
+scope and policy rules, applies any enabled evidence gates, runs verification,
+and records durable evidence for the run. Updating `handoff.md` with that
+outcome is a documented workflow step, not a check enforced by the finish
+gate.
 
-- `agent.md`: stable repo map and operating rules
-- `handoff.md`: current task state and next action
-- `.agent/task.yml`: machine-readable current task scope
-- `.agent/tdd-evidence.yml`: structured TDD evidence, required only when
-  `.agent/task.yml` sets `completion.requires_tdd_evidence: true`
-- `.agent/acceptance.yml`: optional acceptance criteria evidence, required
-  only when `.agent/task.yml` sets
-  `completion.requires_acceptance_check: true`
-- `.agent/review.yml`: optional review evidence, required only when
-  `.agent/task.yml` sets `completion.requires_review_evidence: true`
-- `.agent/subagent-packet.yml`: optional controller-agent to subagent handoff
-  packet for repeatable delegated work
-- `.agent/subagent-runs/`: optional durable evidence from delegated subagent
-  runs; not part of `agent-finish.sh` yet
+## Try It in Three Steps
+
+1. Preview and install the harness into a target repository.
+2. Enter that target repository.
+3. Run the completion gate once to see the workflow.
+
+```bash
+bash install-agent-harness.sh --dry-run /path/to/target-repo
+bash install-agent-harness.sh /path/to/target-repo
+cd /path/to/target-repo
+bash scripts/agent-finish.sh --best-effort
+```
+For real tasks, edit .agent/task.yml, then run scripts/agent-finish.sh again.
+
+Note: the installed default task requires TDD evidence, so this first
+`scripts/agent-finish.sh --best-effort` run can report missing evidence until
+you fill or configure the task evidence.
 
 ## What It Is Not
 
-Agent-Repo-Harness does not provide:
+Agent-Repo-Harness is not:
 
 - a full agent runtime
 - an MCP server
-- sandboxing
-- full runtime orchestration
-- semantic correctness guarantees
-- a replacement for Superpowers
+- a sandbox
+- a semantic correctness guarantee
 
-It makes repo expectations explicit and gives agents lightweight gates to run
-before they claim completion.
+It makes completion expectations explicit; it does not decide whether a
+feature is correct beyond the checks configured by the repository.
 
-`scripts/agent-finish.sh` is the canonical completion gate. It runs the local
-scope, policy, optional acceptance/review, and verification checks and records
-durable evidence for the run.
+## How It Works
 
-Structured high-risk approval is preferred; installed projects document the
-approval contract in `docs/agent/policy-approval.md`.
+The harness keeps stable repository facts separate from current task state:
 
-## Current Status
+- `agent.md`: stable repository map and operating rules
+- `handoff.md`: current task state and next action
+- `.agent/task.yml`: machine-readable current task scope and enabled gates
+- `.agent/policy.yml`: repo-local policy checks and protected paths
+- `.agent/tdd-evidence.yml`: optional structured TDD evidence
+- `.agent/acceptance.yml`: optional acceptance criteria evidence
+- `.agent/review.yml`: optional review evidence
+- `.agent/subagent-packet.yml`: optional controller-to-subagent handoff packet
+- `.agent/subagent-runs/`: optional durable evidence from delegated runs
 
-This repository is evolving from a Superpowers Companion MVP into a universal
-repo-local harness core with agent adapters.
+Installed entrypoints are `AGENTS.md` and `CLAUDE.md`. Agents use these files
+with the durable context above, then finish work through
+`scripts/agent-finish.sh`.
 
-Superpowers remains supported. Existing Superpowers-compatible skills stay in
-place and remain documented.
-
-## Superpowers Integration
-
-Agent-Repo-Harness is designed to work alongside Superpowers. Superpowers
-provides workflow discipline; this harness provides repo-local contracts,
-gates, and evidence.
-
-See [docs/superpowers-integration.md](docs/superpowers-integration.md).
-
-## Quick Start
+## Setup Details
 
 Prerequisites:
 
@@ -77,14 +73,7 @@ Prerequisites:
 - Python (`python3` preferred; `python` accepted)
 - Git for scope, diff, and finish evidence in normal repository workflows
 
-Install the universal templates into a target repo:
-
-```bash
-bash install-agent-harness.sh --dry-run /path/to/target-repo
-bash install-agent-harness.sh /path/to/target-repo
-```
-
-Then fill in:
+After installation, fill in the repository-specific content in:
 
 - `agent.md`
 - `handoff.md`
@@ -94,19 +83,57 @@ Then fill in:
 Harness config files use a small shared-reader YAML subset documented in
 [docs/config-format.md](docs/config-format.md).
 
-After reviewing and customizing the installed files, commit a clean harness
-baseline before starting feature work:
+Before starting feature work, review the installed files and commit a clean
+harness baseline:
 
 ```bash
 git add .
 git commit -m "Initialize project with Agent-Repo-Harness baseline"
 ```
 
-Scope gates compare current changes against git state. Committing the baseline
-keeps newly installed harness scaffold files from being reported as task
-changes.
+Scope gates compare task changes against Git state. A committed baseline keeps
+newly installed scaffold files from being reported as feature-task changes.
 
-Run the gates:
+Structured high-risk approval is preferred. Installed projects document its
+contract in `docs/agent/policy-approval.md`; agents must not record approval
+without explicit human instruction.
+
+## Evidence And Optional Gates
+
+`agent-finish.sh` writes evidence under `.agent/runs/<timestamp>/`, including
+`finish-summary.md`, gate result files such as `tdd-evidence-result.txt`,
+`acceptance-result.txt`, `review-result.txt`,
+`subagent-evidence-result.txt`, `changed-files.txt`, and `git-diff-stat.txt`.
+
+TDD evidence is opt-in per task. When `.agent/task.yml` contains
+`completion.requires_tdd_evidence: true`, fill `.agent/tdd-evidence.yml` with
+non-empty red and green phase commands/results plus at least one changed test
+entry before running `scripts/agent-finish.sh`.
+
+Acceptance and review evidence are also opt-in. When `.agent/task.yml`
+contains `completion.requires_acceptance_check: true`, fill
+`.agent/acceptance.yml` with at least one met criterion and concrete evidence
+or verification. When it contains
+`completion.requires_review_evidence: true`, fill `.agent/review.yml` with an
+approving status, reviewer, evidence, and no blocking concerns.
+
+Subagent packets are optional. Fill `.agent/subagent-packet.yml` when a
+controller agent needs to hand precise task text, allowed paths, required
+verification, and expected status values to a fresh subagent. Validate it with
+`scripts/validate-subagent-packet.sh`. Packet validation is not itself part of
+`agent-finish.sh`.
+
+Controller agents can optionally record delegated results under
+`.agent/subagent-runs/<timestamp>-<role>-<task_id>/` with `packet.yml`,
+`result.md`, and `status.txt`, then validate a directory with
+`scripts/validate-subagent-run.sh`. This becomes a completion gate only when
+`.agent/task.yml` contains `completion.requires_subagent_evidence: true`; in
+that mode, `scripts/check-subagent-evidence.sh` and `scripts/agent-finish.sh`
+require at least one valid run directory.
+
+## Useful Commands
+
+Run individual checks when diagnosing a task or integrating the harness:
 
 ```bash
 bash scripts/agent-preflight.sh
@@ -124,75 +151,67 @@ bash scripts/agent-verify.sh --best-effort
 bash scripts/agent-finish.sh --best-effort
 ```
 
-`agent-finish.sh` writes evidence under `.agent/runs/<timestamp>/`, including
-`finish-summary.md`, gate result files such as `tdd-evidence-result.txt`,
-`acceptance-result.txt`, `review-result.txt`,
-`subagent-evidence-result.txt`, `changed-files.txt`, and `git-diff-stat.txt`.
+## Typical Workflow
 
-TDD evidence is opt-in per task. When `.agent/task.yml` contains
-`completion.requires_tdd_evidence: true`, fill `.agent/tdd-evidence.yml` with
-non-empty red and green phase commands/results plus at least one changed test
-entry before running `scripts/agent-finish.sh`.
+1. Open the target repository in an AI coding agent.
+2. Ask it to read `AGENTS.md` or `CLAUDE.md`.
+3. Define scoped work in `.agent/task.yml`.
+4. Run `scripts/agent-preflight.sh`.
+5. Make changes within the task boundaries.
+6. Run `scripts/agent-finish.sh`.
+7. Update `handoff.md` with changed files, verification results, blockers, and
+   the next recommended action.
 
-Acceptance and review evidence are also opt-in per task. When
-`.agent/task.yml` contains `completion.requires_acceptance_check: true`, fill
-`.agent/acceptance.yml` with at least one met criterion and concrete evidence
-or verification. When it contains `completion.requires_review_evidence: true`,
-fill `.agent/review.yml` with an approving status, reviewer, evidence, and no
-blocking concerns.
+## Context Loading Policy
 
-Subagent packets are optional. Fill `.agent/subagent-packet.yml` when a
-controller agent needs to hand precise task text, allowed paths, required
-verification, and expected status values to a fresh subagent. Validate it with
-`scripts/validate-subagent-packet.sh`. It is not part of `agent-finish.sh` yet
-and is not mandatory for ordinary tasks.
+Agent-Repo-Harness is designed for staged context loading. Agents should read
+compact, durable context first:
 
-Subagent run evidence is also optional. Controller agents can record delegated
-execution results under `.agent/subagent-runs/<timestamp>-<role>-<task_id>/`
-with `packet.yml`, `result.md`, and `status.txt`, then validate the directory
-with `scripts/validate-subagent-run.sh`.
+1. `AGENTS.md` or the installed adapter entrypoint
+2. `agent.md`
+3. `handoff.md`
+4. `.agent/task.yml`
+5. applicable `.agent/policy.yml` entries
 
-Subagent evidence remains optional by default. It only becomes a completion
-gate when `.agent/task.yml` contains
-`completion.requires_subagent_evidence: true`. In that opt-in mode,
-`scripts/check-subagent-evidence.sh` and `scripts/agent-finish.sh` require at
-least one valid subagent run directory under `.agent/subagent-runs/`.
+They can then expand with `rg`, file lists, and targeted file ranges for the
+active task. `scripts/collect-context.sh` prints compact startup context by
+default; `scripts/collect-context.sh --full` includes optional known issues
+and discoveries for deeper debugging.
 
-## Agent Entrypoints
+## Agent Compatibility
 
 Codex:
 
-- install or copy `templates/AGENTS.md` to the target repo root
-- see `docs/codex-usage.md`
-- reusable adapter prompt: `adapters/codex/codex-start-prompt.md`
-- optional lifecycle prompts only, not auto-installed into target repos:
+- install or copy `templates/AGENTS.md` to the target repository root
+- see [docs/codex-usage.md](docs/codex-usage.md)
+- reusable prompt: `adapters/codex/codex-start-prompt.md`
+- optional lifecycle prompts, not auto-installed into target repositories:
   `adapters/codex/codex-repair-prompt.md`,
-  `adapters/codex/codex-verify-prompt.md`,
+  `adapters/codex/codex-verify-prompt.md`, and
   `adapters/codex/codex-handoff-prompt.md`
 
 Claude Code:
 
-- install or copy `templates/CLAUDE.md` to the target repo root
+- install or copy `templates/CLAUDE.md` to the target repository root
 - optional project skills live under
   `adapters/claude-code/.claude/skills/`
 
-Superpowers:
-
-- use the existing Superpowers-compatible skills in `skills/`
-- keep using Superpowers for workflow discipline such as planning, TDD,
-  subagent-driven development, review, and branch finishing
-
-Generic agents:
+Generic AI coding agents:
 
 - read `AGENTS.md`
 - inspect `agent.md`, `handoff.md`, `.agent/task.yml`, and applicable
   `.agent/policy.yml` entries
-- fill `.agent/subagent-packet.yml` only when delegating work to a subagent
-- optionally record delegated results under `.agent/subagent-runs/`
 - run the scripts directly
 
+Superpowers-compatible agents remain supported. The existing skills in
+`skills/` provide workflow discipline such as planning, TDD, delegation,
+review, and branch finishing; this harness supplies repo-local contracts,
+gates, and evidence. See
+[docs/superpowers-integration.md](docs/superpowers-integration.md).
+
 See [docs/USAGE_WITH_AGENTS.md](docs/USAGE_WITH_AGENTS.md) and
-[docs/agent-support-matrix.md](docs/agent-support-matrix.md).
+[docs/agent-support-matrix.md](docs/agent-support-matrix.md) for detailed
+agent workflows and support boundaries.
 
 ## Repository Contents
 
@@ -205,29 +224,6 @@ See [docs/USAGE_WITH_AGENTS.md](docs/USAGE_WITH_AGENTS.md) and
 - `install-agent-harness.sh`: template installer
 - `validate-harness.sh`: repository validation and smoke tests
 
-## Typical Workflow
-
-1. Open the target repo in the coding agent.
-2. Ask the agent to read `AGENTS.md` or `CLAUDE.md`.
-3. Fill `.agent/task.yml` for scoped work.
-4. Run `scripts/agent-preflight.sh`.
-5. Make changes within task boundaries.
-6. Run `scripts/agent-finish.sh`.
-7. Update `handoff.md` with changed files, verification results, blockers, and
-   next recommended action.
-
-## Context Loading Policy
-
-Agent-Repo-Harness is designed for staged context loading. Agents should read compact, durable context first:
-
-1. `AGENTS.md` or the installed adapter entrypoint
-2. `agent.md`
-3. `handoff.md`
-4. `.agent/task.yml`
-5. applicable `.agent/policy.yml` entries
-
-Then they should expand with `rg`, file lists, and targeted file ranges for the active task. `scripts/collect-context.sh` prints compact startup context by default; `scripts/collect-context.sh --full` includes optional known issues and discoveries for deeper debugging.
-
 ## Validation
 
 Validate this repository:
@@ -236,7 +232,7 @@ Validate this repository:
 bash validate-harness.sh
 ```
 
-The validation checks script syntax, YAML and JSON syntax, required harness
-files, install smoke tests, local doc links, scope and policy behavior,
-configured verification, subagent packet/run validation, TDD evidence behavior,
-acceptance/review gate behavior, and finish evidence creation.
+Validation checks script syntax, YAML and JSON syntax, required harness files,
+install smoke tests, local document links, scope and policy behavior,
+configured verification, subagent packet/run validation, TDD evidence
+behavior, acceptance/review gate behavior, and finish evidence creation.
