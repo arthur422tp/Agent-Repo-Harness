@@ -102,7 +102,7 @@ Advanced gates, policy approval, adapters, and subagent workflows are documented
 EOF
 )
 
-  actual_block="$(awk 'found {print} /^Install complete\.$/{found=1; print}' "$log_file" | head -n 7)"
+  actual_block="$(awk 'found {print} /^Install complete\.$/{found=1; print}' "$log_file")"
 
   if [ "$actual_block" != "$expected_block" ]; then
     echo "ERROR: installer completion block mismatch"
@@ -136,7 +136,12 @@ assert_installer_completion_block "$dry_run_log" "$target_root"
 pass "installer dry run"
 
 install_log="$tmp_root/install.log"
-bash install-agent-harness.sh "$target_root" >"$install_log" 2>&1
+if ! bash install-agent-harness.sh "$target_root" >"$install_log" 2>&1; then
+  echo "ERROR: installer copy failed"
+  echo "--- full log ---"
+  cat "$install_log"
+  exit 1
+fi
 assert_installer_completion_block "$install_log" "$target_root"
 pass "installer copy"
 
