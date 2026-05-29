@@ -1,0 +1,13 @@
+current_task: ""
+current_state: ""
+confirmed_facts: []
+changed_files: []
+verification: []
+acceptance:
+  result: ""
+  evidence: ""
+review:
+  result: ""
+  evidence: ""
+open_issues: []
+next_recommended_action: ""

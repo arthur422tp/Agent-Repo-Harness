@@ -96,7 +96,8 @@ guarantee semantic correctness.
 The harness keeps stable repository facts separate from current task state:
 
 - `agent.md`: stable repository map and operating rules
-- `handoff.md`: current task state and next action
+- `handoff.md`: human-readable current task handoff and next action
+- `.agent/handoff.yml`: optional machine-readable handoff state
 - `.agent/task.yml`: machine-readable current task scope and enabled gates
 - `.agent/policy.yml`: repo-local policy checks and protected paths
 - `.agent/tdd-evidence.yml`: optional structured TDD evidence
@@ -183,6 +184,7 @@ Run individual checks when diagnosing a task or integrating the harness:
 bash scripts/agent-preflight.sh
 bash scripts/validate-config.sh
 bash scripts/validate-task.sh
+bash scripts/validate-handoff.sh
 bash scripts/validate-subagent-packet.sh
 bash scripts/check-doc-links.sh
 bash scripts/check-policy.sh
@@ -204,7 +206,8 @@ bash scripts/agent-finish.sh --best-effort
 5. Make changes within the task boundaries.
 6. Run `scripts/agent-finish.sh`.
 7. Update `handoff.md` with changed files, verification results, blockers, and
-   the next recommended action.
+   the next recommended action. Optionally mirror structured state in
+   `.agent/handoff.yml`.
 
 ## Context Loading Policy
 

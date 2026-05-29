@@ -5,6 +5,7 @@
 > log.
 > If the repo uses machine-readable gates, mirror the current task state in
 > `.agent/task.yml` as well.
+> Machine-readable handoff state can be mirrored in `.agent/handoff.yml`.
 
 ## Current Task
 TODO

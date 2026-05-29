@@ -36,6 +36,7 @@ assert_contains "$repo_root/README.md" "Unix-like shell environments"
 assert_contains "$repo_root/README.md" "WSL"
 assert_contains "$repo_root/README.md" "## Verification Strategy"
 assert_contains "$repo_root/README.md" '.agent/harness.yml'
+assert_contains "$repo_root/README.md" '.agent/handoff.yml'
 assert_contains "$repo_root/README.md" "## Guardrails, Not A Sandbox"
 assert_contains "$repo_root/README.md" "process guardrails"
 assert_contains "$repo_root/README.md" "not security boundaries"

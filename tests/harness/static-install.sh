@@ -49,9 +49,11 @@ for required_path in \
   templates/scripts/lib/policy-approval.sh \
   templates/scripts/check-doc-links.sh \
   templates/scripts/check-tdd-evidence.sh \
+  templates/scripts/validate-handoff.sh \
   templates/scripts/check-acceptance.sh \
   templates/scripts/check-review-evidence.sh \
   templates/scripts/check-subagent-evidence.sh \
+  templates/.agent/handoff.yml \
   templates/.agent/tdd-evidence.yml \
   templates/.agent/approvals/high-risk-approved.yml \
   templates/.agent/acceptance.yml \
@@ -155,6 +157,7 @@ for required_path in \
   .agent/harness.yml \
   .agent/policy.yml \
   .agent/task.yml \
+  .agent/handoff.yml \
   .agent/acceptance.yml \
   .agent/review.yml \
   .agent/tdd-evidence.yml \
@@ -181,6 +184,7 @@ for required_path in \
   scripts/check-doc-links.sh \
   scripts/validate-config.sh \
   scripts/validate-task.sh \
+  scripts/validate-handoff.sh \
   scripts/validate-subagent-packet.sh \
   scripts/validate-subagent-run.sh
 do
@@ -207,6 +211,93 @@ pass "hook adapters are not installed automatically"
   bash scripts/validate-config.sh
   bash scripts/validate-task.sh
   bash scripts/check-doc-links.sh
+  handoff_pass_log="$target_root/handoff-pass.log"
+  bash scripts/validate-handoff.sh >"$handoff_pass_log" 2>&1
+  assert_contains "$handoff_pass_log" "HANDOFF_RESULT=pass"
+  handoff_missing_log="$target_root/handoff-missing.log"
+  if bash scripts/validate-handoff.sh .agent/missing-handoff.yml \
+    >"$handoff_missing_log" 2>&1
+  then
+    echo "ERROR: expected missing handoff file validation failure"
+    exit 1
+  fi
+  assert_contains "$handoff_missing_log" "handoff file does not exist"
+  assert_contains "$handoff_missing_log" "HANDOFF_RESULT=fail"
+  printf '%s\n' \
+    'current_task: "Missing required fields."' \
+    > .agent/handoff-missing-required.yml
+  handoff_missing_required_log="$target_root/handoff-missing-required.log"
+  if bash scripts/validate-handoff.sh .agent/handoff-missing-required.yml \
+    >"$handoff_missing_required_log" 2>&1
+  then
+    echo "ERROR: expected missing required field handoff validation failure"
+    exit 1
+  fi
+  assert_contains "$handoff_missing_required_log" "missing required field: current_state"
+  assert_contains "$handoff_missing_required_log" "HANDOFF_RESULT=fail"
+  printf '%s\n' \
+    'current_task: "Invalid changed files."' \
+    'current_state: "Testing."' \
+    'changed_files: "templates/handoff.md"' \
+    'verification: []' \
+    > .agent/handoff-bad-changed-files.yml
+  handoff_bad_changed_files_log="$target_root/handoff-bad-changed-files.log"
+  if bash scripts/validate-handoff.sh .agent/handoff-bad-changed-files.yml \
+    >"$handoff_bad_changed_files_log" 2>&1
+  then
+    echo "ERROR: expected changed_files type handoff validation failure"
+    exit 1
+  fi
+  assert_contains "$handoff_bad_changed_files_log" "changed_files must be a list"
+  assert_contains "$handoff_bad_changed_files_log" "HANDOFF_RESULT=fail"
+  printf '%s\n' \
+    'current_task: "Invalid verification."' \
+    'current_state: "Testing."' \
+    'changed_files: []' \
+    'verification: "bash validate-harness.sh"' \
+    > .agent/handoff-bad-verification.yml
+  handoff_bad_verification_log="$target_root/handoff-bad-verification.log"
+  if bash scripts/validate-handoff.sh .agent/handoff-bad-verification.yml \
+    >"$handoff_bad_verification_log" 2>&1
+  then
+    echo "ERROR: expected verification type handoff validation failure"
+    exit 1
+  fi
+  assert_contains "$handoff_bad_verification_log" "verification must be a list"
+  assert_contains "$handoff_bad_verification_log" "HANDOFF_RESULT=fail"
+  printf '%s\n' \
+    'current_task: "Invalid verification item."' \
+    'current_state: "Testing."' \
+    'changed_files: []' \
+    'verification:' \
+    '  - command: ""' \
+    '    result: "pass"' \
+    > .agent/handoff-missing-verification-command.yml
+  handoff_missing_verification_command_log="$target_root/handoff-missing-verification-command.log"
+  if bash scripts/validate-handoff.sh .agent/handoff-missing-verification-command.yml \
+    >"$handoff_missing_verification_command_log" 2>&1
+  then
+    echo "ERROR: expected missing verification command validation failure"
+    exit 1
+  fi
+  assert_contains "$handoff_missing_verification_command_log" "verification[0].command must be non-empty"
+  assert_contains "$handoff_missing_verification_command_log" "HANDOFF_RESULT=fail"
+  printf '%s\n' \
+    'current_task: "Invalid verification item."' \
+    'current_state: "Testing."' \
+    'changed_files: []' \
+    'verification:' \
+    '  - command: "bash validate-harness.sh"' \
+    > .agent/handoff-missing-verification-result.yml
+  handoff_missing_verification_result_log="$target_root/handoff-missing-verification-result.log"
+  if bash scripts/validate-handoff.sh .agent/handoff-missing-verification-result.yml \
+    >"$handoff_missing_verification_result_log" 2>&1
+  then
+    echo "ERROR: expected missing verification result validation failure"
+    exit 1
+  fi
+  assert_contains "$handoff_missing_verification_result_log" "verification[0].result must be non-empty"
+  assert_contains "$handoff_missing_verification_result_log" "HANDOFF_RESULT=fail"
   subagent_empty_log="$target_root/subagent-packet-empty.log"
   if bash scripts/validate-subagent-packet.sh >"$subagent_empty_log" 2>&1; then
     echo "ERROR: expected empty subagent packet validation failure"

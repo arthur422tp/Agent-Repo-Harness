@@ -9,7 +9,8 @@ files, scripts, skills, and adapters.
 Use repo files for durable context:
 
 - `agent.md`: stable repo map and operating rules
-- `handoff.md`: current task state
+- `handoff.md`: concise human-readable current task state
+- `.agent/handoff.yml`: optional machine-readable handoff state
 - `.agent/policy.yml`: high-risk files and approval rules
 - `.agent/task.yml`: current task scope and completion requirements
 - `.agent/tdd-evidence.yml`: red/green/refactor evidence for tasks that
@@ -23,6 +24,7 @@ Use scripts for gates:
 
 ```bash
 scripts/agent-preflight.sh
+scripts/validate-handoff.sh
 scripts/validate-subagent-packet.sh
 scripts/validate-subagent-run.sh
 scripts/check-policy.sh
@@ -53,6 +55,10 @@ TDD evidence is required only when `.agent/task.yml` contains
 `completion.requires_tdd_evidence: true`. When enabled, agents should fill
 `.agent/tdd-evidence.yml` with the red command/failure, green command/pass, and
 the tests added or changed before running `scripts/agent-finish.sh`.
+
+Keep `handoff.md` concise for humans and future agents. Agents may mirror
+structured current task state in `.agent/handoff.yml` for validators, CI,
+controller agents, and future automation.
 
 ## Operational Boundaries
 
@@ -155,7 +161,7 @@ Use staged context loading: inspect `agent.md`, `handoff.md`, `.agent/task.yml`,
 For delegated work, fill `.agent/subagent-packet.yml` and run `scripts/validate-subagent-packet.sh`.
 Respect task boundaries.
 Before claiming completion, run `scripts/agent-finish.sh`.
-If verification cannot be run, explain exactly why and update `handoff.md`.
+If verification cannot be run, explain exactly why and update `handoff.md`; optionally mirror structured state in `.agent/handoff.yml`.
 ```
 
 See [codex-usage.md](codex-usage.md).
@@ -229,7 +235,7 @@ support:
 4. Run `scripts/agent-preflight.sh`.
 5. Modify only files allowed by `.agent/task.yml`.
 6. Run `scripts/agent-finish.sh` before reporting completion.
-7. Update `handoff.md`.
+7. Update `handoff.md` and optionally mirror structured state in `.agent/handoff.yml`.
 
 ## Avoid This
 
