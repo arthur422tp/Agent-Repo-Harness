@@ -140,6 +140,90 @@ write_git_evidence() {
   } >"$diff_stat_file"
 }
 
+read_harness_value() {
+  local path="$1"
+  local reader="scripts/lib/read-yaml.py"
+
+  if [ ! -f ".agent/harness.yml" ]; then
+    return 0
+  fi
+  if [ -z "${python_bin:-}" ]; then
+    return 0
+  fi
+  if [ ! -f "$reader" ]; then
+    return 0
+  fi
+
+  "$python_bin" "$reader" ".agent/harness.yml" "$path" --optional 2>/dev/null || true
+}
+
+count_changed_files() {
+  if [ ! -f "$changed_files_file" ]; then
+    printf '%s\n' 0
+    return 0
+  fi
+
+  awk '
+    NF &&
+    $0 !~ /^#/ &&
+    $0 != "No changed files detected." &&
+    $0 !~ /^git is unavailable/ &&
+    $0 !~ /^Not inside a git repository/ {
+      count++
+    }
+    END { print count + 0 }
+  ' "$changed_files_file"
+}
+
+check_resource_envelope() {
+  local max_finish_seconds
+  local max_changed_files
+  local changed_count
+  local resource_failures=0
+
+  max_finish_seconds="$(read_harness_value "runtime.resource_limits.max_finish_seconds")"
+  max_changed_files="$(read_harness_value "runtime.resource_limits.max_changed_files")"
+  max_finish_seconds="${max_finish_seconds:-0}"
+  max_changed_files="${max_changed_files:-0}"
+
+  {
+    echo "Check: resource-envelope"
+    echo "Command: scripts/agent-finish.sh $mode_arg"
+    echo
+    if [ "$max_finish_seconds" = "0" ] && [ "$max_changed_files" = "0" ]; then
+      echo "Resource envelope is disabled."
+    else
+      changed_count="$(count_changed_files)"
+      echo "Configured limits:"
+      echo "- max_finish_seconds: $max_finish_seconds"
+      echo "- max_changed_files: $max_changed_files"
+      echo "- elapsed_seconds: $elapsed_seconds"
+      echo "- changed_files: $changed_count"
+
+      if [ "$max_finish_seconds" != "0" ] && [ "$elapsed_seconds" -gt "$max_finish_seconds" ]; then
+        echo "ERROR: elapsed seconds $elapsed_seconds exceeds limit $max_finish_seconds"
+        resource_failures=$((resource_failures + 1))
+      fi
+      if [ "$max_changed_files" != "0" ] && [ "$changed_count" -gt "$max_changed_files" ]; then
+        echo "ERROR: changed files $changed_count exceeds limit $max_changed_files"
+        resource_failures=$((resource_failures + 1))
+      fi
+    fi
+  } >"$resource_result_file"
+
+  if [ "$resource_failures" -gt 0 ]; then
+    resource_status=1
+    failures=$((failures + 1))
+    echo "Resource envelope failed."
+    cat "$resource_result_file"
+    return 1
+  fi
+
+  resource_status=0
+  cat "$resource_result_file"
+  return 0
+}
+
 write_summary() {
   local overall_result="$1"
   local next_action
@@ -171,6 +255,7 @@ write_summary() {
     echo "| check-review-evidence | $review_status | $review_result_file |"
     echo "| check-subagent-evidence | $subagent_evidence_status | $subagent_evidence_result_file |"
     echo "| agent-verify | $verify_status | $verify_result_file |"
+    echo "| resource-envelope | $resource_status | $resource_result_file |"
     echo
     echo "## Changed Files"
     echo
@@ -382,6 +467,8 @@ else
 fi
 
 write_git_evidence
+elapsed_seconds=$(($(date -u +%s) - start_epoch))
+check_resource_envelope || true
 
 if [ "$failures" -gt 0 ]; then
   write_summary "fail"

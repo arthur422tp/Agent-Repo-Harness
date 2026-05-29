@@ -93,11 +93,18 @@ guarantee semantic correctness.
 
 ## Resource Envelope
 
-Agent-Repo-Harness reserves finish-run evidence fields for local resource
-limits, such as maximum finish duration and maximum changed-file count. The
-enforcement gate is planned follow-up work, so current runs only report the
-reserved resource-envelope result in `finish-summary.json`. These local limits
-will not measure provider token use or cloud model cost.
+Agent-Repo-Harness can enforce local finish-run limits for maximum finish
+duration and maximum changed-file count:
+
+```yaml
+runtime:
+  resource_limits:
+    max_finish_seconds: 300
+    max_changed_files: 20
+```
+
+A value of `0` disables that limit. These limits are local shell-run controls
+and do not measure provider tokens or hosted model cost.
 
 For the full runtime boundary, see [docs/runtime-boundaries.md](docs/runtime-boundaries.md).
 

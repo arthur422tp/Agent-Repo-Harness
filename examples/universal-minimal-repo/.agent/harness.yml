@@ -17,3 +17,10 @@ scripts:
 verification:
   final_gate_command: scripts/agent-finish.sh
   allow_unverified_completion: false
+
+runtime:
+  resource_limits:
+    # 0 disables the local finish duration limit.
+    max_finish_seconds: 0
+    # 0 disables the changed-file count limit.
+    max_changed_files: 0

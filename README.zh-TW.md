@@ -89,10 +89,18 @@ repository 內的政策模式；它們不會隔離檔案系統、網路、secret
 
 ## Resource Envelope
 
-Agent-Repo-Harness 目前在 finish-run evidence 中保留本地 resource limit 欄位，
-例如最大 finish duration 與最大 changed-file count。實際 enforcement gate 是
-後續工作；目前 run 只會在 `finish-summary.json` 回報保留的 resource-envelope
-result。這類本地限制不會計算 provider token use 或 cloud model cost。
+Agent-Repo-Harness 可以強制套用本地 finish-run 限制，例如最大 finish
+duration 與最大 changed-file count：
+
+```yaml
+runtime:
+  resource_limits:
+    max_finish_seconds: 300
+    max_changed_files: 20
+```
+
+值為 `0` 代表停用該項限制。這些限制是本地 shell run 控制，不會衡量
+provider tokens 或 hosted model cost。
 
 完整 runtime 邊界請看 [docs/runtime-boundaries.md](docs/runtime-boundaries.md)。
 

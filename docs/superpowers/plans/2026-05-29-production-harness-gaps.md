@@ -542,7 +542,7 @@ git commit -m "feat: write machine-readable finish evidence"
 - Modify: `README.md`
 - Modify: `README.zh-TW.md`
 
-- [ ] **Step 1: Add failing resource-envelope tests**
+- [x] **Step 1: Add failing resource-envelope tests**
 
 Create `tests/harness/resource-envelope.sh`:
 
@@ -647,7 +647,7 @@ git init -q "$resource_changed_files_root"
 pass "resource envelope fails changed-file limit"
 ```
 
-- [ ] **Step 2: Source the new test suite**
+- [x] **Step 2: Source the new test suite**
 
 Add this line to `validate-harness.sh` after `finish-examples.sh`:
 
@@ -655,7 +655,7 @@ Add this line to `validate-harness.sh` after `finish-examples.sh`:
 source "$repo_root/tests/harness/resource-envelope.sh"
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run:
 
@@ -665,7 +665,7 @@ bash validate-harness.sh
 
 Expected: FAIL because `resource-envelope-result.txt` is not written and `.agent/harness.yml` has no `runtime.resource_limits`.
 
-- [ ] **Step 4: Add disabled default resource limits**
+- [x] **Step 4: Add disabled default resource limits**
 
 Append this section to `templates/.agent/harness.yml` and `examples/universal-minimal-repo/.agent/harness.yml`:
 
@@ -678,7 +678,7 @@ runtime:
     max_changed_files: 0
 ```
 
-- [ ] **Step 5: Extend `schemas/harness.schema.json`**
+- [x] **Step 5: Extend `schemas/harness.schema.json`**
 
 Add this top-level property inside `properties`:
 
@@ -699,7 +699,7 @@ Add this top-level property inside `properties`:
 }
 ```
 
-- [ ] **Step 6: Add resource-envelope helper functions to `agent-finish.sh`**
+- [x] **Step 6: Add resource-envelope helper functions to `agent-finish.sh`**
 
 Add these functions above `write_summary()`:
 
@@ -804,7 +804,7 @@ check_resource_envelope() {
 }
 ```
 
-- [ ] **Step 7: Run the resource check after git evidence is written**
+- [x] **Step 7: Run the resource check after git evidence is written**
 
 In `agent-finish.sh`, immediately after `write_git_evidence`, add:
 
@@ -815,7 +815,7 @@ check_resource_envelope || true
 
 Ensure `write_json_summary` includes `resource_envelope_status` and the `resource-envelope` gate as described in Task 2.
 
-- [ ] **Step 8: Update docs**
+- [x] **Step 8: Update docs**
 
 In `README.md` and `README.zh-TW.md`, add the concrete config example:
 
@@ -833,7 +833,7 @@ A value of `0` disables that limit. These limits are local shell-run controls
 and do not measure provider tokens or hosted model cost.
 ```
 
-- [ ] **Step 9: Run validation**
+- [x] **Step 9: Run validation**
 
 Run:
 
@@ -843,7 +843,7 @@ bash validate-harness.sh
 
 Expected: PASS, including the new resource-envelope suite.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add templates/.agent/harness.yml examples/universal-minimal-repo/.agent/harness.yml schemas/harness.schema.json templates/scripts/agent-finish.sh tests/harness/resource-envelope.sh validate-harness.sh tests/harness/template-sync.sh README.md README.zh-TW.md

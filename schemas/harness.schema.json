@@ -43,6 +43,20 @@
         }
       },
       "additionalProperties": true
+    },
+    "runtime": {
+      "type": "object",
+      "properties": {
+        "resource_limits": {
+          "type": "object",
+          "properties": {
+            "max_finish_seconds": { "type": "integer", "minimum": 0 },
+            "max_changed_files": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": true
     }
   },
   "additionalProperties": true
