@@ -6,8 +6,9 @@ usage() {
 Usage: check-doc-links.sh [ROOT]
 
 Checks local Markdown links and local scripts/*.sh references under ROOT.
-External links, mailto links, pure anchors, docs/plans/*.md future-plan
-references, and tests/fixtures/*.md validation fixtures are ignored.
+External links, mailto links, pure anchors, docs/plans/*.md and
+docs/superpowers/plans/*.md future-plan references, and tests/fixtures/*.md
+validation fixtures are ignored.
 EOF
 }
 
@@ -76,13 +77,21 @@ def report(message: str) -> None:
     failures += 1
 
 
+def is_ignored_markdown(path: Path) -> bool:
+    relative_parts = path.relative_to(root).parts
+    return (
+        relative_parts[:2] == ("docs", "plans")
+        or relative_parts[:3] == ("docs", "superpowers", "plans")
+        or relative_parts[:2] == ("tests", "fixtures")
+    )
+
+
 markdown_files = sorted(
     path
     for path in root.rglob("*.md")
     if ".git" not in path.parts
     and ".agent/runs" not in str(path)
-    and path.relative_to(root).parts[:2] != ("docs", "plans")
-    and path.relative_to(root).parts[:2] != ("tests", "fixtures")
+    and not is_ignored_markdown(path)
 )
 
 for markdown_file in markdown_files:

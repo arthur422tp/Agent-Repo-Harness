@@ -19,6 +19,25 @@ mkdir -p "$doc_links_failure_root/docs"
 pass "doc link validation failure"
 
 echo
+echo "== Doc link validation ignores superpowers future plans =="
+doc_links_future_plan_root="$tmp_root/doc-links-future-plan"
+rm -rf "$doc_links_future_plan_root"
+mkdir -p "$doc_links_future_plan_root/docs/superpowers/plans"
+(
+  cd "$doc_links_future_plan_root"
+  cat > docs/superpowers/plans/future.md <<'EOF'
+# Future Plan
+
+This future plan links to [planned docs](docs/planned.md) and references
+`scripts/planned-gate.sh` before those files exist.
+EOF
+  doc_link_log="$doc_links_future_plan_root/doc-links-future-plan.log"
+  bash "$repo_root/templates/scripts/check-doc-links.sh" >"$doc_link_log" 2>&1
+  assert_contains "$doc_link_log" "DOC_LINKS_RESULT=pass"
+)
+pass "doc link validation ignores superpowers future plans"
+
+echo
 
 echo "== Repo-defined verification commands =="
 mkdir -p "$verify_config_root/.agent"
