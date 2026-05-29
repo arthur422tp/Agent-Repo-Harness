@@ -13,7 +13,7 @@ AI coding agent 避免在尚未完成下列事項前便宣告完成：
 - 保持在任務範圍內
 - 通過政策檢查
 - 執行驗證
-- 留下可持續保存的交接證據
+- 留下可持續保存的執行證據與精簡 continuity note
 
 `scripts/agent-finish.sh` 是標準完成閘門。它會檢查本地範圍與政策規則、
 套用已啟用的證據閘門、執行驗證，並記錄該次執行的持久證據。根據結果
@@ -93,6 +93,7 @@ Harness 會將穩定的 repository 事實與目前任務狀態分開保存：
 
 - `agent.md`：穩定的 repository 導覽與操作規則
 - `handoff.md`：目前任務狀態與下一個動作
+- `.agent/handoff.yml`：選用、可由機器讀取的 handoff 狀態
 - `.agent/task.yml`：可由機器讀取的目前任務範圍與已啟用閘門
 - `.agent/policy.yml`：repository 內的政策檢查與受保護路徑
 - `.agent/tdd-evidence.yml`：選用的結構化 TDD 證據
@@ -103,6 +104,21 @@ Harness 會將穩定的 repository 事實與目前任務狀態分開保存：
 
 安裝後的入口點為 `AGENTS.md` 與 `CLAUDE.md`。Agent 會搭配上述持久
 context 使用這些檔案，並透過 `scripts/agent-finish.sh` 完成工作。
+
+## Evidence Vs Handoff
+
+`.agent/runs/<timestamp>/` 是由 `scripts/agent-finish.sh` 產生的權威
+完成證據。它會記錄特定 finish run 的命令、模式、閘門結果、驗證輸出、
+變更檔案與 diff 摘要。
+
+`handoff.md` 是由 model 撰寫、供人類與未來 agent 延續工作的 continuity
+artifact。它應摘要變更內容、應檢查哪份 run evidence、哪些項目已通過、
+仍有哪些開放事項，以及下一個建議動作。`.agent/handoff.yml` 則是選用的
+結構化 continuity mirror，供需要 machine-readable handoff 的工具使用。
+
+`.agent/task.yml` 可設定 `completion.expects_handoff_update: true`，用來
+記錄 workflow 預期 finish 後更新 handoff。這是 advisory；`agent-finish.sh`
+不會強制檢查 handoff freshness。
 
 ## 設定細節
 
@@ -138,11 +154,14 @@ git commit -m "Initialize project with Agent-Repo-Harness baseline"
 
 ## 證據與選用閘門
 
-`agent-finish.sh` 會將證據寫入 `.agent/runs/<timestamp>/`，包含
+`agent-finish.sh` 會將權威 run evidence 寫入 `.agent/runs/<timestamp>/`，
+包含
 `finish-summary.md`、`tdd-evidence-result.txt`、
 `acceptance-result.txt`、`review-result.txt`、
 `subagent-evidence-result.txt`、`changed-files.txt` 與
 `git-diff-stat.txt` 等閘門結果檔案。
+
+完整 handoff/evidence model 請見 [docs/handoff.md](docs/handoff.md)。
 
 TDD 證據由每項任務自行選用。當 `.agent/task.yml` 包含
 `completion.requires_tdd_evidence: true` 時，請在執行
@@ -177,6 +196,7 @@ Controller agent 可選擇將委派結果記錄在
 bash scripts/agent-preflight.sh
 bash scripts/validate-config.sh
 bash scripts/validate-task.sh
+bash scripts/validate-handoff.sh
 bash scripts/validate-subagent-packet.sh
 bash scripts/check-doc-links.sh
 bash scripts/check-policy.sh
@@ -198,7 +218,7 @@ bash scripts/agent-finish.sh --best-effort
 5. 在任務邊界內進行變更。
 6. 執行 `scripts/agent-finish.sh`。
 7. 在 `handoff.md` 中更新變更檔案、驗證結果、阻擋事項，以及建議的
-   下一個動作。
+   下一個動作。可選擇同步結構化狀態至 `.agent/handoff.yml`。
 
 ## Context 載入政策
 
