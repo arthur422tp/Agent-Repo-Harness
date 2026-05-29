@@ -89,9 +89,10 @@ repository 內的政策模式；它們不會隔離檔案系統、網路、secret
 
 ## Resource Envelope
 
-Agent-Repo-Harness 可以依 `.agent/harness.yml` 設定本地 finish-run 限制，例如
-最大 finish duration 與最大 changed-file count。這些限制用來抓出 runaway local
-workflow 和 scope drift；它不會計算 provider token use 或 cloud model cost。
+Agent-Repo-Harness 目前在 finish-run evidence 中保留本地 resource limit 欄位，
+例如最大 finish duration 與最大 changed-file count。實際 enforcement gate 是
+後續工作；目前 run 只會在 `finish-summary.json` 回報保留的 resource-envelope
+result。這類本地限制不會計算 provider token use 或 cloud model cost。
 
 完整 runtime 邊界請看 [docs/runtime-boundaries.md](docs/runtime-boundaries.md)。
 
@@ -122,8 +123,8 @@ context 使用這些檔案，並透過 `scripts/agent-finish.sh` 完成工作。
 每次 finish run 也會寫入 `finish-summary.json`。這是給工具和 CI 使用的
 machine-readable 摘要，包含 run directory、mode、overall result、gate
 statuses、changed-file evidence、diff-stat evidence、elapsed seconds，以及
-resource-envelope result。人類除錯仍以 Markdown summary 和各 gate 的文字輸出
-為主。
+保留的 resource-envelope result。人類除錯仍以 Markdown summary 和各 gate 的
+文字輸出為主。
 
 `handoff.md` 是由 model 撰寫、供人類與未來 agent 延續工作的 continuity
 artifact。它應摘要變更內容、應檢查哪份 run evidence、哪些項目已通過、

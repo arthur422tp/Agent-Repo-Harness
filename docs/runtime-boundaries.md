@@ -8,10 +8,14 @@ contracts, gates, and evidence requirements before they claim completion.
 - Task scope checks against Git changes.
 - Repo-local policy checks for high-risk paths.
 - Repo-defined verification commands through `.agent/harness.yml`.
-- Optional TDD, acceptance, review, subagent, and architecture evidence gates.
+- Optional TDD, acceptance, review, and subagent evidence gates.
 - Durable run evidence under `.agent/runs/<timestamp>/`.
 - Machine-readable `finish-summary.json` beside the human-readable summary.
+
+## Planned Follow-up
+
 - A local resource envelope for finish duration and changed-file count.
+- Optional architecture evidence gates for semantic and design-risk claims.
 
 ## Not Implemented
 
