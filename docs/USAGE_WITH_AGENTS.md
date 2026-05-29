@@ -97,8 +97,7 @@ Subagent packets are intended for controller-agent to subagent handoffs. A
 controller can fill `.agent/subagent-packet.yml` with the task id, subagent
 role, allowed paths, relevant files, required verification, and expected status
 enum, then run `scripts/validate-subagent-packet.sh` before spawning or
-prompting the subagent. Packets are not mandatory for all tasks and are not part
-of the `agent-finish.sh` completion gate yet.
+prompting the subagent. Packets are not mandatory for all tasks.
 
 ## Subagent Run Evidence
 
@@ -123,28 +122,21 @@ Validate the evidence with:
 bash scripts/validate-subagent-run.sh .agent/subagent-runs/<timestamp>-<role>-<task_id>
 ```
 
-This evidence is optional and is not part of `scripts/agent-finish.sh` yet.
+When `.agent/task.yml` sets `completion.requires_subagent_evidence: true`,
+`scripts/agent-finish.sh` requires at least one valid directory under
+`.agent/subagent-runs/`. When the flag is false or missing, subagent evidence
+remains an optional continuity artifact.
 
-Planned JSON evidence format, not implemented in this pass:
+`agent-finish.sh` writes both human-readable and machine-readable evidence:
 
-```json
-{
-  "timestamp": "20260501-120000",
-  "mode": "strict",
-  "command": "scripts/agent-finish.sh --strict",
-  "result": "pass",
-  "gates": [
-    {
-      "name": "check-scope",
-      "exit_code": 0,
-      "log": ".agent/runs/20260501-120000/scope-result.txt"
-    }
-  ]
-}
-```
+- `finish-summary.md`: concise Markdown summary for humans and future agents
+- `finish-summary.json`: structured run summary for tools, CI, and controller agents
+- `*-result.txt`: per-gate command output
+- `changed-files.txt`: changed-file evidence
+- `git-diff-stat.txt`: diff-size evidence
 
-Until JSON output exists, treat `finish-summary.md` and the text evidence files
-in the run directory as canonical.
+Treat `finish-summary.json` as the stable machine-readable run envelope. Treat
+the text files as the source for detailed command output.
 
 ## Codex
 

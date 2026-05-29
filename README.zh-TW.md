@@ -87,6 +87,14 @@ verification:
 repository 內的政策模式；它們不會隔離檔案系統、網路、secrets 或命令
 的副作用，也不保證語意正確性。
 
+## Resource Envelope
+
+Agent-Repo-Harness 可以依 `.agent/harness.yml` 設定本地 finish-run 限制，例如
+最大 finish duration 與最大 changed-file count。這些限制用來抓出 runaway local
+workflow 和 scope drift；它不會計算 provider token use 或 cloud model cost。
+
+完整 runtime 邊界請看 [docs/runtime-boundaries.md](docs/runtime-boundaries.md)。
+
 ## 運作方式
 
 Harness 會將穩定的 repository 事實與目前任務狀態分開保存：
@@ -110,6 +118,12 @@ context 使用這些檔案，並透過 `scripts/agent-finish.sh` 完成工作。
 `.agent/runs/<timestamp>/` 是由 `scripts/agent-finish.sh` 產生的權威
 完成證據。它會記錄特定 finish run 的命令、模式、閘門結果、驗證輸出、
 變更檔案與 diff 摘要。
+
+每次 finish run 也會寫入 `finish-summary.json`。這是給工具和 CI 使用的
+machine-readable 摘要，包含 run directory、mode、overall result、gate
+statuses、changed-file evidence、diff-stat evidence、elapsed seconds，以及
+resource-envelope result。人類除錯仍以 Markdown summary 和各 gate 的文字輸出
+為主。
 
 `handoff.md` 是由 model 撰寫、供人類與未來 agent 延續工作的 continuity
 artifact。它應摘要變更內容、應檢查哪份 run evidence、哪些項目已通過、

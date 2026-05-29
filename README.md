@@ -91,6 +91,15 @@ inspect Git changes and repo-local policy patterns; they do not isolate the
 filesystem, network, secrets, or command side effects, and they do not
 guarantee semantic correctness.
 
+## Resource Envelope
+
+Agent-Repo-Harness can enforce local finish-run limits declared in
+`.agent/harness.yml`, such as maximum finish duration and maximum changed-file
+count. These limits catch runaway local workflows and scope drift. They do not
+measure provider token use or cloud model cost.
+
+For the full runtime boundary, see [docs/runtime-boundaries.md](docs/runtime-boundaries.md).
+
 ## How It Works
 
 The harness keeps stable repository facts separate from current task state:
@@ -115,6 +124,12 @@ with the durable context above, then finish work through
 `.agent/runs/<timestamp>/` is the authoritative completion evidence produced
 by `scripts/agent-finish.sh`. It records the command, mode, gate results,
 verification output, changed files, and diff summary for a specific finish run.
+
+Each finish run also writes `finish-summary.json`, a machine-readable summary
+with the run directory, mode, overall result, gate statuses, changed-file
+evidence, diff-stat evidence, elapsed seconds, and any resource-envelope result.
+Use the JSON file for tools and CI; use the Markdown and text files for human
+debugging.
 
 `handoff.md` is a model-authored continuity artifact for humans and future
 agents. It should summarize what changed, which run evidence to inspect, what

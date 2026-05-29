@@ -44,6 +44,14 @@ assert_contains "$repo_root/README.md" "docs/handoff.md"
 assert_contains "$repo_root/README.md" "## Guardrails, Not A Sandbox"
 assert_contains "$repo_root/README.md" "process guardrails"
 assert_contains "$repo_root/README.md" "not security boundaries"
+assert_contains "$repo_root/README.md" "docs/runtime-boundaries.md"
+assert_contains "$repo_root/README.md" 'finish-summary.json'
+assert_contains "$repo_root/README.md" "Resource Envelope"
+assert_contains "$repo_root/README.zh-TW.md" "Resource Envelope"
+assert_exists "$repo_root/docs/runtime-boundaries.md"
+assert_contains "$repo_root/docs/runtime-boundaries.md" "Implemented"
+assert_contains "$repo_root/docs/runtime-boundaries.md" "Not Implemented"
+assert_contains "$repo_root/docs/public-packaging.md" "Production-harness follow-up checklist"
 assert_exists "$repo_root/docs/handoff.md"
 assert_contains "$repo_root/docs/handoff.md" '.agent/runs/<timestamp>/'
 assert_contains "$repo_root/docs/handoff.md" 'handoff.md'
@@ -62,6 +70,10 @@ assert_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" "## Context Loading Polic
 assert_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'applicable `.agent/policy.yml` entries'
 assert_not_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'Before editing, inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`.'
 assert_not_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'Inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`.'
+assert_not_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" "Packets are not mandatory for all tasks and are not part"
+assert_not_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'This evidence is optional and is not part of `scripts/agent-finish.sh` yet.'
+assert_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'completion.requires_subagent_evidence: true'
+assert_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'finish-summary.json'
 assert_contains "$repo_root/docs/codex-usage.md" "staged context loading"
 assert_contains "$repo_root/docs/codex-usage.md" "repair outcome"
 assert_contains "$repo_root/docs/superpowers-integration.md" "staged context loading"
