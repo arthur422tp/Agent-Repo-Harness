@@ -41,6 +41,11 @@ esac
 timestamp="$(date -u +"%Y%m%d-%H%M%S")"
 run_dir=".agent/runs/$timestamp"
 summary_file="$run_dir/finish-summary.md"
+summary_json_file="$run_dir/finish-summary.json"
+start_epoch="$(date -u +%s)"
+elapsed_seconds=0
+resource_status="0"
+resource_result_file="$run_dir/resource-envelope-result.txt"
 check_agent_md_result_file="$run_dir/check-agent-md-result.txt"
 scope_result_file="$run_dir/scope-result.txt"
 policy_result_file="$run_dir/policy-result.txt"
@@ -64,6 +69,28 @@ subagent_evidence_status=""
 verify_status=""
 
 mkdir -p "$run_dir"
+
+have_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+find_python() {
+  if have_cmd python3; then
+    printf '%s\n' "python3"
+    return 0
+  fi
+  if have_cmd python; then
+    printf '%s\n' "python"
+    return 0
+  fi
+  return 1
+}
+
+python_bin=""
+if ! python_bin="$(find_python)"; then
+  echo "ERROR: python is required for finish evidence writes"
+  exit 1
+fi
 
 write_git_evidence() {
   local changed_files
@@ -171,6 +198,117 @@ write_summary() {
   } >"$summary_file"
 }
 
+write_json_summary() {
+  local overall_result="$1"
+  local end_epoch
+
+  end_epoch="$(date -u +%s)"
+  elapsed_seconds=$((end_epoch - start_epoch))
+
+  SUMMARY_JSON_FILE="$summary_json_file" \
+  AGENT_FINISH_TIMESTAMP="$timestamp" \
+  AGENT_FINISH_MODE="$mode" \
+  AGENT_FINISH_MODE_ARG="$mode_arg" \
+  AGENT_FINISH_RUN_DIR="$run_dir" \
+  AGENT_FINISH_OVERALL_RESULT="$overall_result" \
+  AGENT_FINISH_ELAPSED_SECONDS="$elapsed_seconds" \
+  AGENT_FINISH_RESOURCE_STATUS="${resource_status:-0}" \
+  AGENT_FINISH_CHECK_AGENT_MD_STATUS="${agent_md_status:-0}" \
+  AGENT_FINISH_SCOPE_STATUS="${scope_status:-0}" \
+  AGENT_FINISH_POLICY_STATUS="${policy_status:-0}" \
+  AGENT_FINISH_TDD_EVIDENCE_STATUS="${tdd_evidence_status:-0}" \
+  AGENT_FINISH_ACCEPTANCE_STATUS="${acceptance_status:-0}" \
+  AGENT_FINISH_REVIEW_STATUS="${review_status:-0}" \
+  AGENT_FINISH_SUBAGENT_EVIDENCE_STATUS="${subagent_evidence_status:-0}" \
+  AGENT_FINISH_VERIFY_STATUS="${verify_status:-0}" \
+  AGENT_FINISH_CHECK_AGENT_MD_EVIDENCE="$check_agent_md_result_file" \
+  AGENT_FINISH_SCOPE_EVIDENCE="$scope_result_file" \
+  AGENT_FINISH_POLICY_EVIDENCE="$policy_result_file" \
+  AGENT_FINISH_TDD_EVIDENCE="$tdd_evidence_result_file" \
+  AGENT_FINISH_ACCEPTANCE_EVIDENCE="$acceptance_result_file" \
+  AGENT_FINISH_REVIEW_EVIDENCE="$review_result_file" \
+  AGENT_FINISH_SUBAGENT_EVIDENCE="$subagent_evidence_result_file" \
+  AGENT_FINISH_VERIFY_EVIDENCE="$verify_result_file" \
+  AGENT_FINISH_RESOURCE_EVIDENCE="$resource_result_file" \
+  AGENT_FINISH_MARKDOWN_SUMMARY="$summary_file" \
+  AGENT_FINISH_CHANGED_FILES="$changed_files_file" \
+  AGENT_FINISH_DIFF_STAT="$diff_stat_file" \
+  "$python_bin" - <<'PY'
+import json
+import os
+from pathlib import Path
+
+env = os.environ
+
+data = {
+    "timestamp": env["AGENT_FINISH_TIMESTAMP"],
+    "mode": env["AGENT_FINISH_MODE"],
+    "command": f"scripts/agent-finish.sh {env['AGENT_FINISH_MODE_ARG']}",
+    "run_dir": env["AGENT_FINISH_RUN_DIR"],
+    "overall_result": env["AGENT_FINISH_OVERALL_RESULT"],
+    "elapsed_seconds": int(env["AGENT_FINISH_ELAPSED_SECONDS"]),
+    "resource_envelope_status": int(env["AGENT_FINISH_RESOURCE_STATUS"]),
+    "gates": [
+        {
+            "name": "check-agent-md",
+            "exit_status": int(env["AGENT_FINISH_CHECK_AGENT_MD_STATUS"]),
+            "evidence": env["AGENT_FINISH_CHECK_AGENT_MD_EVIDENCE"],
+        },
+        {
+            "name": "check-scope",
+            "exit_status": int(env["AGENT_FINISH_SCOPE_STATUS"]),
+            "evidence": env["AGENT_FINISH_SCOPE_EVIDENCE"],
+        },
+        {
+            "name": "check-policy",
+            "exit_status": int(env["AGENT_FINISH_POLICY_STATUS"]),
+            "evidence": env["AGENT_FINISH_POLICY_EVIDENCE"],
+        },
+        {
+            "name": "check-tdd-evidence",
+            "exit_status": int(env["AGENT_FINISH_TDD_EVIDENCE_STATUS"]),
+            "evidence": env["AGENT_FINISH_TDD_EVIDENCE"],
+        },
+        {
+            "name": "check-acceptance",
+            "exit_status": int(env["AGENT_FINISH_ACCEPTANCE_STATUS"]),
+            "evidence": env["AGENT_FINISH_ACCEPTANCE_EVIDENCE"],
+        },
+        {
+            "name": "check-review-evidence",
+            "exit_status": int(env["AGENT_FINISH_REVIEW_STATUS"]),
+            "evidence": env["AGENT_FINISH_REVIEW_EVIDENCE"],
+        },
+        {
+            "name": "check-subagent-evidence",
+            "exit_status": int(env["AGENT_FINISH_SUBAGENT_EVIDENCE_STATUS"]),
+            "evidence": env["AGENT_FINISH_SUBAGENT_EVIDENCE"],
+        },
+        {
+            "name": "agent-verify",
+            "exit_status": int(env["AGENT_FINISH_VERIFY_STATUS"]),
+            "evidence": env["AGENT_FINISH_VERIFY_EVIDENCE"],
+        },
+        {
+            "name": "resource-envelope",
+            "exit_status": int(env["AGENT_FINISH_RESOURCE_STATUS"]),
+            "evidence": env["AGENT_FINISH_RESOURCE_EVIDENCE"],
+        },
+    ],
+    "evidence": {
+        "markdown_summary": env["AGENT_FINISH_MARKDOWN_SUMMARY"],
+        "changed_files": env["AGENT_FINISH_CHANGED_FILES"],
+        "diff_stat": env["AGENT_FINISH_DIFF_STAT"],
+    },
+}
+
+Path(env["SUMMARY_JSON_FILE"]).write_text(
+    json.dumps(data, indent=2, sort_keys=True) + "\n",
+    encoding="utf-8",
+)
+PY
+}
+
 run_gate() {
   local label="$1"
   local result_file="$2"
@@ -247,6 +385,7 @@ write_git_evidence
 
 if [ "$failures" -gt 0 ]; then
   write_summary "fail"
+  write_json_summary "fail"
   echo "AGENT_FINISH_RESULT=fail"
   echo "Agent finish gates failed."
   echo "Run directory: $run_dir"
@@ -255,6 +394,7 @@ if [ "$failures" -gt 0 ]; then
 fi
 
 write_summary "pass"
+write_json_summary "pass"
 
 echo "AGENT_FINISH_RESULT=pass"
 echo "Agent finish gates passed."

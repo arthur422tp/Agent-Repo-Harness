@@ -198,6 +198,115 @@ assert_finish_summary_contract() {
   assert_file_contains "$root" "finish-summary.md" "## Next Recommended Action"
 }
 
+assert_finish_json_contract() {
+  local root="$1"
+  local expected_result="$2"
+  local summary_json
+
+  summary_json="$(find "$root/.agent/runs" -type f -name "finish-summary.json" | sort | tail -n 1)"
+  if [ -z "$summary_json" ]; then
+    echo "ERROR: expected finish-summary.json under $root/.agent/runs"
+    exit 1
+  fi
+
+  "$(find_python)" - "$summary_json" "$expected_result" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+summary_path = Path(sys.argv[1])
+expected_result = sys.argv[2]
+data = json.loads(summary_path.read_text(encoding="utf-8"))
+
+required_top_level = {
+    "timestamp",
+    "mode",
+    "command",
+    "run_dir",
+    "overall_result",
+    "gates",
+    "evidence",
+    "elapsed_seconds",
+    "resource_envelope_status",
+}
+missing = sorted(required_top_level - set(data))
+if missing:
+    raise SystemExit(f"missing top-level keys: {missing}")
+
+if data["overall_result"] != expected_result:
+    raise SystemExit(
+        f"expected overall_result {expected_result}, got {data['overall_result']}"
+    )
+
+if not isinstance(data["gates"], list) or not data["gates"]:
+    raise SystemExit("gates must be a non-empty list")
+
+expected_gate_names = [
+    "check-agent-md",
+    "check-scope",
+    "check-policy",
+    "check-tdd-evidence",
+    "check-acceptance",
+    "check-review-evidence",
+    "check-subagent-evidence",
+    "agent-verify",
+    "resource-envelope",
+]
+actual_gate_names = [gate.get("name") for gate in data["gates"]]
+if actual_gate_names != expected_gate_names:
+    raise SystemExit(
+        f"expected gate names {expected_gate_names}, got {actual_gate_names}"
+    )
+
+expected_gate_evidence = {
+    "check-agent-md": "check-agent-md-result.txt",
+    "check-scope": "scope-result.txt",
+    "check-policy": "policy-result.txt",
+    "check-tdd-evidence": "tdd-evidence-result.txt",
+    "check-acceptance": "acceptance-result.txt",
+    "check-review-evidence": "review-result.txt",
+    "check-subagent-evidence": "subagent-evidence-result.txt",
+    "agent-verify": "verify-result.txt",
+    "resource-envelope": "resource-envelope-result.txt",
+}
+
+for gate in data["gates"]:
+    for key in ("name", "exit_status", "evidence"):
+        if key not in gate:
+            raise SystemExit(f"gate missing {key}: {gate}")
+    if not isinstance(gate["exit_status"], int):
+        raise SystemExit(f"gate exit_status must be int: {gate}")
+    expected_evidence = expected_gate_evidence[gate["name"]]
+    if gate["evidence"] != f"{data['run_dir']}/{expected_evidence}":
+        raise SystemExit(
+            f"expected {gate['name']} evidence to end with "
+            f"{expected_evidence}, got {gate['evidence']}"
+        )
+
+if not isinstance(data["resource_envelope_status"], int):
+    raise SystemExit("resource_envelope_status must be an integer")
+
+for key in ("changed_files", "diff_stat", "markdown_summary"):
+    if key not in data["evidence"]:
+        raise SystemExit(f"evidence missing {key}")
+
+expected_evidence_paths = {
+    "changed_files": "changed-files.txt",
+    "diff_stat": "git-diff-stat.txt",
+    "markdown_summary": "finish-summary.md",
+}
+for key, name in expected_evidence_paths.items():
+    if data["evidence"][key] != f"{data['run_dir']}/{name}":
+        raise SystemExit(
+            f"expected evidence.{key} to be {data['run_dir']}/{name}, "
+            f"got {data['evidence'][key]}"
+        )
+
+if not isinstance(data["elapsed_seconds"], int):
+    raise SystemExit("elapsed_seconds must be an integer")
+PY
+}
+
 run_yaml_syntax_checks() {
   local yaml_files=()
   local file
