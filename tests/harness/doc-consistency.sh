@@ -37,9 +37,27 @@ assert_contains "$repo_root/README.md" "WSL"
 assert_contains "$repo_root/README.md" "## Verification Strategy"
 assert_contains "$repo_root/README.md" '.agent/harness.yml'
 assert_contains "$repo_root/README.md" '.agent/handoff.yml'
+assert_contains "$repo_root/README.md" "## Evidence Vs Handoff"
+assert_contains "$repo_root/README.md" 'completion.expects_handoff_update: true'
+assert_contains "$repo_root/README.md" 'agent-finish.sh` does not enforce handoff freshness'
+assert_contains "$repo_root/README.md" "docs/handoff.md"
 assert_contains "$repo_root/README.md" "## Guardrails, Not A Sandbox"
 assert_contains "$repo_root/README.md" "process guardrails"
 assert_contains "$repo_root/README.md" "not security boundaries"
+assert_exists "$repo_root/docs/handoff.md"
+assert_contains "$repo_root/docs/handoff.md" '.agent/runs/<timestamp>/'
+assert_contains "$repo_root/docs/handoff.md" 'handoff.md'
+assert_contains "$repo_root/docs/handoff.md" '.agent/handoff.yml'
+assert_contains "$repo_root/docs/handoff.md" 'expects_handoff_update'
+assert_contains "$repo_root/docs/handoff.md" 'not part of `scripts/agent-finish.sh`'
+assert_contains "$repo_root/schemas/task.schema.json" 'expects_handoff_update'
+assert_not_contains "$repo_root/schemas/task.schema.json" 'requires_handoff_update'
+assert_not_contains "$repo_root/schemas/task.schema.json" 'requires_doc_freshness_check'
+assert_contains "$repo_root/templates/.agent/task.yml" 'expects_handoff_update: true'
+assert_not_contains "$repo_root/templates/.agent/task.yml" 'requires_handoff_update'
+assert_exists "$repo_root/templates/handoff.md"
+assert_exists "$repo_root/templates/.agent/handoff.yml"
+assert_exists "$repo_root/schemas/handoff.schema.json"
 assert_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" "## Context Loading Policy"
 assert_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'applicable `.agent/policy.yml` entries'
 assert_not_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" 'Before editing, inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`.'

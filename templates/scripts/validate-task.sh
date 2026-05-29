@@ -152,11 +152,10 @@ check_task_types() {
     requires_scope_check \
     requires_policy_check \
     requires_verification \
-    requires_handoff_update \
+    expects_handoff_update \
     requires_acceptance_check \
     requires_review_evidence \
-    requires_subagent_evidence \
-    requires_doc_freshness_check
+    requires_subagent_evidence
   do
     check_optional_boolean "task.completion.$flag"
   done

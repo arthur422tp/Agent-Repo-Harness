@@ -22,7 +22,9 @@ task:
     requires_scope_check: true
     requires_policy_check: true
     requires_verification: true
-    requires_handoff_update: true
+    # Advisory workflow expectation only; agent-finish.sh does not enforce
+    # handoff freshness.
+    expects_handoff_update: true
     requires_acceptance_check: false
     requires_review_evidence: false
     requires_subagent_evidence: false

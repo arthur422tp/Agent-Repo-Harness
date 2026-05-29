@@ -15,7 +15,7 @@ task:
     requires_policy_check: true
     requires_scope_check: true
     requires_verification: true
-    requires_handoff_update: true
+    expects_handoff_update: true
 
 last_verified:
   command: ""

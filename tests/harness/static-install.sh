@@ -36,6 +36,7 @@ for required_path in \
   docs/agent-support-matrix.md \
   docs/config-format.md \
   docs/codex-usage.md \
+  docs/handoff.md \
   docs/superpowers-integration.md \
   schemas/harness.schema.json \
   schemas/policy.schema.json \

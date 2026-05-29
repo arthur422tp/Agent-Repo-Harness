@@ -38,11 +38,10 @@
             "requires_scope_check": { "type": "boolean" },
             "requires_policy_check": { "type": "boolean" },
             "requires_verification": { "type": "boolean" },
-            "requires_handoff_update": { "type": "boolean" },
+            "expects_handoff_update": { "type": "boolean" },
             "requires_acceptance_check": { "type": "boolean" },
             "requires_review_evidence": { "type": "boolean" },
-            "requires_subagent_evidence": { "type": "boolean" },
-            "requires_doc_freshness_check": { "type": "boolean" }
+            "requires_subagent_evidence": { "type": "boolean" }
           },
           "additionalProperties": { "type": "boolean" }
         }

@@ -13,7 +13,7 @@ It helps AI coding agents avoid claiming completion without:
 - staying inside task scope
 - passing policy checks
 - running verification
-- leaving durable handoff evidence
+- leaving durable run evidence and concise continuity notes
 
 `scripts/agent-finish.sh` is the canonical completion gate. It checks local
 scope and policy rules, applies any enabled evidence gates, runs verification,
@@ -110,6 +110,22 @@ Installed entrypoints are `AGENTS.md` and `CLAUDE.md`. Agents use these files
 with the durable context above, then finish work through
 `scripts/agent-finish.sh`.
 
+## Evidence Vs Handoff
+
+`.agent/runs/<timestamp>/` is the authoritative completion evidence produced
+by `scripts/agent-finish.sh`. It records the command, mode, gate results,
+verification output, changed files, and diff summary for a specific finish run.
+
+`handoff.md` is a model-authored continuity artifact for humans and future
+agents. It should summarize what changed, which run evidence to inspect, what
+passed, what remains open, and the next recommended action. `.agent/handoff.yml`
+is an optional structured mirror of that continuity state for tools that want a
+machine-readable handoff.
+
+`.agent/task.yml` may set `completion.expects_handoff_update: true` to document
+that the workflow expects a handoff update after finishing. This is advisory:
+`agent-finish.sh` does not enforce handoff freshness.
+
 ## Setup Details
 
 Prerequisites:
@@ -145,10 +161,14 @@ without explicit human instruction.
 
 ## Evidence And Optional Gates
 
-`agent-finish.sh` writes evidence under `.agent/runs/<timestamp>/`, including
+`agent-finish.sh` writes authoritative run evidence under
+`.agent/runs/<timestamp>/`, including
 `finish-summary.md`, gate result files such as `tdd-evidence-result.txt`,
 `acceptance-result.txt`, `review-result.txt`,
 `subagent-evidence-result.txt`, `changed-files.txt`, and `git-diff-stat.txt`.
+
+For the full handoff/evidence model, see
+[docs/handoff.md](docs/handoff.md).
 
 TDD evidence is opt-in per task. When `.agent/task.yml` contains
 `completion.requires_tdd_evidence: true`, fill `.agent/tdd-evidence.yml` with

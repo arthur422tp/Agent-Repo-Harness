@@ -23,7 +23,8 @@ Repo-local completion gate for AI coding agents.
 - [ ] CI is passing.
 - [ ] `VERSION` is `0.1.0`.
 - [ ] `CHANGELOG.md` has a `v0.1.0` entry.
-- [ ] `README.md` has a CI badge, Quick Start, What It Is Not, Platform Support, Verification Strategy, and Guardrails section.
+- [ ] `README.md` has a CI badge, Quick Start, What It Is Not, Platform Support, Verification Strategy, Evidence vs Handoff, and Guardrails section.
+- [ ] `docs/handoff.md` explains `.agent/runs/<timestamp>/`, `handoff.md`, and optional `.agent/handoff.yml`.
 - [ ] `install-agent-harness.sh` prints the short 3-step next path.
 - [ ] The default TDD evidence is opt-in.
 - [ ] `bash validate-harness.sh` passes locally.

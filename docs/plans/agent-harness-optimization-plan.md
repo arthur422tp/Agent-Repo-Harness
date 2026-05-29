@@ -135,7 +135,7 @@ Extend `.agent/task.yml` completion flags additively:
 - `requires_acceptance_check`
 - `requires_review_evidence`
 - `requires_subagent_evidence`
-- `requires_doc_freshness_check`
+- `expects_handoff_update` (advisory workflow expectation, not a finish gate)
 
 ### Gate layer
 
@@ -145,14 +145,13 @@ Add:
 - `scripts/check-acceptance.sh`: validates `.agent/acceptance.yml` when required.
 - `scripts/check-review-evidence.sh`: validates `.agent/review.yml` when required.
 - `scripts/check-doc-links.sh`: checks local Markdown links and referenced scripts/files.
-- `scripts/check-doc-freshness.sh`: checks required metadata and stale markers for `agent.md` and `docs/agent/*`.
 - `scripts/check-template-sync.sh`: checks templates, examples, adapters, schemas, and README command references for drift.
 - `scripts/check-subagent-evidence.sh`: validates required subagent run evidence and acceptable statuses.
 
 Update:
 
 - `scripts/agent-verify.sh`: use robust config reading for `verification.required`; keep auto-detection as fallback.
-- `scripts/agent-finish.sh`: include acceptance, review, subagent evidence, handoff update, and maintenance gates only when configured.
+- `scripts/agent-finish.sh`: include acceptance, review, and subagent evidence gates only when configured. Do not make handoff freshness or doc freshness a finish gate for the v0.1.0 baseline.
 - `scripts/validate-config.sh` and `scripts/validate-task.sh`: use the shared YAML reader and schema-like structural checks.
 - `validate-harness.sh`: include unit-style checks and fixtures for every new gate.
 
@@ -268,7 +267,7 @@ bash templates/scripts/agent-verify.sh --best-effort
 - `validate-task.sh`: recognize new completion flags.
 - New acceptance gate: fail if required criteria lack `met: true`, evidence, or verification reference.
 - New review gate: fail if required review is missing, has unresolved blocking concerns, or lacks evidence path.
-- Add handoff update validation as a check that `handoff.md` references the latest `.agent/runs/<timestamp>/finish-summary.md` after finish, or run it as a post-finish warning to avoid circularity.
+- Document `handoff.md` as a continuity artifact that may reference the latest `.agent/runs/<timestamp>/finish-summary.md`; do not add handoff freshness as a required `agent-finish.sh` gate.
 
 **Validation command:**
 
@@ -288,7 +287,8 @@ bash templates/scripts/check-review-evidence.sh templates/.agent/task.yml templa
 - Completion can be tied to explicit acceptance criteria.
 - Review expectations become machine-readable.
 - Finish evidence records acceptance and review gate results.
-- Handoff update requirements become checkable.
+- Handoff expectations are documented as continuity guidance, not a required
+  finish gate.
 
 **Risks:**
 
@@ -408,7 +408,6 @@ bash templates/scripts/check-subagent-evidence.sh
 - `templates/docs/agent/index.md`
 - `templates/docs/agent/architecture-map.md`
 - `templates/docs/agent/maintenance.md`
-- `templates/scripts/check-doc-freshness.sh`
 - `templates/scripts/check-template-sync.sh`
 
 **Files to modify:**
@@ -427,15 +426,13 @@ bash templates/scripts/check-subagent-evidence.sh
 
 **Scripts to update:**
 
-- `check-doc-freshness.sh`: ensure docs contain required metadata such as owner, last-reviewed, source-of-truth, and verified-by where appropriate.
 - `check-template-sync.sh`: compare installed example files against templates where exact sync is expected, and allow documented example-specific deltas.
-- `validate-harness.sh`: add maintenance checks and CI-ready pass/fail output.
+- `validate-harness.sh`: add lightweight template, schema, and documentation checks with CI-ready pass/fail output.
 
 **Validation command:**
 
 ```bash
 bash validate-harness.sh
-bash templates/scripts/check-doc-freshness.sh
 bash templates/scripts/check-template-sync.sh
 ```
 
@@ -562,8 +559,8 @@ bash templates/scripts/check-doc-links.sh
 - Should `.agent/acceptance.yml` be separate, or should acceptance criteria live under `.agent/task.yml` to reduce file count?
 - What statuses should block review completion by default: only `changes_requested`, or also `needs_context` and `concerns`?
 - Should `DONE_WITH_CONCERNS` subagent runs pass by default, warn by default, or be task-configurable?
-- How should `handoff.md` freshness be checked without creating a circular dependency with `agent-finish.sh`, which produces the run directory that handoff should reference?
+- Should a future non-blocking advisory checker report stale `handoff.md` references, while keeping `agent-finish.sh` focused on run evidence?
 - How much additional fixture orchestration should remain in `validate-harness.sh` versus move into helper scripts under `validate/`?
-- Should `docs/agent/*` freshness metadata be required in installed target repos, or only in this harness repository?
+- Should installed target repos keep only lightweight doc/template consistency checks, or add optional metadata for teams that want stricter maintenance?
 - How much adapter lifecycle guidance belongs in prompt files versus Claude Code skills versus `docs/agent/failure-recovery.md`?
 - Should examples be exact installed snapshots, teaching examples with allowed deltas, or both?
