@@ -21,7 +21,7 @@
 - [x] Task 2 behavior was landed before the final Task 1 wording correction, so
   public docs now describe the implemented JSON evidence behavior without
   claiming Task 3 or Task 4 are complete.
-- [ ] Task 3 has not started.
+- [x] Task 3: local resource envelope limits completed in `8cd2c03`.
 - [ ] Tasks 4 and 5 have not started.
 
 Verification status:
@@ -29,9 +29,7 @@ Verification status:
 - Focused finish evidence suite passed:
   `bash -c 'source tests/harness/lib.sh; source tests/harness/finish-examples.sh'`.
 - Clean exported `HEAD` passed `bash validate-harness.sh`.
-- In the live workspace, `bash validate-harness.sh` still fails while this
-  untracked plan file is under `docs/` because it references later-task files
-  that do not exist until Task 3 and Task 4 land.
+- Live `bash validate-harness.sh` passed after Task 3 landed.
 
 ## Scope Check
 
