@@ -870,7 +870,7 @@ git commit -m "feat: add local resource envelope"
 - Modify: `README.md`
 - Modify: `README.zh-TW.md`
 
-- [ ] **Step 1: Add failing architecture evidence tests**
+- [x] **Step 1: Add failing architecture evidence tests**
 
 Create `tests/harness/architecture-evidence.sh`:
 
@@ -953,7 +953,7 @@ mkdir -p "$architecture_invalid_root/.agent" "$architecture_invalid_root/scripts
 pass "architecture evidence required and invalid"
 ```
 
-- [ ] **Step 2: Source the new test suite**
+- [x] **Step 2: Source the new test suite**
 
 Add this line to `validate-harness.sh`:
 
@@ -961,7 +961,7 @@ Add this line to `validate-harness.sh`:
 source "$repo_root/tests/harness/architecture-evidence.sh"
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run:
 
@@ -971,7 +971,7 @@ bash validate-harness.sh
 
 Expected: FAIL because `templates/scripts/check-architecture-evidence.sh` does not exist.
 
-- [ ] **Step 4: Add the architecture evidence template**
+- [x] **Step 4: Add the architecture evidence template**
 
 Create `templates/.agent/architecture.yml` and `examples/universal-minimal-repo/.agent/architecture.yml`:
 
@@ -991,7 +991,7 @@ architecture:
       evidence: ""
 ```
 
-- [ ] **Step 5: Add architecture schema**
+- [x] **Step 5: Add architecture schema**
 
 Create `schemas/architecture.schema.json`:
 
@@ -1036,7 +1036,7 @@ Create `schemas/architecture.schema.json`:
 }
 ```
 
-- [ ] **Step 6: Add task completion flag**
+- [x] **Step 6: Add task completion flag**
 
 Add this flag to `templates/.agent/task.yml` and `examples/universal-minimal-repo/.agent/task.yml` under `task.completion`:
 
@@ -1050,7 +1050,7 @@ Add this property to `schemas/task.schema.json` under `task.completion.propertie
 "requires_architecture_evidence": { "type": "boolean" }
 ```
 
-- [ ] **Step 7: Implement `check-architecture-evidence.sh`**
+- [x] **Step 7: Implement `check-architecture-evidence.sh`**
 
 Create `templates/scripts/check-architecture-evidence.sh`:
 
@@ -1187,7 +1187,7 @@ fi
 echo "ARCHITECTURE_EVIDENCE_RESULT=pass"
 ```
 
-- [ ] **Step 8: Wire architecture evidence into finish gate**
+- [x] **Step 8: Wire architecture evidence into finish gate**
 
 In `templates/scripts/agent-finish.sh`, add:
 
@@ -1219,7 +1219,7 @@ Add this gate to `write_json_summary()`:
 },
 ```
 
-- [ ] **Step 9: Install the new files**
+- [x] **Step 9: Install the new files**
 
 Update `install-agent-harness.sh` so a default install copies:
 
@@ -1231,7 +1231,7 @@ schemas/architecture.schema.json -> schemas/architecture.schema.json
 
 Follow the existing install list style. Preserve dry-run, backup, and no-overwrite behavior.
 
-- [ ] **Step 10: Update preflight**
+- [x] **Step 10: Update preflight**
 
 In `templates/scripts/agent-preflight.sh`, add:
 
@@ -1241,7 +1241,7 @@ bash scripts/check-architecture-evidence.sh
 
 Place it after review evidence if that script is already called, or after task validation if preflight only validates the core files.
 
-- [ ] **Step 11: Update docs**
+- [x] **Step 11: Update docs**
 
 Add this section to `README.md`:
 
@@ -1267,7 +1267,7 @@ Add the Traditional Chinese version to `README.zh-TW.md`:
 evidence 的 invariant。
 ```
 
-- [ ] **Step 12: Run validation**
+- [x] **Step 12: Run validation**
 
 Run:
 
@@ -1277,7 +1277,7 @@ bash validate-harness.sh
 
 Expected: PASS, including architecture evidence, install smoke, template sync, and finish examples.
 
-- [ ] **Step 13: Commit**
+- [x] **Step 13: Commit**
 
 ```bash
 git add templates/.agent/architecture.yml examples/universal-minimal-repo/.agent/architecture.yml schemas/architecture.schema.json templates/scripts/check-architecture-evidence.sh templates/scripts/agent-finish.sh templates/scripts/agent-preflight.sh templates/.agent/task.yml examples/universal-minimal-repo/.agent/task.yml schemas/task.schema.json tests/harness/architecture-evidence.sh validate-harness.sh install-agent-harness.sh README.md README.zh-TW.md
