@@ -41,6 +41,7 @@
             "expects_handoff_update": { "type": "boolean" },
             "requires_acceptance_check": { "type": "boolean" },
             "requires_review_evidence": { "type": "boolean" },
+            "requires_architecture_evidence": { "type": "boolean" },
             "requires_subagent_evidence": { "type": "boolean" }
           },
           "additionalProperties": { "type": "boolean" }

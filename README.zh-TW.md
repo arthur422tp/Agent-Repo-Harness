@@ -181,8 +181,8 @@ git commit -m "Initialize project with Agent-Repo-Harness baseline"
 包含
 `finish-summary.md`、`tdd-evidence-result.txt`、
 `acceptance-result.txt`、`review-result.txt`、
-`subagent-evidence-result.txt`、`changed-files.txt` 與
-`git-diff-stat.txt` 等閘門結果檔案。
+`architecture-evidence-result.txt`、`subagent-evidence-result.txt`、
+`changed-files.txt` 與 `git-diff-stat.txt` 等閘門結果檔案。
 
 完整 handoff/evidence model 請見 [docs/handoff.md](docs/handoff.md)。
 
@@ -197,6 +197,14 @@ TDD 證據由每項任務自行選用。當 `.agent/task.yml` 包含
 驗證。當其中包含 `completion.requires_review_evidence: true` 時，請在
 `.agent/review.yml` 中填入核准狀態、reviewer、證據，且不得有阻擋性
 疑慮。
+
+## Architecture Evidence
+
+當測試不足以證明設計品質時，可以在 `.agent/task.yml` 設定
+`completion.requires_architecture_evidence: true`，並填寫
+`.agent/architecture.yml`。此 gate 會要求 reviewer、summary evidence，以及至少
+一個標記為 `upheld`、`upheld_with_concerns` 或 `not_applicable` 且包含具體
+evidence 的 invariant。
 
 Subagent packet 為選用項目。當 controller agent 需要將精確的任務文字、
 允許路徑、必要驗證與預期 status 值交給新的 subagent 時，請填寫
@@ -227,6 +235,7 @@ bash scripts/check-scope.sh
 bash scripts/check-tdd-evidence.sh
 bash scripts/check-acceptance.sh
 bash scripts/check-review-evidence.sh
+bash scripts/check-architecture-evidence.sh
 bash scripts/check-subagent-evidence.sh
 bash scripts/agent-verify.sh --best-effort
 bash scripts/agent-finish.sh --best-effort

@@ -155,6 +155,7 @@ check_task_types() {
     expects_handoff_update \
     requires_acceptance_check \
     requires_review_evidence \
+    requires_architecture_evidence \
     requires_subagent_evidence
   do
     check_optional_boolean "task.completion.$flag"

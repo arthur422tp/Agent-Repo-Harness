@@ -65,6 +65,7 @@ fi
 
 script_dir="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
 template_root="$script_dir/templates"
+schema_root="$script_dir/schemas"
 
 if [ ! -d "$template_root" ]; then
   echo "ERROR: template directory not found: $template_root"
@@ -111,6 +112,12 @@ while IFS= read -r -d '' path; do
 
   copy_path "$path" "$dest"
 done < <(find "$template_root" -mindepth 1 -print0 | sort -z)
+
+if [ -f "$schema_root/architecture.schema.json" ]; then
+  copy_path \
+    "$schema_root/architecture.schema.json" \
+    "$target/schemas/architecture.schema.json"
+fi
 
 if [ -d "$target/scripts" ] && \
   find "$target/scripts" -type f -name "*.sh" | grep -q .

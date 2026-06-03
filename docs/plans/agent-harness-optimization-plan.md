@@ -28,6 +28,25 @@ Agent-Repo-Harness already has a coherent lightweight core:
 
 The repository is therefore a solid MVP. The optimization work should harden and connect existing pieces rather than replace them.
 
+## 1.1 2026-05-29 Production Harness Gap Update
+
+The earlier MVP gaps around shared config parsing, acceptance evidence, review
+evidence, subagent evidence, doc-link checks, template sync, and adapter sync
+have been implemented. Remaining production-harness work is now tracked as:
+
+- machine-readable finish evidence through `finish-summary.json`
+- local resource-envelope limits for finish runs
+- optional architecture evidence for semantic and design-risk claims
+- explicit runtime-boundary documentation for sandbox, token-cost, and semantic-correctness limits
+
+Agent-Repo-Harness remains a repo-local completion harness. It is not a
+filesystem sandbox, network sandbox, MCP server, full agent runtime, or semantic
+correctness guarantee.
+
+The problem diagnosis below is retained as historical planning context. For the
+gaps named in this update, treat the older status bullets in Section 2 as
+superseded by this update and by the current validation suites.
+
 ## 2. Problem Diagnosis
 
 ### Gap 1: Durable repo knowledge is seeded but not yet navigable

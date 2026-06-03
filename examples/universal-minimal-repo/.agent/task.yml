@@ -16,6 +16,7 @@ task:
     requires_scope_check: true
     requires_verification: true
     expects_handoff_update: true
+    requires_architecture_evidence: false
 
 last_verified:
   command: ""

@@ -27,6 +27,9 @@ task:
     expects_handoff_update: true
     requires_acceptance_check: false
     requires_review_evidence: false
+    requires_architecture_evidence: false
+    # Set true when tests are insufficient to prove design quality and
+    # .agent/architecture.yml must record reviewer-backed invariants.
     requires_subagent_evidence: false
     # Set true only when this task must prove delegated execution via at least
     # one validated .agent/subagent-runs/<run>/ directory.

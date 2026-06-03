@@ -22,7 +22,9 @@
   public docs now describe the implemented JSON evidence behavior without
   claiming Task 3 or Task 4 are complete.
 - [x] Task 3: local resource envelope limits completed in `8cd2c03`.
-- [ ] Tasks 4 and 5 have not started.
+- [x] Task 4: optional architecture evidence gate completed in `10e35b0`.
+- [x] Task 5: final alignment and public baseline readiness completed in this
+  branch.
 
 Verification status:
 
@@ -30,6 +32,8 @@ Verification status:
   `bash -c 'source tests/harness/lib.sh; source tests/harness/finish-examples.sh'`.
 - Clean exported `HEAD` passed `bash validate-harness.sh`.
 - Live `bash validate-harness.sh` passed after Task 3 landed.
+- Live `bash validate-harness.sh` passed after Task 5 final consistency
+  assertions were added.
 
 ## Scope Check
 
@@ -866,7 +870,7 @@ git commit -m "feat: add local resource envelope"
 - Modify: `README.md`
 - Modify: `README.zh-TW.md`
 
-- [ ] **Step 1: Add failing architecture evidence tests**
+- [x] **Step 1: Add failing architecture evidence tests**
 
 Create `tests/harness/architecture-evidence.sh`:
 
@@ -949,7 +953,7 @@ mkdir -p "$architecture_invalid_root/.agent" "$architecture_invalid_root/scripts
 pass "architecture evidence required and invalid"
 ```
 
-- [ ] **Step 2: Source the new test suite**
+- [x] **Step 2: Source the new test suite**
 
 Add this line to `validate-harness.sh`:
 
@@ -957,7 +961,7 @@ Add this line to `validate-harness.sh`:
 source "$repo_root/tests/harness/architecture-evidence.sh"
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run:
 
@@ -967,7 +971,7 @@ bash validate-harness.sh
 
 Expected: FAIL because `templates/scripts/check-architecture-evidence.sh` does not exist.
 
-- [ ] **Step 4: Add the architecture evidence template**
+- [x] **Step 4: Add the architecture evidence template**
 
 Create `templates/.agent/architecture.yml` and `examples/universal-minimal-repo/.agent/architecture.yml`:
 
@@ -987,7 +991,7 @@ architecture:
       evidence: ""
 ```
 
-- [ ] **Step 5: Add architecture schema**
+- [x] **Step 5: Add architecture schema**
 
 Create `schemas/architecture.schema.json`:
 
@@ -1032,7 +1036,7 @@ Create `schemas/architecture.schema.json`:
 }
 ```
 
-- [ ] **Step 6: Add task completion flag**
+- [x] **Step 6: Add task completion flag**
 
 Add this flag to `templates/.agent/task.yml` and `examples/universal-minimal-repo/.agent/task.yml` under `task.completion`:
 
@@ -1046,7 +1050,7 @@ Add this property to `schemas/task.schema.json` under `task.completion.propertie
 "requires_architecture_evidence": { "type": "boolean" }
 ```
 
-- [ ] **Step 7: Implement `check-architecture-evidence.sh`**
+- [x] **Step 7: Implement `check-architecture-evidence.sh`**
 
 Create `templates/scripts/check-architecture-evidence.sh`:
 
@@ -1183,7 +1187,7 @@ fi
 echo "ARCHITECTURE_EVIDENCE_RESULT=pass"
 ```
 
-- [ ] **Step 8: Wire architecture evidence into finish gate**
+- [x] **Step 8: Wire architecture evidence into finish gate**
 
 In `templates/scripts/agent-finish.sh`, add:
 
@@ -1215,7 +1219,7 @@ Add this gate to `write_json_summary()`:
 },
 ```
 
-- [ ] **Step 9: Install the new files**
+- [x] **Step 9: Install the new files**
 
 Update `install-agent-harness.sh` so a default install copies:
 
@@ -1227,7 +1231,7 @@ schemas/architecture.schema.json -> schemas/architecture.schema.json
 
 Follow the existing install list style. Preserve dry-run, backup, and no-overwrite behavior.
 
-- [ ] **Step 10: Update preflight**
+- [x] **Step 10: Update preflight**
 
 In `templates/scripts/agent-preflight.sh`, add:
 
@@ -1237,7 +1241,7 @@ bash scripts/check-architecture-evidence.sh
 
 Place it after review evidence if that script is already called, or after task validation if preflight only validates the core files.
 
-- [ ] **Step 11: Update docs**
+- [x] **Step 11: Update docs**
 
 Add this section to `README.md`:
 
@@ -1263,7 +1267,7 @@ Add the Traditional Chinese version to `README.zh-TW.md`:
 evidence 的 invariant。
 ```
 
-- [ ] **Step 12: Run validation**
+- [x] **Step 12: Run validation**
 
 Run:
 
@@ -1273,7 +1277,7 @@ bash validate-harness.sh
 
 Expected: PASS, including architecture evidence, install smoke, template sync, and finish examples.
 
-- [ ] **Step 13: Commit**
+- [x] **Step 13: Commit**
 
 ```bash
 git add templates/.agent/architecture.yml examples/universal-minimal-repo/.agent/architecture.yml schemas/architecture.schema.json templates/scripts/check-architecture-evidence.sh templates/scripts/agent-finish.sh templates/scripts/agent-preflight.sh templates/.agent/task.yml examples/universal-minimal-repo/.agent/task.yml schemas/task.schema.json tests/harness/architecture-evidence.sh validate-harness.sh install-agent-harness.sh README.md README.zh-TW.md
@@ -1288,7 +1292,7 @@ git commit -m "feat: add architecture evidence gate"
 - Modify: `handoff.md`
 - Possibly modify: `CHANGELOG.md`
 
-- [ ] **Step 1: Add final consistency assertions**
+- [x] **Step 1: Add final consistency assertions**
 
 In `tests/harness/doc-consistency.sh`, add:
 
@@ -1304,7 +1308,7 @@ assert_contains "$repo_root/docs/runtime-boundaries.md" "Agent-provider token ac
 assert_contains "$repo_root/docs/runtime-boundaries.md" "Filesystem sandboxing"
 ```
 
-- [ ] **Step 2: Run validation**
+- [x] **Step 2: Run validation**
 
 Run:
 
@@ -1314,7 +1318,7 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 3: Update the optimization plan status**
+- [x] **Step 3: Update the optimization plan status**
 
 In `docs/plans/agent-harness-optimization-plan.md`, add this section near the top after `## 1. Current State Summary`:
 
@@ -1335,7 +1339,7 @@ filesystem sandbox, network sandbox, MCP server, full agent runtime, or semantic
 correctness guarantee.
 ```
 
-- [ ] **Step 4: Update changelog if this work is part of the release**
+- [x] **Step 4: Update changelog if this work is part of the release**
 
 If the branch targets v0.1.0, add this bullet under the v0.1.0 entry in `CHANGELOG.md`:
 
@@ -1351,7 +1355,7 @@ If the branch targets a post-v0.1.0 release, create a new `Unreleased` section i
 - Added machine-readable finish evidence, local resource-envelope controls, architecture evidence, and runtime-boundary documentation.
 ```
 
-- [ ] **Step 5: Run final verification**
+- [x] **Step 5: Run final verification**
 
 Run:
 
@@ -1372,7 +1376,7 @@ and:
 DOC_LINKS_RESULT=pass
 ```
 
-- [ ] **Step 6: Update handoff**
+- [x] **Step 6: Update handoff**
 
 Replace `handoff.md` with a concise current-state summary:
 
@@ -1436,7 +1440,7 @@ offers optional architecture evidence for semantic/design-risk claims.
   or the next post-v0.1.0 release.
 ```
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add docs/public-packaging.md docs/plans/agent-harness-optimization-plan.md CHANGELOG.md handoff.md tests/harness/doc-consistency.sh

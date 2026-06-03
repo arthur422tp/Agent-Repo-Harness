@@ -13,6 +13,7 @@ Highlights:
 - repo-defined verification via `.agent/harness.yml`
 - opt-in TDD, acceptance, review, and subagent evidence gates
 - durable `.agent/runs/<timestamp>/` finish evidence
+- machine-readable finish evidence, local resource-envelope controls, architecture evidence, and runtime-boundary documentation
 - Codex and Claude Code adapters
 - GitHub Actions CI running `bash validate-harness.sh`
 
