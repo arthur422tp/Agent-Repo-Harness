@@ -105,6 +105,7 @@ mkdir -p "$task_invalid_types_root/.agent" "$task_invalid_types_root/scripts/lib
   assert_contains "$task_log" "FAIL: .agent/task.yml task.status must be one of"
   assert_contains "$task_log" "FAIL: .agent/task.yml task.allowed_paths must be an array or null"
   assert_contains "$task_log" "FAIL: .agent/task.yml task.completion.requires_verification must be boolean"
+  assert_contains "$task_log" "FAIL: .agent/task.yml task.completion.requires_architecture_evidence must be boolean"
   assert_contains "$task_log" "TASK_VALIDATION_RESULT=fail"
 )
 pass "task type validation failure"

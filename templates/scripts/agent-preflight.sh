@@ -70,6 +70,16 @@ echo
 echo "== Scripts =="
 find scripts -maxdepth 1 -type f -name "*.sh" -print 2>/dev/null || true
 
+echo
+echo "== Optional evidence gates =="
+if [ -f scripts/check-architecture-evidence.sh ]; then
+  if ! bash scripts/check-architecture-evidence.sh; then
+    echo "WARN: architecture evidence is incomplete; scripts/agent-finish.sh will enforce it when required."
+  fi
+else
+  echo "SKIP: scripts/check-architecture-evidence.sh not found"
+fi
+
 if [ "$failures" -gt 0 ]; then
   echo "PREFLIGHT_RESULT=fail"
   exit 1

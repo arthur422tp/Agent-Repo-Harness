@@ -5,3 +5,4 @@ task:
   forbidden_paths: []
   completion:
     requires_verification: "yes"
+    requires_architecture_evidence: "definitely"

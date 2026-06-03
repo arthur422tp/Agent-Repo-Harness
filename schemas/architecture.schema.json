@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-repo-harness.local/schemas/architecture.schema.json",
+  "title": "Agent-Repo-Harness architecture evidence",
+  "type": "object",
+  "required": ["architecture"],
+  "properties": {
+    "architecture": {
+      "type": "object",
+      "required": ["status", "reviewer", "evidence", "invariants"],
+      "properties": {
+        "status": {
+          "enum": ["not_reviewed", "upheld", "upheld_with_concerns", "violated"]
+        },
+        "reviewer": { "type": "string" },
+        "evidence": { "type": "string" },
+        "invariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "description", "status", "evidence"],
+            "properties": {
+              "id": { "type": "string" },
+              "description": { "type": "string" },
+              "status": {
+                "enum": ["not_reviewed", "upheld", "upheld_with_concerns", "violated", "not_applicable"]
+              },
+              "evidence": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

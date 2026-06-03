@@ -18,6 +18,7 @@ assert_not_contains "$repo_root/templates/CLAUDE.md" "## Context Loading Policy"
 assert_not_contains "$repo_root/templates/CLAUDE.md" '3. Read `.agent/policy.yml`.'
 assert_contains "$repo_root/templates/.agent/task.yml" 'requires_tdd_evidence: false'
 assert_not_contains "$repo_root/templates/.agent/task.yml" 'requires_tdd_evidence: true'
+assert_contains "$repo_root/templates/.agent/task.yml" 'requires_architecture_evidence: false'
 assert_contains "$repo_root/templates/.agent/task.yml" 'expects_handoff_update: true'
 assert_contains "$repo_root/templates/.agent/task.yml" 'agent-finish.sh does not enforce'
 assert_not_contains "$repo_root/templates/.agent/task.yml" 'requires_handoff_update'
@@ -27,7 +28,10 @@ assert_contains "$repo_root/templates/.agent/harness.yml" 'max_finish_seconds: 0
 assert_contains "$repo_root/templates/.agent/harness.yml" 'max_changed_files: 0'
 assert_contains "$repo_root/examples/strict-tdd-task.yml" 'requires_tdd_evidence: true'
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/task.yml" 'expects_handoff_update: true'
+assert_contains "$repo_root/examples/universal-minimal-repo/.agent/task.yml" 'requires_architecture_evidence: false'
 assert_not_contains "$repo_root/examples/universal-minimal-repo/.agent/task.yml" 'requires_handoff_update'
+assert_contains "$repo_root/templates/.agent/architecture.yml" 'status: not_reviewed'
+assert_contains "$repo_root/examples/universal-minimal-repo/.agent/architecture.yml" 'status: not_reviewed'
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 'runtime:'
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 'resource_limits:'
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 'max_finish_seconds: 0'
@@ -56,4 +60,5 @@ assert_contains "$target_root/CLAUDE.md" "docs/agent/context-loading.md"
 assert_contains "$target_root/CLAUDE.md" "docs/agent/policy-approval.md"
 assert_not_contains "$target_root/CLAUDE.md" "## Context Loading Policy"
 assert_not_contains "$target_root/CLAUDE.md" '3. Read `.agent/policy.yml`.'
+assert_contains "$target_root/.agent/architecture.yml" 'status: not_reviewed'
 pass "templates, examples, and installed entrypoints stay aligned"

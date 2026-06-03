@@ -1,0 +1,13 @@
+architecture:
+  status: not_reviewed
+  reviewer: ""
+  evidence: ""
+  invariants:
+    - id: "public-api-shape"
+      description: "The change does not introduce unnecessary public API surface."
+      status: not_reviewed
+      evidence: ""
+    - id: "module-boundaries"
+      description: "The change stays within existing module ownership boundaries."
+      status: not_reviewed
+      evidence: ""

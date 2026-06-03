@@ -52,6 +52,7 @@ policy_result_file="$run_dir/policy-result.txt"
 tdd_evidence_result_file="$run_dir/tdd-evidence-result.txt"
 acceptance_result_file="$run_dir/acceptance-result.txt"
 review_result_file="$run_dir/review-result.txt"
+architecture_result_file="$run_dir/architecture-evidence-result.txt"
 subagent_evidence_result_file="$run_dir/subagent-evidence-result.txt"
 verify_result_file="$run_dir/verify-result.txt"
 changed_files_file="$run_dir/changed-files.txt"
@@ -65,6 +66,7 @@ policy_status=""
 tdd_evidence_status=""
 acceptance_status=""
 review_status=""
+architecture_status=""
 subagent_evidence_status=""
 verify_status=""
 
@@ -253,6 +255,7 @@ write_summary() {
     echo "| check-tdd-evidence | $tdd_evidence_status | $tdd_evidence_result_file |"
     echo "| check-acceptance | $acceptance_status | $acceptance_result_file |"
     echo "| check-review-evidence | $review_status | $review_result_file |"
+    echo "| check-architecture-evidence | $architecture_status | $architecture_result_file |"
     echo "| check-subagent-evidence | $subagent_evidence_status | $subagent_evidence_result_file |"
     echo "| agent-verify | $verify_status | $verify_result_file |"
     echo "| resource-envelope | $resource_status | $resource_result_file |"
@@ -304,6 +307,7 @@ write_json_summary() {
   AGENT_FINISH_TDD_EVIDENCE_STATUS="${tdd_evidence_status:-0}" \
   AGENT_FINISH_ACCEPTANCE_STATUS="${acceptance_status:-0}" \
   AGENT_FINISH_REVIEW_STATUS="${review_status:-0}" \
+  AGENT_FINISH_ARCHITECTURE_STATUS="${architecture_status:-0}" \
   AGENT_FINISH_SUBAGENT_EVIDENCE_STATUS="${subagent_evidence_status:-0}" \
   AGENT_FINISH_VERIFY_STATUS="${verify_status:-0}" \
   AGENT_FINISH_CHECK_AGENT_MD_EVIDENCE="$check_agent_md_result_file" \
@@ -312,6 +316,7 @@ write_json_summary() {
   AGENT_FINISH_TDD_EVIDENCE="$tdd_evidence_result_file" \
   AGENT_FINISH_ACCEPTANCE_EVIDENCE="$acceptance_result_file" \
   AGENT_FINISH_REVIEW_EVIDENCE="$review_result_file" \
+  AGENT_FINISH_ARCHITECTURE_EVIDENCE="$architecture_result_file" \
   AGENT_FINISH_SUBAGENT_EVIDENCE="$subagent_evidence_result_file" \
   AGENT_FINISH_VERIFY_EVIDENCE="$verify_result_file" \
   AGENT_FINISH_RESOURCE_EVIDENCE="$resource_result_file" \
@@ -363,6 +368,11 @@ data = {
             "name": "check-review-evidence",
             "exit_status": int(env["AGENT_FINISH_REVIEW_STATUS"]),
             "evidence": env["AGENT_FINISH_REVIEW_EVIDENCE"],
+        },
+        {
+            "name": "check-architecture-evidence",
+            "exit_status": int(env["AGENT_FINISH_ARCHITECTURE_STATUS"]),
+            "evidence": env["AGENT_FINISH_ARCHITECTURE_EVIDENCE"],
         },
         {
             "name": "check-subagent-evidence",
@@ -443,6 +453,8 @@ if [ "$mode" = "strict" ]; then
   acceptance_status="$last_status"
   run_gate "check-review-evidence" "$review_result_file" bash scripts/check-review-evidence.sh
   review_status="$last_status"
+  run_gate "check-architecture-evidence" "$architecture_result_file" bash scripts/check-architecture-evidence.sh
+  architecture_status="$last_status"
   run_gate "check-subagent-evidence" "$subagent_evidence_result_file" bash scripts/check-subagent-evidence.sh
   subagent_evidence_status="$last_status"
   run_gate "agent-verify" "$verify_result_file" bash scripts/agent-verify.sh --strict
@@ -460,6 +472,8 @@ else
   acceptance_status="$last_status"
   run_gate "check-review-evidence" "$review_result_file" bash scripts/check-review-evidence.sh
   review_status="$last_status"
+  run_gate "check-architecture-evidence" "$architecture_result_file" bash scripts/check-architecture-evidence.sh
+  architecture_status="$last_status"
   run_gate "check-subagent-evidence" "$subagent_evidence_result_file" bash scripts/check-subagent-evidence.sh
   subagent_evidence_status="$last_status"
   run_gate "agent-verify" "$verify_result_file" bash scripts/agent-verify.sh --best-effort

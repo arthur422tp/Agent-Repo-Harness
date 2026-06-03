@@ -44,6 +44,7 @@ for required_path in \
   schemas/handoff.schema.json \
   schemas/acceptance.schema.json \
   schemas/review.schema.json \
+  schemas/architecture.schema.json \
   templates/scripts/validate-config.sh \
   templates/scripts/validate-task.sh \
   templates/scripts/lib/read-yaml.py \
@@ -53,12 +54,14 @@ for required_path in \
   templates/scripts/validate-handoff.sh \
   templates/scripts/check-acceptance.sh \
   templates/scripts/check-review-evidence.sh \
+  templates/scripts/check-architecture-evidence.sh \
   templates/scripts/check-subagent-evidence.sh \
   templates/.agent/handoff.yml \
   templates/.agent/tdd-evidence.yml \
   templates/.agent/approvals/high-risk-approved.yml \
   templates/.agent/acceptance.yml \
   templates/.agent/review.yml \
+  templates/.agent/architecture.yml \
   templates/scripts/validate-subagent-packet.sh \
   templates/.agent/subagent-packet.yml \
   templates/.agent/subagent-runs/README.md \
@@ -82,7 +85,8 @@ for required_path in \
   examples/universal-minimal-repo/CLAUDE.md \
   examples/universal-minimal-repo/.agent/harness.yml \
   examples/universal-minimal-repo/.agent/policy.yml \
-  examples/universal-minimal-repo/.agent/task.yml
+  examples/universal-minimal-repo/.agent/task.yml \
+  examples/universal-minimal-repo/.agent/architecture.yml
 do
   assert_exists "$repo_root/$required_path"
 done
@@ -161,6 +165,7 @@ for required_path in \
   .agent/handoff.yml \
   .agent/acceptance.yml \
   .agent/review.yml \
+  .agent/architecture.yml \
   .agent/tdd-evidence.yml \
   .agent/approvals/high-risk-approved.yml \
   .agent/subagent-packet.yml \
@@ -178,6 +183,7 @@ for required_path in \
   scripts/check-tdd-evidence.sh \
   scripts/check-acceptance.sh \
   scripts/check-review-evidence.sh \
+  scripts/check-architecture-evidence.sh \
   scripts/check-subagent-evidence.sh \
   scripts/agent-verify.sh \
   scripts/lib/read-yaml.py \
@@ -187,7 +193,8 @@ for required_path in \
   scripts/validate-task.sh \
   scripts/validate-handoff.sh \
   scripts/validate-subagent-packet.sh \
-  scripts/validate-subagent-run.sh
+  scripts/validate-subagent-run.sh \
+  schemas/architecture.schema.json
 do
   assert_exists "$target_root/$required_path"
 done
@@ -195,6 +202,9 @@ pass "required files installed"
 
 assert_contains "$target_root/.agent/task.yml" 'requires_tdd_evidence: false'
 pass "installed default TDD evidence gate is opt-in"
+
+assert_contains "$target_root/.agent/task.yml" 'requires_architecture_evidence: false'
+pass "installed default architecture evidence gate is opt-in"
 
 assert_not_exists "$target_root/adapters/hooks/README.md"
 assert_not_exists "$target_root/adapters/hooks/git/pre-commit"
@@ -209,6 +219,7 @@ pass "hook adapters are not installed automatically"
   bash scripts/agent-preflight.sh >"$preflight_log" 2>&1
   assert_contains "$preflight_log" "== Dependencies =="
   assert_contains "$preflight_log" "OK: python"
+  assert_contains "$preflight_log" "Architecture evidence is not required."
   bash scripts/validate-config.sh
   bash scripts/validate-task.sh
   bash scripts/check-doc-links.sh
@@ -394,6 +405,10 @@ pass "hook adapters are not installed automatically"
   bash scripts/check-subagent-evidence.sh >"$subagent_evidence_pass_log" 2>&1
   assert_contains "$subagent_evidence_pass_log" "Subagent evidence is required."
   assert_contains "$subagent_evidence_pass_log" "SUBAGENT_EVIDENCE_RESULT=pass"
+  architecture_evidence_skip_log="$target_root/architecture-evidence-skip.log"
+  bash scripts/check-architecture-evidence.sh >"$architecture_evidence_skip_log" 2>&1
+  assert_contains "$architecture_evidence_skip_log" "Architecture evidence is not required."
+  assert_contains "$architecture_evidence_skip_log" "ARCHITECTURE_EVIDENCE_RESULT=pass"
   bash scripts/check-agent-md.sh agent.md
   verify_log="$target_root/agent-verify-pass.log"
   bash scripts/agent-verify.sh --best-effort >"$verify_log" 2>&1
@@ -425,6 +440,8 @@ pass "hook adapters are not installed automatically"
   assert_file_contains "$target_root" "acceptance-result.txt" "Acceptance check is not required."
   assert_file_contains "$target_root" "review-result.txt" "Exit status: 0"
   assert_file_contains "$target_root" "review-result.txt" "Review evidence is not required."
+  assert_file_contains "$target_root" "architecture-evidence-result.txt" "Exit status: 0"
+  assert_file_contains "$target_root" "architecture-evidence-result.txt" "Architecture evidence is not required."
   assert_file_contains "$target_root" "subagent-evidence-result.txt" "Exit status: 0"
   assert_file_contains "$target_root" "subagent-evidence-result.txt" "Subagent evidence is required."
   assert_file_contains "$target_root" "verify-result.txt" "Exit status: 0"

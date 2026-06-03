@@ -17,6 +17,7 @@ git init -q "$resource_disabled_root"
   cp "$repo_root/templates/scripts/check-tdd-evidence.sh" scripts/check-tdd-evidence.sh
   cp "$repo_root/templates/scripts/check-acceptance.sh" scripts/check-acceptance.sh
   cp "$repo_root/templates/scripts/check-review-evidence.sh" scripts/check-review-evidence.sh
+  cp "$repo_root/templates/scripts/check-architecture-evidence.sh" scripts/check-architecture-evidence.sh
   cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
@@ -52,6 +53,7 @@ git init -q "$resource_changed_files_root"
   cp "$repo_root/templates/scripts/check-tdd-evidence.sh" scripts/check-tdd-evidence.sh
   cp "$repo_root/templates/scripts/check-acceptance.sh" scripts/check-acceptance.sh
   cp "$repo_root/templates/scripts/check-review-evidence.sh" scripts/check-review-evidence.sh
+  cp "$repo_root/templates/scripts/check-architecture-evidence.sh" scripts/check-architecture-evidence.sh
   cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh

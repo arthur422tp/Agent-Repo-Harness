@@ -189,7 +189,8 @@ without explicit human instruction.
 `.agent/runs/<timestamp>/`, including
 `finish-summary.md`, gate result files such as `tdd-evidence-result.txt`,
 `acceptance-result.txt`, `review-result.txt`,
-`subagent-evidence-result.txt`, `changed-files.txt`, and `git-diff-stat.txt`.
+`architecture-evidence-result.txt`, `subagent-evidence-result.txt`,
+`changed-files.txt`, and `git-diff-stat.txt`.
 
 For the full handoff/evidence model, see
 [docs/handoff.md](docs/handoff.md).
@@ -205,6 +206,14 @@ contains `completion.requires_acceptance_check: true`, fill
 or verification. When it contains
 `completion.requires_review_evidence: true`, fill `.agent/review.yml` with an
 approving status, reviewer, evidence, and no blocking concerns.
+
+## Architecture Evidence
+
+For changes where tests are not enough to prove design quality, set
+`completion.requires_architecture_evidence: true` in `.agent/task.yml` and fill
+`.agent/architecture.yml`. The gate requires a reviewer, summary evidence, and
+at least one invariant marked `upheld`, `upheld_with_concerns`, or
+`not_applicable` with concrete evidence.
 
 Subagent packets are optional. Fill `.agent/subagent-packet.yml` when a
 controller agent needs to hand precise task text, allowed paths, required
@@ -236,6 +245,7 @@ bash scripts/check-scope.sh
 bash scripts/check-tdd-evidence.sh
 bash scripts/check-acceptance.sh
 bash scripts/check-review-evidence.sh
+bash scripts/check-architecture-evidence.sh
 bash scripts/check-subagent-evidence.sh
 bash scripts/agent-verify.sh --best-effort
 bash scripts/agent-finish.sh --best-effort
