@@ -40,8 +40,8 @@ Repo-local completion gate for AI coding agents.
 
 ## Production-harness follow-up checklist
 
-- [ ] `finish-summary.json` is documented and validated by `validate-harness.sh`.
-- [ ] Resource-envelope limits are documented as local shell limits, not token-cost controls.
-- [ ] Architecture evidence is documented as an optional semantic/design-risk gate.
-- [ ] `docs/runtime-boundaries.md` clearly separates implemented guardrails from sandbox/runtime features that are not implemented.
-- [ ] Public wording avoids claiming filesystem isolation, network isolation, secret isolation, model-cost enforcement, or semantic correctness guarantees.
+- [x] `finish-summary.json` is documented and validated by `validate-harness.sh`.
+- [x] Resource-envelope limits are documented as local shell limits, not token-cost controls.
+- [x] Architecture evidence is documented as an optional semantic/design-risk gate.
+- [x] `docs/runtime-boundaries.md` clearly separates implemented guardrails from sandbox/runtime features that are not implemented.
+- [x] Public wording avoids claiming filesystem isolation, network isolation, secret isolation, model-cost enforcement, or semantic correctness guarantees.

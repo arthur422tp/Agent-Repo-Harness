@@ -22,7 +22,9 @@
   public docs now describe the implemented JSON evidence behavior without
   claiming Task 3 or Task 4 are complete.
 - [x] Task 3: local resource envelope limits completed in `8cd2c03`.
-- [ ] Tasks 4 and 5 have not started.
+- [x] Task 4: optional architecture evidence gate completed in `10e35b0`.
+- [x] Task 5: final alignment and public baseline readiness completed in this
+  branch.
 
 Verification status:
 
@@ -30,6 +32,8 @@ Verification status:
   `bash -c 'source tests/harness/lib.sh; source tests/harness/finish-examples.sh'`.
 - Clean exported `HEAD` passed `bash validate-harness.sh`.
 - Live `bash validate-harness.sh` passed after Task 3 landed.
+- Live `bash validate-harness.sh` passed after Task 5 final consistency
+  assertions were added.
 
 ## Scope Check
 
@@ -1288,7 +1292,7 @@ git commit -m "feat: add architecture evidence gate"
 - Modify: `handoff.md`
 - Possibly modify: `CHANGELOG.md`
 
-- [ ] **Step 1: Add final consistency assertions**
+- [x] **Step 1: Add final consistency assertions**
 
 In `tests/harness/doc-consistency.sh`, add:
 
@@ -1304,7 +1308,7 @@ assert_contains "$repo_root/docs/runtime-boundaries.md" "Agent-provider token ac
 assert_contains "$repo_root/docs/runtime-boundaries.md" "Filesystem sandboxing"
 ```
 
-- [ ] **Step 2: Run validation**
+- [x] **Step 2: Run validation**
 
 Run:
 
@@ -1314,7 +1318,7 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 3: Update the optimization plan status**
+- [x] **Step 3: Update the optimization plan status**
 
 In `docs/plans/agent-harness-optimization-plan.md`, add this section near the top after `## 1. Current State Summary`:
 
@@ -1335,7 +1339,7 @@ filesystem sandbox, network sandbox, MCP server, full agent runtime, or semantic
 correctness guarantee.
 ```
 
-- [ ] **Step 4: Update changelog if this work is part of the release**
+- [x] **Step 4: Update changelog if this work is part of the release**
 
 If the branch targets v0.1.0, add this bullet under the v0.1.0 entry in `CHANGELOG.md`:
 
@@ -1351,7 +1355,7 @@ If the branch targets a post-v0.1.0 release, create a new `Unreleased` section i
 - Added machine-readable finish evidence, local resource-envelope controls, architecture evidence, and runtime-boundary documentation.
 ```
 
-- [ ] **Step 5: Run final verification**
+- [x] **Step 5: Run final verification**
 
 Run:
 
@@ -1372,7 +1376,7 @@ and:
 DOC_LINKS_RESULT=pass
 ```
 
-- [ ] **Step 6: Update handoff**
+- [x] **Step 6: Update handoff**
 
 Replace `handoff.md` with a concise current-state summary:
 
@@ -1436,7 +1440,7 @@ offers optional architecture evidence for semantic/design-risk claims.
   or the next post-v0.1.0 release.
 ```
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add docs/public-packaging.md docs/plans/agent-harness-optimization-plan.md CHANGELOG.md handoff.md tests/harness/doc-consistency.sh
