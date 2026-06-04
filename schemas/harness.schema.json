@@ -57,6 +57,18 @@
         }
       },
       "additionalProperties": true
+    },
+    "audit": {
+      "type": "object",
+      "properties": {
+        "command": { "type": "string" },
+        "evidence_dir": { "type": "string" },
+        "checks": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
     }
   },
   "additionalProperties": true

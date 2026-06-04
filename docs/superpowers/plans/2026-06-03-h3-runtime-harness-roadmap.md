@@ -1165,7 +1165,7 @@ git commit -m "feat: add intervention evidence gate"
 - Modify: `tests/harness/static-install.sh`
 - Modify: `tests/harness/template-sync.sh`
 
-- [ ] **Step 1: Write failing audit tests**
+- [x] **Step 1: Write failing audit tests**
 
 Create `tests/harness/entropy-audit.sh`:
 
@@ -1231,7 +1231,7 @@ bash validate-harness.sh
 
 Expected: FAIL because `templates/scripts/agent-audit.sh` does not exist.
 
-- [ ] **Step 2: Add audit config**
+- [x] **Step 2: Add audit config**
 
 In `templates/.agent/harness.yml`, add:
 
@@ -1262,7 +1262,7 @@ In `schemas/harness.schema.json`, add:
 }
 ```
 
-- [ ] **Step 3: Add audit script**
+- [x] **Step 3: Add audit script**
 
 Create `templates/scripts/agent-audit.sh`:
 
@@ -1376,7 +1376,7 @@ if [ "$overall_result" = "fail" ]; then
 fi
 ```
 
-- [ ] **Step 4: Replace hardcoded python3**
+- [x] **Step 4: Replace hardcoded python3**
 
 Before committing, replace the final `python3` call in `agent-audit.sh` with the repo's `find_python` helper pattern used in other scripts:
 
@@ -1398,7 +1398,7 @@ Then invoke:
 "$python_bin" - <<'PY'
 ```
 
-- [ ] **Step 5: Add preflight discovery**
+- [x] **Step 5: Add preflight discovery**
 
 In `templates/scripts/agent-preflight.sh`, add:
 
@@ -1412,7 +1412,7 @@ else
 fi
 ```
 
-- [ ] **Step 6: Run tests**
+- [x] **Step 6: Run tests**
 
 ```bash
 bash validate-harness.sh
@@ -1420,7 +1420,13 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 7: Commit**
+Verified locally on 2026-06-04 with `bash validate-harness.sh`.
+Result: PASS, with Ruby unavailable warnings for optional YAML/JSON syntax checks.
+Implementation also includes a regression test for failed audit check propagation
+and keeps `examples/universal-minimal-repo` aligned with the advertised audit
+command.
+
+- [x] **Step 7: Commit**
 
 ```bash
 git add templates/scripts/agent-audit.sh templates/.agent/harness.yml schemas/harness.schema.json templates/scripts/agent-preflight.sh tests/harness/entropy-audit.sh tests/harness/static-install.sh tests/harness/template-sync.sh validate-harness.sh

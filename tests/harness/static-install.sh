@@ -51,6 +51,7 @@ for required_path in \
   templates/scripts/validate-config.sh \
   templates/scripts/validate-task.sh \
   templates/scripts/validate-episode.sh \
+  templates/scripts/agent-audit.sh \
   templates/scripts/lib/read-yaml.py \
   templates/scripts/lib/policy-approval.sh \
   templates/scripts/check-doc-links.sh \
@@ -199,6 +200,7 @@ for required_path in \
   scripts/check-interventions.sh \
   scripts/check-subagent-evidence.sh \
   scripts/validate-episode.sh \
+  scripts/agent-audit.sh \
   scripts/agent-verify.sh \
   scripts/lib/read-yaml.py \
   scripts/lib/policy-approval.sh \
@@ -245,6 +247,8 @@ pass "hook adapters are not installed automatically"
   assert_contains "$preflight_log" "Architecture evidence is not required."
   assert_contains "$preflight_log" "== Episode metadata =="
   assert_contains "$preflight_log" "EPISODE_VALIDATION_RESULT=pass"
+  assert_contains "$preflight_log" "== Audit command =="
+  assert_contains "$preflight_log" "FOUND scripts/agent-audit.sh"
   bash scripts/validate-config.sh
   bash scripts/validate-task.sh
   bash scripts/check-doc-links.sh

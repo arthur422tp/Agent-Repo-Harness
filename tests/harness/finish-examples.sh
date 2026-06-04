@@ -309,6 +309,11 @@ cp -R examples/universal-minimal-repo "$example_root"
   bash scripts/check-policy.sh
   bash scripts/check-scope.sh
   bash scripts/agent-verify.sh
+  example_audit_log="$tmp_root/universal-minimal-audit.log"
+  bash scripts/agent-audit.sh >"$example_audit_log" 2>&1
+  assert_contains "$example_audit_log" "AGENT_AUDIT_RESULT=pass"
+  assert_exists "$(find .agent/audits -type f -name "entropy-report.md" | sort | tail -n 1)"
+  assert_exists "$(find .agent/audits -type f -name "entropy-report.json" | sort | tail -n 1)"
   example_finish_log="$tmp_root/universal-minimal-finish.log"
   bash scripts/agent-finish.sh >"$example_finish_log" 2>&1
   assert_contains "$example_finish_log" "AGENT_FINISH_RESULT=pass"

@@ -24,3 +24,11 @@ runtime:
     max_finish_seconds: 0
     # 0 disables the changed-file count limit.
     max_changed_files: 0
+
+audit:
+  command: scripts/agent-audit.sh
+  evidence_dir: .agent/audits
+  checks:
+    - doc-links
+    - git-status
+    - harness-config

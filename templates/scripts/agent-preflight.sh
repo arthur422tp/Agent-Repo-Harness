@@ -71,6 +71,14 @@ echo "== Scripts =="
 find scripts -maxdepth 1 -type f -name "*.sh" -print 2>/dev/null || true
 
 echo
+echo "== Audit command =="
+if [ -f scripts/agent-audit.sh ]; then
+  echo "FOUND scripts/agent-audit.sh"
+else
+  echo "SKIP: scripts/agent-audit.sh not found"
+fi
+
+echo
 echo "== Optional evidence gates =="
 if [ -f scripts/check-architecture-evidence.sh ]; then
   if ! bash scripts/check-architecture-evidence.sh; then
