@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-repo-harness.local/schemas/episode.schema.json",
+  "title": "Agent episode metadata",
+  "type": "object",
+  "required": ["episode"],
+  "properties": {
+    "episode": {
+      "type": "object",
+      "required": ["id", "objective", "actor", "status"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "objective": { "type": "string", "minLength": 1 },
+        "actor": {
+          "type": "object",
+          "required": ["kind", "name"],
+          "properties": {
+            "kind": { "type": "string", "enum": ["agent", "human", "hybrid"] },
+            "name": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": true
+        },
+        "status": {
+          "type": "string",
+          "enum": ["planned", "in_progress", "blocked", "ready_for_finish", "finished"]
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "loaded_files": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "external_sources": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

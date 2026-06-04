@@ -45,8 +45,10 @@ for required_path in \
   schemas/acceptance.schema.json \
   schemas/review.schema.json \
   schemas/architecture.schema.json \
+  schemas/episode.schema.json \
   templates/scripts/validate-config.sh \
   templates/scripts/validate-task.sh \
+  templates/scripts/validate-episode.sh \
   templates/scripts/lib/read-yaml.py \
   templates/scripts/lib/policy-approval.sh \
   templates/scripts/check-doc-links.sh \
@@ -62,6 +64,7 @@ for required_path in \
   templates/.agent/acceptance.yml \
   templates/.agent/review.yml \
   templates/.agent/architecture.yml \
+  templates/.agent/episode.yml \
   templates/scripts/validate-subagent-packet.sh \
   templates/.agent/subagent-packet.yml \
   templates/.agent/subagent-runs/README.md \
@@ -166,6 +169,7 @@ for required_path in \
   .agent/acceptance.yml \
   .agent/review.yml \
   .agent/architecture.yml \
+  .agent/episode.yml \
   .agent/tdd-evidence.yml \
   .agent/approvals/high-risk-approved.yml \
   .agent/subagent-packet.yml \
@@ -185,6 +189,7 @@ for required_path in \
   scripts/check-review-evidence.sh \
   scripts/check-architecture-evidence.sh \
   scripts/check-subagent-evidence.sh \
+  scripts/validate-episode.sh \
   scripts/agent-verify.sh \
   scripts/lib/read-yaml.py \
   scripts/lib/policy-approval.sh \
@@ -194,7 +199,8 @@ for required_path in \
   scripts/validate-handoff.sh \
   scripts/validate-subagent-packet.sh \
   scripts/validate-subagent-run.sh \
-  schemas/architecture.schema.json
+  schemas/architecture.schema.json \
+  schemas/episode.schema.json
 do
   assert_exists "$target_root/$required_path"
 done
@@ -220,6 +226,8 @@ pass "hook adapters are not installed automatically"
   assert_contains "$preflight_log" "== Dependencies =="
   assert_contains "$preflight_log" "OK: python"
   assert_contains "$preflight_log" "Architecture evidence is not required."
+  assert_contains "$preflight_log" "== Episode metadata =="
+  assert_contains "$preflight_log" "EPISODE_VALIDATION_RESULT=pass"
   bash scripts/validate-config.sh
   bash scripts/validate-task.sh
   bash scripts/check-doc-links.sh

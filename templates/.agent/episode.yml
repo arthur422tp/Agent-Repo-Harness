@@ -1,0 +1,15 @@
+episode:
+  id: "local-task"
+  objective: "Record the current agent work episode."
+  actor:
+    kind: "agent"
+    name: "coding-agent"
+  status: "planned"
+  context:
+    loaded_files:
+      - "AGENTS.md"
+      - "agent.md"
+      - "handoff.md"
+      - ".agent/task.yml"
+    external_sources: []
+  notes: []

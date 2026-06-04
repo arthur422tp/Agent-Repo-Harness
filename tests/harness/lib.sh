@@ -157,7 +157,9 @@ assert_run_evidence_files() {
     review-result.txt \
     architecture-evidence-result.txt \
     subagent-evidence-result.txt \
+    episode-result.txt \
     verify-result.txt \
+    episode-summary.json \
     changed-files.txt \
     git-diff-stat.txt
   do
@@ -184,6 +186,7 @@ assert_finish_summary_contract() {
   assert_file_contains "$root" "finish-summary.md" "| check-review-evidence |"
   assert_file_contains "$root" "finish-summary.md" "| check-architecture-evidence |"
   assert_file_contains "$root" "finish-summary.md" "| check-subagent-evidence |"
+  assert_file_contains "$root" "finish-summary.md" "| validate-episode |"
   assert_file_contains "$root" "finish-summary.md" "| agent-verify |"
   assert_file_contains "$root" "finish-summary.md" "check-agent-md-result.txt"
   assert_file_contains "$root" "finish-summary.md" "scope-result.txt"
@@ -193,6 +196,7 @@ assert_finish_summary_contract() {
   assert_file_contains "$root" "finish-summary.md" "review-result.txt"
   assert_file_contains "$root" "finish-summary.md" "architecture-evidence-result.txt"
   assert_file_contains "$root" "finish-summary.md" "subagent-evidence-result.txt"
+  assert_file_contains "$root" "finish-summary.md" "episode-result.txt"
   assert_file_contains "$root" "finish-summary.md" "verify-result.txt"
   assert_file_contains "$root" "finish-summary.md" "changed-files.txt"
   assert_file_contains "$root" "finish-summary.md" "git-diff-stat.txt"
@@ -253,6 +257,7 @@ expected_gate_names = [
     "check-review-evidence",
     "check-architecture-evidence",
     "check-subagent-evidence",
+    "validate-episode",
     "agent-verify",
     "resource-envelope",
 ]
@@ -261,6 +266,10 @@ if actual_gate_names != expected_gate_names:
     raise SystemExit(
         f"expected gate names {expected_gate_names}, got {actual_gate_names}"
     )
+
+gate_names = {gate["name"] for gate in data["gates"]}
+if "validate-episode" not in gate_names:
+    raise SystemExit("missing validate-episode gate")
 
 expected_gate_evidence = {
     "check-agent-md": "check-agent-md-result.txt",
@@ -271,6 +280,7 @@ expected_gate_evidence = {
     "check-review-evidence": "review-result.txt",
     "check-architecture-evidence": "architecture-evidence-result.txt",
     "check-subagent-evidence": "subagent-evidence-result.txt",
+    "validate-episode": "episode-result.txt",
     "agent-verify": "verify-result.txt",
     "resource-envelope": "resource-envelope-result.txt",
 }
@@ -309,6 +319,70 @@ for key, name in expected_evidence_paths.items():
 
 if not isinstance(data["elapsed_seconds"], int):
     raise SystemExit("elapsed_seconds must be an integer")
+PY
+
+  assert_episode_summary_json_contract "$root" "$expected_result"
+}
+
+assert_episode_summary_json_contract() {
+  local root="$1"
+  local expected_result="$2"
+  local episode_summary_json
+
+  episode_summary_json="$(find "$root/.agent/runs" -type f -name "episode-summary.json" | sort | tail -n 1)"
+  if [ -z "$episode_summary_json" ]; then
+    echo "ERROR: expected episode-summary.json under $root/.agent/runs"
+    exit 1
+  fi
+
+  "$(find_python)" - "$episode_summary_json" "$expected_result" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+summary_path = Path(sys.argv[1])
+expected_result = sys.argv[2]
+data = json.loads(summary_path.read_text(encoding="utf-8"))
+
+required_top_level = {
+    "timestamp",
+    "mode",
+    "run_dir",
+    "overall_result",
+    "finish_summary_json",
+    "contracts",
+    "evidence",
+}
+missing = sorted(required_top_level - set(data))
+if missing:
+    raise SystemExit(f"missing episode summary keys: {missing}")
+
+if data["overall_result"] != expected_result:
+    raise SystemExit(
+        f"expected episode overall_result {expected_result}, got {data['overall_result']}"
+    )
+
+if data["finish_summary_json"] != f"{data['run_dir']}/finish-summary.json":
+    raise SystemExit(
+        "expected finish_summary_json to point at finish-summary.json in the run dir"
+    )
+
+expected_contracts = {
+    "task": ".agent/task.yml",
+    "episode": ".agent/episode.yml",
+    "policy": ".agent/policy.yml",
+    "harness": ".agent/harness.yml",
+}
+if data["contracts"] != expected_contracts:
+    raise SystemExit(f"unexpected episode contracts: {data['contracts']}")
+
+expected_evidence = {
+    "finish_summary": "finish-summary.md",
+    "changed_files": "changed-files.txt",
+    "diff_stat": "git-diff-stat.txt",
+}
+if data["evidence"] != expected_evidence:
+    raise SystemExit(f"unexpected episode evidence: {data['evidence']}")
 PY
 }
 

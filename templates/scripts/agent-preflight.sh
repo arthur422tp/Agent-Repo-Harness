@@ -80,6 +80,16 @@ else
   echo "SKIP: scripts/check-architecture-evidence.sh not found"
 fi
 
+echo
+echo "== Episode metadata =="
+if [ -f scripts/validate-episode.sh ]; then
+  if ! bash scripts/validate-episode.sh; then
+    echo "WARN: episode metadata is invalid; scripts/agent-finish.sh will still write finish evidence."
+  fi
+else
+  echo "SKIP: scripts/validate-episode.sh not found"
+fi
+
 if [ "$failures" -gt 0 ]; then
   echo "PREFLIGHT_RESULT=fail"
   exit 1

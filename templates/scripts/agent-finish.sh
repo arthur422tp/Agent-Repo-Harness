@@ -54,7 +54,9 @@ acceptance_result_file="$run_dir/acceptance-result.txt"
 review_result_file="$run_dir/review-result.txt"
 architecture_result_file="$run_dir/architecture-evidence-result.txt"
 subagent_evidence_result_file="$run_dir/subagent-evidence-result.txt"
+episode_result_file="$run_dir/episode-result.txt"
 verify_result_file="$run_dir/verify-result.txt"
+episode_summary_json_file="$run_dir/episode-summary.json"
 changed_files_file="$run_dir/changed-files.txt"
 diff_stat_file="$run_dir/git-diff-stat.txt"
 failures=0
@@ -68,6 +70,7 @@ acceptance_status=""
 review_status=""
 architecture_status=""
 subagent_evidence_status=""
+episode_status=""
 verify_status=""
 
 mkdir -p "$run_dir"
@@ -257,6 +260,7 @@ write_summary() {
     echo "| check-review-evidence | $review_status | $review_result_file |"
     echo "| check-architecture-evidence | $architecture_status | $architecture_result_file |"
     echo "| check-subagent-evidence | $subagent_evidence_status | $subagent_evidence_result_file |"
+    echo "| validate-episode | $episode_status | $episode_result_file |"
     echo "| agent-verify | $verify_status | $verify_result_file |"
     echo "| resource-envelope | $resource_status | $resource_result_file |"
     echo
@@ -309,6 +313,7 @@ write_json_summary() {
   AGENT_FINISH_REVIEW_STATUS="${review_status:-0}" \
   AGENT_FINISH_ARCHITECTURE_STATUS="${architecture_status:-0}" \
   AGENT_FINISH_SUBAGENT_EVIDENCE_STATUS="${subagent_evidence_status:-0}" \
+  AGENT_FINISH_EPISODE_STATUS="${episode_status:-0}" \
   AGENT_FINISH_VERIFY_STATUS="${verify_status:-0}" \
   AGENT_FINISH_CHECK_AGENT_MD_EVIDENCE="$check_agent_md_result_file" \
   AGENT_FINISH_SCOPE_EVIDENCE="$scope_result_file" \
@@ -318,6 +323,7 @@ write_json_summary() {
   AGENT_FINISH_REVIEW_EVIDENCE="$review_result_file" \
   AGENT_FINISH_ARCHITECTURE_EVIDENCE="$architecture_result_file" \
   AGENT_FINISH_SUBAGENT_EVIDENCE="$subagent_evidence_result_file" \
+  AGENT_FINISH_EPISODE_EVIDENCE="$episode_result_file" \
   AGENT_FINISH_VERIFY_EVIDENCE="$verify_result_file" \
   AGENT_FINISH_RESOURCE_EVIDENCE="$resource_result_file" \
   AGENT_FINISH_MARKDOWN_SUMMARY="$summary_file" \
@@ -380,6 +386,11 @@ data = {
             "evidence": env["AGENT_FINISH_SUBAGENT_EVIDENCE"],
         },
         {
+            "name": "validate-episode",
+            "exit_status": int(env["AGENT_FINISH_EPISODE_STATUS"]),
+            "evidence": env["AGENT_FINISH_EPISODE_EVIDENCE"],
+        },
+        {
             "name": "agent-verify",
             "exit_status": int(env["AGENT_FINISH_VERIFY_STATUS"]),
             "evidence": env["AGENT_FINISH_VERIFY_EVIDENCE"],
@@ -398,6 +409,44 @@ data = {
 }
 
 Path(env["SUMMARY_JSON_FILE"]).write_text(
+    json.dumps(data, indent=2, sort_keys=True) + "\n",
+    encoding="utf-8",
+)
+PY
+}
+
+write_episode_summary() {
+  EPISODE_SUMMARY_JSON_FILE="$episode_summary_json_file" \
+  AGENT_FINISH_TIMESTAMP="$timestamp" \
+  AGENT_FINISH_MODE="$mode" \
+  AGENT_FINISH_RUN_DIR="$run_dir" \
+  AGENT_FINISH_OVERALL_RESULT="$1" \
+  AGENT_FINISH_SUMMARY_JSON="$summary_json_file" \
+  "$python_bin" - <<'PY'
+import json
+import os
+from pathlib import Path
+
+data = {
+    "timestamp": os.environ["AGENT_FINISH_TIMESTAMP"],
+    "mode": os.environ["AGENT_FINISH_MODE"],
+    "run_dir": os.environ["AGENT_FINISH_RUN_DIR"],
+    "overall_result": os.environ["AGENT_FINISH_OVERALL_RESULT"],
+    "finish_summary_json": os.environ["AGENT_FINISH_SUMMARY_JSON"],
+    "contracts": {
+        "task": ".agent/task.yml",
+        "episode": ".agent/episode.yml",
+        "policy": ".agent/policy.yml",
+        "harness": ".agent/harness.yml"
+    },
+    "evidence": {
+        "finish_summary": "finish-summary.md",
+        "changed_files": "changed-files.txt",
+        "diff_stat": "git-diff-stat.txt"
+    }
+}
+
+Path(os.environ["EPISODE_SUMMARY_JSON_FILE"]).write_text(
     json.dumps(data, indent=2, sort_keys=True) + "\n",
     encoding="utf-8",
 )
@@ -457,6 +506,8 @@ if [ "$mode" = "strict" ]; then
   architecture_status="$last_status"
   run_gate "check-subagent-evidence" "$subagent_evidence_result_file" bash scripts/check-subagent-evidence.sh
   subagent_evidence_status="$last_status"
+  run_gate "validate-episode" "$episode_result_file" bash scripts/validate-episode.sh
+  episode_status="$last_status"
   run_gate "agent-verify" "$verify_result_file" bash scripts/agent-verify.sh --strict
   verify_status="$last_status"
 else
@@ -476,6 +527,8 @@ else
   architecture_status="$last_status"
   run_gate "check-subagent-evidence" "$subagent_evidence_result_file" bash scripts/check-subagent-evidence.sh
   subagent_evidence_status="$last_status"
+  run_gate "validate-episode" "$episode_result_file" bash scripts/validate-episode.sh
+  episode_status="$last_status"
   run_gate "agent-verify" "$verify_result_file" bash scripts/agent-verify.sh --best-effort
   verify_status="$last_status"
 fi
@@ -487,6 +540,7 @@ check_resource_envelope || true
 if [ "$failures" -gt 0 ]; then
   write_summary "fail"
   write_json_summary "fail"
+  write_episode_summary "fail"
   echo "AGENT_FINISH_RESULT=fail"
   echo "Agent finish gates failed."
   echo "Run directory: $run_dir"
@@ -496,6 +550,7 @@ fi
 
 write_summary "pass"
 write_json_summary "pass"
+write_episode_summary "pass"
 
 echo "AGENT_FINISH_RESULT=pass"
 echo "Agent finish gates passed."

@@ -19,6 +19,7 @@ git init -q "$resource_disabled_root"
   cp "$repo_root/templates/scripts/check-review-evidence.sh" scripts/check-review-evidence.sh
   cp "$repo_root/templates/scripts/check-architecture-evidence.sh" scripts/check-architecture-evidence.sh
   cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
+  cp "$repo_root/templates/scripts/validate-episode.sh" scripts/validate-episode.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
@@ -55,6 +56,7 @@ git init -q "$resource_changed_files_root"
   cp "$repo_root/templates/scripts/check-review-evidence.sh" scripts/check-review-evidence.sh
   cp "$repo_root/templates/scripts/check-architecture-evidence.sh" scripts/check-architecture-evidence.sh
   cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
+  cp "$repo_root/templates/scripts/validate-episode.sh" scripts/validate-episode.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
