@@ -18,6 +18,7 @@ git init -q "$resource_disabled_root"
   cp "$repo_root/templates/scripts/check-acceptance.sh" scripts/check-acceptance.sh
   cp "$repo_root/templates/scripts/check-review-evidence.sh" scripts/check-review-evidence.sh
   cp "$repo_root/templates/scripts/check-architecture-evidence.sh" scripts/check-architecture-evidence.sh
+  cp "$repo_root/templates/scripts/check-failure-attribution.sh" scripts/check-failure-attribution.sh
   cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
   cp "$repo_root/templates/scripts/validate-episode.sh" scripts/validate-episode.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
@@ -55,6 +56,7 @@ git init -q "$resource_changed_files_root"
   cp "$repo_root/templates/scripts/check-acceptance.sh" scripts/check-acceptance.sh
   cp "$repo_root/templates/scripts/check-review-evidence.sh" scripts/check-review-evidence.sh
   cp "$repo_root/templates/scripts/check-architecture-evidence.sh" scripts/check-architecture-evidence.sh
+  cp "$repo_root/templates/scripts/check-failure-attribution.sh" scripts/check-failure-attribution.sh
   cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
   cp "$repo_root/templates/scripts/validate-episode.sh" scripts/validate-episode.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh

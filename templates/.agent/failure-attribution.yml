@@ -1,0 +1,8 @@
+failure_attribution:
+  required: false
+  status: "complete"
+  root_cause: "No failure attribution required for the current task."
+  evidence: "No blocking gate failure is being attributed."
+  repair: "No repair action required."
+  verification: "bash scripts/agent-finish.sh --best-effort"
+  concerns: []

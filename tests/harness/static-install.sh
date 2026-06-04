@@ -46,6 +46,7 @@ for required_path in \
   schemas/review.schema.json \
   schemas/architecture.schema.json \
   schemas/episode.schema.json \
+  schemas/failure-attribution.schema.json \
   templates/scripts/validate-config.sh \
   templates/scripts/validate-task.sh \
   templates/scripts/validate-episode.sh \
@@ -57,6 +58,7 @@ for required_path in \
   templates/scripts/check-acceptance.sh \
   templates/scripts/check-review-evidence.sh \
   templates/scripts/check-architecture-evidence.sh \
+  templates/scripts/check-failure-attribution.sh \
   templates/scripts/check-subagent-evidence.sh \
   templates/.agent/handoff.yml \
   templates/.agent/tdd-evidence.yml \
@@ -65,6 +67,7 @@ for required_path in \
   templates/.agent/review.yml \
   templates/.agent/architecture.yml \
   templates/.agent/episode.yml \
+  templates/.agent/failure-attribution.yml \
   templates/scripts/validate-subagent-packet.sh \
   templates/.agent/subagent-packet.yml \
   templates/.agent/subagent-runs/README.md \
@@ -188,6 +191,7 @@ for required_path in \
   scripts/check-acceptance.sh \
   scripts/check-review-evidence.sh \
   scripts/check-architecture-evidence.sh \
+  scripts/check-failure-attribution.sh \
   scripts/check-subagent-evidence.sh \
   scripts/validate-episode.sh \
   scripts/agent-verify.sh \
@@ -200,7 +204,8 @@ for required_path in \
   scripts/validate-subagent-packet.sh \
   scripts/validate-subagent-run.sh \
   schemas/architecture.schema.json \
-  schemas/episode.schema.json
+  schemas/episode.schema.json \
+  schemas/failure-attribution.schema.json
 do
   assert_exists "$target_root/$required_path"
 done
@@ -211,6 +216,9 @@ pass "installed default TDD evidence gate is opt-in"
 
 assert_contains "$target_root/.agent/task.yml" 'requires_architecture_evidence: false'
 pass "installed default architecture evidence gate is opt-in"
+
+assert_contains "$target_root/.agent/task.yml" 'requires_failure_attribution: false'
+pass "installed default failure attribution gate is opt-in"
 
 assert_not_exists "$target_root/adapters/hooks/README.md"
 assert_not_exists "$target_root/adapters/hooks/git/pre-commit"

@@ -19,6 +19,7 @@ assert_not_contains "$repo_root/templates/CLAUDE.md" '3. Read `.agent/policy.yml
 assert_contains "$repo_root/templates/.agent/task.yml" 'requires_tdd_evidence: false'
 assert_not_contains "$repo_root/templates/.agent/task.yml" 'requires_tdd_evidence: true'
 assert_contains "$repo_root/templates/.agent/task.yml" 'requires_architecture_evidence: false'
+assert_contains "$repo_root/templates/.agent/task.yml" 'requires_failure_attribution: false'
 assert_contains "$repo_root/templates/.agent/task.yml" 'expects_handoff_update: true'
 assert_contains "$repo_root/templates/.agent/task.yml" 'agent-finish.sh does not enforce'
 assert_not_contains "$repo_root/templates/.agent/task.yml" 'requires_handoff_update'

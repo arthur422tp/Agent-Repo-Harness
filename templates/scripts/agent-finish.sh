@@ -53,6 +53,7 @@ tdd_evidence_result_file="$run_dir/tdd-evidence-result.txt"
 acceptance_result_file="$run_dir/acceptance-result.txt"
 review_result_file="$run_dir/review-result.txt"
 architecture_result_file="$run_dir/architecture-evidence-result.txt"
+failure_attribution_result_file="$run_dir/failure-attribution-result.txt"
 subagent_evidence_result_file="$run_dir/subagent-evidence-result.txt"
 episode_result_file="$run_dir/episode-result.txt"
 verify_result_file="$run_dir/verify-result.txt"
@@ -69,6 +70,7 @@ tdd_evidence_status=""
 acceptance_status=""
 review_status=""
 architecture_status=""
+failure_attribution_status=""
 subagent_evidence_status=""
 episode_status=""
 verify_status=""
@@ -259,6 +261,7 @@ write_summary() {
     echo "| check-acceptance | $acceptance_status | $acceptance_result_file |"
     echo "| check-review-evidence | $review_status | $review_result_file |"
     echo "| check-architecture-evidence | $architecture_status | $architecture_result_file |"
+    echo "| check-failure-attribution | $failure_attribution_status | $failure_attribution_result_file |"
     echo "| check-subagent-evidence | $subagent_evidence_status | $subagent_evidence_result_file |"
     echo "| validate-episode | $episode_status | $episode_result_file |"
     echo "| agent-verify | $verify_status | $verify_result_file |"
@@ -312,6 +315,7 @@ write_json_summary() {
   AGENT_FINISH_ACCEPTANCE_STATUS="${acceptance_status:-0}" \
   AGENT_FINISH_REVIEW_STATUS="${review_status:-0}" \
   AGENT_FINISH_ARCHITECTURE_STATUS="${architecture_status:-0}" \
+  AGENT_FINISH_FAILURE_ATTRIBUTION_STATUS="${failure_attribution_status:-0}" \
   AGENT_FINISH_SUBAGENT_EVIDENCE_STATUS="${subagent_evidence_status:-0}" \
   AGENT_FINISH_EPISODE_STATUS="${episode_status:-0}" \
   AGENT_FINISH_VERIFY_STATUS="${verify_status:-0}" \
@@ -322,6 +326,7 @@ write_json_summary() {
   AGENT_FINISH_ACCEPTANCE_EVIDENCE="$acceptance_result_file" \
   AGENT_FINISH_REVIEW_EVIDENCE="$review_result_file" \
   AGENT_FINISH_ARCHITECTURE_EVIDENCE="$architecture_result_file" \
+  AGENT_FINISH_FAILURE_ATTRIBUTION_EVIDENCE="$failure_attribution_result_file" \
   AGENT_FINISH_SUBAGENT_EVIDENCE="$subagent_evidence_result_file" \
   AGENT_FINISH_EPISODE_EVIDENCE="$episode_result_file" \
   AGENT_FINISH_VERIFY_EVIDENCE="$verify_result_file" \
@@ -379,6 +384,11 @@ data = {
             "name": "check-architecture-evidence",
             "exit_status": int(env["AGENT_FINISH_ARCHITECTURE_STATUS"]),
             "evidence": env["AGENT_FINISH_ARCHITECTURE_EVIDENCE"],
+        },
+        {
+            "name": "check-failure-attribution",
+            "exit_status": int(env["AGENT_FINISH_FAILURE_ATTRIBUTION_STATUS"]),
+            "evidence": env["AGENT_FINISH_FAILURE_ATTRIBUTION_EVIDENCE"],
         },
         {
             "name": "check-subagent-evidence",
@@ -504,6 +514,8 @@ if [ "$mode" = "strict" ]; then
   review_status="$last_status"
   run_gate "check-architecture-evidence" "$architecture_result_file" bash scripts/check-architecture-evidence.sh
   architecture_status="$last_status"
+  run_gate "check-failure-attribution" "$failure_attribution_result_file" bash scripts/check-failure-attribution.sh
+  failure_attribution_status="$last_status"
   run_gate "check-subagent-evidence" "$subagent_evidence_result_file" bash scripts/check-subagent-evidence.sh
   subagent_evidence_status="$last_status"
   run_gate "validate-episode" "$episode_result_file" bash scripts/validate-episode.sh
@@ -525,6 +537,8 @@ else
   review_status="$last_status"
   run_gate "check-architecture-evidence" "$architecture_result_file" bash scripts/check-architecture-evidence.sh
   architecture_status="$last_status"
+  run_gate "check-failure-attribution" "$failure_attribution_result_file" bash scripts/check-failure-attribution.sh
+  failure_attribution_status="$last_status"
   run_gate "check-subagent-evidence" "$subagent_evidence_result_file" bash scripts/check-subagent-evidence.sh
   subagent_evidence_status="$last_status"
   run_gate "validate-episode" "$episode_result_file" bash scripts/validate-episode.sh

@@ -156,6 +156,7 @@ check_task_types() {
     requires_acceptance_check \
     requires_review_evidence \
     requires_architecture_evidence \
+    requires_failure_attribution \
     requires_subagent_evidence
   do
     check_optional_boolean "task.completion.$flag"

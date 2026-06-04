@@ -28,6 +28,7 @@ task:
     requires_acceptance_check: false
     requires_review_evidence: false
     requires_architecture_evidence: false
+    requires_failure_attribution: false
     # Set true when tests are insufficient to prove design quality and
     # .agent/architecture.yml must record reviewer-backed invariants.
     requires_subagent_evidence: false

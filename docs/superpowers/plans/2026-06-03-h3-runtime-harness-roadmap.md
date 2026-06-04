@@ -503,7 +503,7 @@ git commit -m "feat: add episode package contract"
 - Modify: `validate-harness.sh`
 - Modify: `install-agent-harness.sh`
 
-- [ ] **Step 1: Write failing gate tests**
+- [x] **Step 1: Write failing gate tests**
 
 Create `tests/harness/failure-attribution.sh`:
 
@@ -599,7 +599,7 @@ bash validate-harness.sh
 
 Expected: FAIL because the script and template are missing.
 
-- [ ] **Step 2: Add failure attribution schema and template**
+- [x] **Step 2: Add failure attribution schema and template**
 
 Create `schemas/failure-attribution.schema.json`:
 
@@ -646,7 +646,7 @@ failure_attribution:
   concerns: []
 ```
 
-- [ ] **Step 3: Add failure attribution gate**
+- [x] **Step 3: Add failure attribution gate**
 
 Create `templates/scripts/check-failure-attribution.sh`:
 
@@ -744,7 +744,7 @@ echo "OK: failure attribution"
 echo "FAILURE_ATTRIBUTION_RESULT=pass"
 ```
 
-- [ ] **Step 4: Add task flag validation**
+- [x] **Step 4: Add task flag validation**
 
 In `templates/.agent/task.yml`, add:
 
@@ -764,7 +764,7 @@ In `templates/scripts/validate-task.sh`, add the same style of boolean check alr
 check_optional_bool "task.completion.requires_failure_attribution"
 ```
 
-- [ ] **Step 5: Wire the finish gate**
+- [x] **Step 5: Wire the finish gate**
 
 In `templates/scripts/agent-finish.sh`, add:
 
@@ -803,7 +803,7 @@ Add JSON gate entry:
 },
 ```
 
-- [ ] **Step 6: Update install and evidence assertions**
+- [x] **Step 6: Update install and evidence assertions**
 
 In `install-agent-harness.sh`, add:
 
@@ -828,13 +828,16 @@ assert_file_contains "$root" "finish-summary.md" "| check-failure-attribution |"
 assert_file_contains "$root" "finish-summary.md" "failure-attribution-result.txt"
 ```
 
-- [ ] **Step 7: Run tests**
+- [x] **Step 7: Run tests**
 
 ```bash
 bash validate-harness.sh
 ```
 
 Expected: PASS.
+
+Verified locally on 2026-06-04 with `bash validate-harness.sh`.
+Result: PASS, with Ruby unavailable warnings for optional YAML/JSON syntax checks.
 
 - [ ] **Step 8: Commit**
 

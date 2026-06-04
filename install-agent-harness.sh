@@ -125,6 +125,12 @@ if [ -f "$schema_root/episode.schema.json" ]; then
     "$target/schemas/episode.schema.json"
 fi
 
+if [ -f "$schema_root/failure-attribution.schema.json" ]; then
+  copy_path \
+    "$schema_root/failure-attribution.schema.json" \
+    "$target/schemas/failure-attribution.schema.json"
+fi
+
 if [ -d "$target/scripts" ] && \
   find "$target/scripts" -type f -name "*.sh" | grep -q .
 then

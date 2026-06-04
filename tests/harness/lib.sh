@@ -156,6 +156,7 @@ assert_run_evidence_files() {
     acceptance-result.txt \
     review-result.txt \
     architecture-evidence-result.txt \
+    failure-attribution-result.txt \
     subagent-evidence-result.txt \
     episode-result.txt \
     verify-result.txt \
@@ -185,6 +186,7 @@ assert_finish_summary_contract() {
   assert_file_contains "$root" "finish-summary.md" "| check-acceptance |"
   assert_file_contains "$root" "finish-summary.md" "| check-review-evidence |"
   assert_file_contains "$root" "finish-summary.md" "| check-architecture-evidence |"
+  assert_file_contains "$root" "finish-summary.md" "| check-failure-attribution |"
   assert_file_contains "$root" "finish-summary.md" "| check-subagent-evidence |"
   assert_file_contains "$root" "finish-summary.md" "| validate-episode |"
   assert_file_contains "$root" "finish-summary.md" "| agent-verify |"
@@ -195,6 +197,7 @@ assert_finish_summary_contract() {
   assert_file_contains "$root" "finish-summary.md" "acceptance-result.txt"
   assert_file_contains "$root" "finish-summary.md" "review-result.txt"
   assert_file_contains "$root" "finish-summary.md" "architecture-evidence-result.txt"
+  assert_file_contains "$root" "finish-summary.md" "failure-attribution-result.txt"
   assert_file_contains "$root" "finish-summary.md" "subagent-evidence-result.txt"
   assert_file_contains "$root" "finish-summary.md" "episode-result.txt"
   assert_file_contains "$root" "finish-summary.md" "verify-result.txt"
@@ -256,6 +259,7 @@ expected_gate_names = [
     "check-acceptance",
     "check-review-evidence",
     "check-architecture-evidence",
+    "check-failure-attribution",
     "check-subagent-evidence",
     "validate-episode",
     "agent-verify",
@@ -279,6 +283,7 @@ expected_gate_evidence = {
     "check-acceptance": "acceptance-result.txt",
     "check-review-evidence": "review-result.txt",
     "check-architecture-evidence": "architecture-evidence-result.txt",
+    "check-failure-attribution": "failure-attribution-result.txt",
     "check-subagent-evidence": "subagent-evidence-result.txt",
     "validate-episode": "episode-result.txt",
     "agent-verify": "verify-result.txt",
