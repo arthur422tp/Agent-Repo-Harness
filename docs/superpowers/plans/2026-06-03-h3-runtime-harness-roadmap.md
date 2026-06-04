@@ -88,7 +88,7 @@ Modify:
 - Modify: `validate-harness.sh`
 - Modify: `install-agent-harness.sh`
 
-- [ ] **Step 1: Write failing install and validation tests**
+- [x] **Step 1: Write failing install and validation tests**
 
 Add this suite file:
 
@@ -151,7 +151,7 @@ bash validate-harness.sh
 
 Expected: FAIL because `templates/.agent/episode.yml` and `templates/scripts/validate-episode.sh` do not exist.
 
-- [ ] **Step 2: Add the episode schema**
+- [x] **Step 2: Add the episode schema**
 
 Create `schemas/episode.schema.json`:
 
@@ -204,7 +204,7 @@ Create `schemas/episode.schema.json`:
 }
 ```
 
-- [ ] **Step 3: Add the episode template**
+- [x] **Step 3: Add the episode template**
 
 Create `templates/.agent/episode.yml`:
 
@@ -226,7 +226,7 @@ episode:
   notes: []
 ```
 
-- [ ] **Step 4: Add episode validation script**
+- [x] **Step 4: Add episode validation script**
 
 Create `templates/scripts/validate-episode.sh`:
 
@@ -330,7 +330,7 @@ fi
 echo "EPISODE_VALIDATION_RESULT=pass"
 ```
 
-- [ ] **Step 5: Wire preflight and finish evidence**
+- [x] **Step 5: Wire preflight and finish evidence**
 
 In `templates/scripts/agent-preflight.sh`, add this block after task validation or optional evidence gates:
 
@@ -438,7 +438,7 @@ and:
 write_episode_summary "pass"
 ```
 
-- [ ] **Step 6: Update evidence assertions**
+- [x] **Step 6: Update evidence assertions**
 
 In `tests/harness/lib.sh`, add `episode-result.txt` and `episode-summary.json` to `assert_run_evidence_files`:
 
@@ -462,7 +462,7 @@ if "validate-episode" not in gate_names:
     raise SystemExit("missing validate-episode gate")
 ```
 
-- [ ] **Step 7: Install schema and run tests**
+- [x] **Step 7: Install schema and run tests**
 
 In `install-agent-harness.sh`, add:
 
@@ -482,7 +482,7 @@ bash validate-harness.sh
 
 Expected: PASS, with the new `Episode metadata validation` suite included.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add schemas/episode.schema.json templates/.agent/episode.yml templates/scripts/validate-episode.sh templates/scripts/agent-preflight.sh templates/scripts/agent-finish.sh tests/harness/episode.sh tests/harness/lib.sh validate-harness.sh install-agent-harness.sh
