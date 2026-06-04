@@ -2,6 +2,7 @@
 set -euo pipefail
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
+export PYTHONDONTWRITEBYTECODE=1
 
 # Keep this entrypoint stable. The individual suites live under tests/harness/
 # so subsystem checks can grow without turning this file into a monolith again.
@@ -18,6 +19,7 @@ source "$repo_root/tests/harness/episode.sh"
 source "$repo_root/tests/harness/acceptance-review.sh"
 source "$repo_root/tests/harness/architecture-evidence.sh"
 source "$repo_root/tests/harness/failure-attribution.sh"
+source "$repo_root/tests/harness/interventions.sh"
 source "$repo_root/tests/harness/repo-verification.sh"
 source "$repo_root/tests/harness/finish-examples.sh"
 source "$repo_root/tests/harness/resource-envelope.sh"

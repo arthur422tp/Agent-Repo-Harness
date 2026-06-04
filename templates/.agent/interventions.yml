@@ -1,0 +1,8 @@
+interventions:
+  required: false
+  entries:
+    - timestamp: "2026-06-03T00:00:00Z"
+      actor: "local-agent"
+      type: "manual_verification"
+      summary: "No human intervention required for the default template."
+      evidence: "Template entry; replace when intervention evidence is required."

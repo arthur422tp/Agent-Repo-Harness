@@ -47,6 +47,7 @@ for required_path in \
   schemas/architecture.schema.json \
   schemas/episode.schema.json \
   schemas/failure-attribution.schema.json \
+  schemas/interventions.schema.json \
   templates/scripts/validate-config.sh \
   templates/scripts/validate-task.sh \
   templates/scripts/validate-episode.sh \
@@ -59,6 +60,7 @@ for required_path in \
   templates/scripts/check-review-evidence.sh \
   templates/scripts/check-architecture-evidence.sh \
   templates/scripts/check-failure-attribution.sh \
+  templates/scripts/check-interventions.sh \
   templates/scripts/check-subagent-evidence.sh \
   templates/.agent/handoff.yml \
   templates/.agent/tdd-evidence.yml \
@@ -68,6 +70,7 @@ for required_path in \
   templates/.agent/architecture.yml \
   templates/.agent/episode.yml \
   templates/.agent/failure-attribution.yml \
+  templates/.agent/interventions.yml \
   templates/scripts/validate-subagent-packet.sh \
   templates/.agent/subagent-packet.yml \
   templates/.agent/subagent-runs/README.md \
@@ -174,6 +177,7 @@ for required_path in \
   .agent/architecture.yml \
   .agent/episode.yml \
   .agent/tdd-evidence.yml \
+  .agent/interventions.yml \
   .agent/approvals/high-risk-approved.yml \
   .agent/subagent-packet.yml \
   .agent/subagent-runs/README.md \
@@ -192,6 +196,7 @@ for required_path in \
   scripts/check-review-evidence.sh \
   scripts/check-architecture-evidence.sh \
   scripts/check-failure-attribution.sh \
+  scripts/check-interventions.sh \
   scripts/check-subagent-evidence.sh \
   scripts/validate-episode.sh \
   scripts/agent-verify.sh \
@@ -205,7 +210,8 @@ for required_path in \
   scripts/validate-subagent-run.sh \
   schemas/architecture.schema.json \
   schemas/episode.schema.json \
-  schemas/failure-attribution.schema.json
+  schemas/failure-attribution.schema.json \
+  schemas/interventions.schema.json
 do
   assert_exists "$target_root/$required_path"
 done
@@ -219,6 +225,9 @@ pass "installed default architecture evidence gate is opt-in"
 
 assert_contains "$target_root/.agent/task.yml" 'requires_failure_attribution: false'
 pass "installed default failure attribution gate is opt-in"
+
+assert_contains "$target_root/.agent/task.yml" 'requires_intervention_record: false'
+pass "installed default intervention record gate is opt-in"
 
 assert_not_exists "$target_root/adapters/hooks/README.md"
 assert_not_exists "$target_root/adapters/hooks/git/pre-commit"

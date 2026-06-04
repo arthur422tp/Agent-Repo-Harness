@@ -43,6 +43,7 @@
             "requires_review_evidence": { "type": "boolean" },
             "requires_architecture_evidence": { "type": "boolean" },
             "requires_failure_attribution": { "type": "boolean" },
+            "requires_intervention_record": { "type": "boolean" },
             "requires_subagent_evidence": { "type": "boolean" }
           },
           "additionalProperties": { "type": "boolean" }

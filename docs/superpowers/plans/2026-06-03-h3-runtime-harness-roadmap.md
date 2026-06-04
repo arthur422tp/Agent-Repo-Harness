@@ -860,7 +860,7 @@ git commit -m "feat: add failure attribution gate"
 - Modify: `validate-harness.sh`
 - Modify: `install-agent-harness.sh`
 
-- [ ] **Step 1: Write failing intervention tests**
+- [x] **Step 1: Write failing intervention tests**
 
 Create `tests/harness/interventions.sh`:
 
@@ -951,7 +951,7 @@ Source it in `validate-harness.sh` after `failure-attribution.sh`:
 source "$repo_root/tests/harness/interventions.sh"
 ```
 
-- [ ] **Step 2: Add intervention schema and template**
+- [x] **Step 2: Add intervention schema and template**
 
 Create `schemas/interventions.schema.json`:
 
@@ -1007,7 +1007,7 @@ interventions:
       evidence: "Template entry; replace when intervention evidence is required."
 ```
 
-- [ ] **Step 3: Add intervention gate**
+- [x] **Step 3: Add intervention gate**
 
 Create `templates/scripts/check-interventions.sh`:
 
@@ -1107,7 +1107,7 @@ fi
 echo "INTERVENTIONS_RESULT=pass"
 ```
 
-- [ ] **Step 4: Add task flag, finish wiring, install wiring, and tests**
+- [x] **Step 4: Add task flag, finish wiring, install wiring, and tests**
 
 Use the same pattern as Task 2:
 
@@ -1135,7 +1135,7 @@ In `install-agent-harness.sh`, copy `schemas/interventions.schema.json` into tar
 
 In `tests/harness/lib.sh`, add `interventions-result.txt` evidence assertions and require `check-interventions` in `finish-summary.json`.
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 ```bash
 bash validate-harness.sh
@@ -1143,7 +1143,10 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+Verified locally on 2026-06-04 with `bash validate-harness.sh`.
+Result: PASS, with Ruby unavailable warnings for optional YAML/JSON syntax checks.
+
+- [x] **Step 6: Commit**
 
 ```bash
 git add schemas/interventions.schema.json templates/.agent/interventions.yml templates/.agent/task.yml templates/scripts/check-interventions.sh templates/scripts/agent-finish.sh schemas/task.schema.json templates/scripts/validate-task.sh tests/harness/interventions.sh tests/harness/lib.sh validate-harness.sh install-agent-harness.sh
