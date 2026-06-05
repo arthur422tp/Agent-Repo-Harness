@@ -1455,7 +1455,7 @@ git commit -m "feat: add entropy audit command"
 - Modify: `tests/harness/doc-consistency.sh`
 - Modify: `tests/harness/adapter-sync.sh`
 
-- [ ] **Step 1: Write failing doc consistency assertions**
+- [x] **Step 1: Write failing doc consistency assertions**
 
 In `tests/harness/doc-consistency.sh`, add:
 
@@ -1480,7 +1480,7 @@ bash validate-harness.sh
 
 Expected: FAIL in doc consistency.
 
-- [ ] **Step 2: Add episode package docs**
+- [x] **Step 2: Add episode package docs**
 
 Create `docs/agent/episode-package.md`:
 
@@ -1514,7 +1514,7 @@ Use `finish-summary.json` for completion status automation. Use
 the episode.
 ```
 
-- [ ] **Step 3: Add failure attribution docs**
+- [x] **Step 3: Add failure attribution docs**
 
 Create `docs/agent/failure-attribution.md`:
 
@@ -1545,7 +1545,7 @@ The finish gate records the result in
 `.agent/runs/<timestamp>/failure-attribution-result.txt`.
 ```
 
-- [ ] **Step 4: Add intervention docs**
+- [x] **Step 4: Add intervention docs**
 
 Create `docs/agent/interventions.md`:
 
@@ -1575,7 +1575,7 @@ Use this file for durable intervention evidence. Do not use it to invent
 approval that was not explicitly given.
 ```
 
-- [ ] **Step 5: Add entropy audit docs**
+- [x] **Step 5: Add entropy audit docs**
 
 Create `docs/agent/entropy-audit.md`:
 
@@ -1598,7 +1598,7 @@ The audit is an operational maintenance report. It is not a replacement for
 `scripts/agent-finish.sh`.
 ```
 
-- [ ] **Step 6: Update public README wording**
+- [x] **Step 6: Update public README wording**
 
 In `README.md`, add this concise section after Evidence And Optional Gates:
 
@@ -1623,7 +1623,7 @@ secret isolation, or model-cost accounting.
 
 Mirror the same section in `README.zh-TW.md` with Traditional Chinese wording.
 
-- [ ] **Step 7: Update runtime boundary docs**
+- [x] **Step 7: Update runtime boundary docs**
 
 In `docs/runtime-boundaries.md`, add under Implemented:
 
@@ -1640,7 +1640,7 @@ Add under Not Implemented:
 - Provider-native trace capture unless an external runtime supplies it.
 ```
 
-- [ ] **Step 8: Update agent entrypoints and adapter prompts**
+- [x] **Step 8: Update agent entrypoints and adapter prompts**
 
 In `templates/AGENTS.md`, add before completion:
 
@@ -1668,7 +1668,7 @@ Include the latest `.agent/runs/<timestamp>/episode-summary.json` path when it
 exists, plus any required intervention or failure-attribution evidence.
 ```
 
-- [ ] **Step 9: Run docs and adapter tests**
+- [x] **Step 9: Run docs and adapter tests**
 
 ```bash
 bash validate-harness.sh
@@ -1676,7 +1676,7 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add docs/agent/episode-package.md docs/agent/failure-attribution.md docs/agent/interventions.md docs/agent/entropy-audit.md README.md README.zh-TW.md docs/USAGE_WITH_AGENTS.md docs/runtime-boundaries.md docs/public-packaging.md templates/AGENTS.md templates/CLAUDE.md templates/agent.md adapters/codex/codex-start-prompt.md adapters/codex/codex-verify-prompt.md adapters/codex/codex-repair-prompt.md adapters/codex/codex-handoff-prompt.md tests/harness/doc-consistency.sh tests/harness/adapter-sync.sh
