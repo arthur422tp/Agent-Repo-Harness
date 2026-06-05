@@ -14,6 +14,8 @@ Start with staged context loading:
    - `subagent-evidence-result.txt` for `check-subagent-evidence`
    - `acceptance-result.txt` for `check-acceptance`
    - `review-result.txt` for `check-review-evidence`
+   - `failure-attribution-result.txt` for `check-failure-attribution`
+   - `interventions-result.txt` for `check-interventions`
    - `verify-result.txt` for `agent-verify`
 4. Do not read unrelated files unless the failing gate requires it.
 
@@ -25,6 +27,8 @@ Recovery playbook by gate:
 - `check-subagent-evidence`: repair missing or invalid delegated-work evidence named in `subagent-evidence-result.txt`. Do not invent subagent runs, statuses, packets, or results.
 - `check-acceptance`: satisfy the stated acceptance gap with the smallest implementation or documentation change needed.
 - `check-review-evidence`: update review evidence honestly. Do not fabricate review approval or fake reviewer sign-off.
+- `check-failure-attribution`: update `.agent/failure-attribution.yml` with real `failure_attribution.root_cause`, evidence, repair, and verification. Do not fabricate attribution details.
+- `check-interventions`: update `.agent/interventions.yml` only with interventions that actually happened. Do not invent approvals, scope changes, or runtime overrides.
 - `agent-verify`: fix the specific verification failure reported in `verify-result.txt` and rerun the relevant checks.
 
 General repair rules:
@@ -32,6 +36,7 @@ General repair rules:
 - Rule: do not fabricate evidence, approvals, or completed steps.
 - Do not broaden task scope without explicit human approval.
 - Do not create or modify high-risk approval files unless the user explicitly instructs it.
+- If `.agent/task.yml` requires failure attribution, record root cause, evidence, repair, and verification in `.agent/failure-attribution.yml`.
 
 After the fix:
 1. Rerun `scripts/agent-finish.sh`.

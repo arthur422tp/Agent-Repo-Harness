@@ -45,3 +45,4 @@ Repo-local completion gate for AI coding agents.
 - [x] Architecture evidence is documented as an optional semantic/design-risk gate.
 - [x] `docs/runtime-boundaries.md` clearly separates implemented guardrails from sandbox/runtime features that are not implemented.
 - [x] Public wording avoids claiming filesystem isolation, network isolation, secret isolation, model-cost enforcement, or semantic correctness guarantees.
+- [x] Episode package, failure attribution, intervention records, and entropy audit evidence are documented as local harness contracts.

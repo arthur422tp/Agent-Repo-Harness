@@ -116,6 +116,9 @@ Harness 會將穩定的 repository 事實與目前任務狀態分開保存：
 - `.agent/tdd-evidence.yml`：選用的結構化 TDD 證據
 - `.agent/acceptance.yml`：選用的驗收條件證據
 - `.agent/review.yml`：選用的 review 證據
+- `.agent/episode.yml`：選用的 episode package metadata
+- `.agent/failure-attribution.yml`：選用的 failure attribution 證據
+- `.agent/interventions.yml`：選用的 intervention record
 - `.agent/subagent-packet.yml`：選用的 controller-to-subagent 交接封包
 - `.agent/subagent-runs/`：選用的委派執行持久證據
 
@@ -197,6 +200,27 @@ TDD 證據由每項任務自行選用。當 `.agent/task.yml` 包含
 驗證。當其中包含 `completion.requires_review_evidence: true` 時，請在
 `.agent/review.yml` 中填入核准狀態、reviewer、證據，且不得有阻擋性
 疑慮。
+
+## Episode And Audit Evidence
+
+安裝後，`.agent/episode.yml` 可描述本地 episode 的 objective、actor、
+status 與精簡 context。每次 finish run 都會在 `finish-summary.json` 旁
+寫入 `.agent/runs/<timestamp>/episode-summary.json`，讓工具可檢查
+episode package、已啟用契約與 evidence paths。
+
+Failure attribution 與 intervention record 是選用 completion gates。當
+`.agent/task.yml` 啟用它們時，請在執行 `scripts/agent-finish.sh` 前，
+以具體證據填寫 `.agent/failure-attribution.yml` 或
+`.agent/interventions.yml`。
+
+維護 drift check 可執行 `scripts/agent-audit.sh`。它會寫入
+`.agent/audits/<timestamp>/entropy-report.json` 與 Markdown report，內容
+包含本地 doc-link、Git status 與 harness config evidence。Audit command
+不是 `scripts/agent-finish.sh` 的替代品。
+
+這些 episode 與 audit 檔案只是本地 harness evidence。它們不提供
+sandboxing、secret isolation、provider-native trace capture 或 model-cost
+accounting。
 
 ## Architecture Evidence
 

@@ -120,6 +120,9 @@ The harness keeps stable repository facts separate from current task state:
 - `.agent/tdd-evidence.yml`: optional structured TDD evidence
 - `.agent/acceptance.yml`: optional acceptance criteria evidence
 - `.agent/review.yml`: optional review evidence
+- `.agent/episode.yml`: optional episode package metadata
+- `.agent/failure-attribution.yml`: optional failure attribution evidence
+- `.agent/interventions.yml`: optional intervention record
 - `.agent/subagent-packet.yml`: optional controller-to-subagent handoff packet
 - `.agent/subagent-runs/`: optional durable evidence from delegated runs
 
@@ -206,6 +209,27 @@ contains `completion.requires_acceptance_check: true`, fill
 or verification. When it contains
 `completion.requires_review_evidence: true`, fill `.agent/review.yml` with an
 approving status, reviewer, evidence, and no blocking concerns.
+
+## Episode And Audit Evidence
+
+When installed, `.agent/episode.yml` can describe the local episode objective,
+actor, status, and compact context. Each finish run writes
+`.agent/runs/<timestamp>/episode-summary.json` beside `finish-summary.json` so
+tools can inspect the episode package, enabled contracts, and evidence paths.
+
+Failure attribution and intervention records are optional completion gates.
+When `.agent/task.yml` enables them, fill `.agent/failure-attribution.yml` or
+`.agent/interventions.yml` with concrete evidence before running
+`scripts/agent-finish.sh`.
+
+For maintenance drift checks, run `scripts/agent-audit.sh`. It writes
+`.agent/audits/<timestamp>/entropy-report.json` and a Markdown report with
+local doc-link, Git status, and harness config evidence. The audit command is
+not a substitute for `scripts/agent-finish.sh`.
+
+These episode and audit files are local harness evidence. They do not provide
+sandboxing, secret isolation, provider-native trace capture, or model-cost
+accounting.
 
 ## Architecture Evidence
 

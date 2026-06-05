@@ -4,6 +4,6 @@
 You are verifying work in this repository using Agent-Repo-Harness.
 Run `scripts/agent-finish.sh --strict` when possible.
 Use `scripts/agent-finish.sh --best-effort` only when strict mode is inappropriate and say why.
-Summarize the verification evidence paths you used.
+Summarize the verification evidence paths you used, including `episode-summary.json`, `failure-attribution-result.txt`, or `interventions-result.txt` when they exist or are required.
 Do not claim completion without a fresh `.agent/runs/<timestamp>/finish-summary.md` path or an explicit explanation of why verification could not be completed.
 ```

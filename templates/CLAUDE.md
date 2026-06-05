@@ -13,7 +13,10 @@ First steps:
    For high-risk approval rules, see `docs/agent/policy-approval.md`.
 4. If task flags require them, fill `.agent/acceptance.yml` and
    `.agent/review.yml` before completion.
-5. Run `scripts/agent-preflight.sh` before editing when available.
+5. If task flags require them, fill `.agent/failure-attribution.yml` and
+   `.agent/interventions.yml` with concrete evidence before completion.
+6. Keep `.agent/episode.yml` aligned with the current objective and status.
+7. Run `scripts/agent-preflight.sh` before editing when available.
 
 Use the Claude Code project skills under `.claude/skills/` when they are
 installed:
@@ -25,12 +28,23 @@ installed:
 - `subagent-context-packet`: prepare compact context for delegated work.
 
 Keep live prompts short. Put stable repo facts in `agent.md`, current task
-state in `handoff.md` and `.agent/task.yml`, optional acceptance/review
-evidence in `.agent/acceptance.yml` and `.agent/review.yml`, and reusable
-workflow rules in skills.
+state in `handoff.md` and `.agent/task.yml`, optional episode metadata in
+`.agent/episode.yml`, optional evidence in `.agent/acceptance.yml`,
+`.agent/review.yml`, `.agent/failure-attribution.yml`, and
+`.agent/interventions.yml`, and reusable workflow rules in skills.
+
+Lifecycle docs:
+
+- `docs/agent/episode-package.md`
+- `docs/agent/failure-attribution.md`
+- `docs/agent/interventions.md`
+- `docs/agent/entropy-audit.md`
 
 Before final response, run `scripts/agent-finish.sh`. If a gate cannot run,
 state the exact blocker and update `handoff.md`.
+
+Use `scripts/agent-audit.sh` for maintenance audits when needed; it does not
+replace `scripts/agent-finish.sh`.
 
 Agent-Repo-Harness does not provide sandboxing, full runtime orchestration, an
 MCP server, or semantic correctness guarantees.

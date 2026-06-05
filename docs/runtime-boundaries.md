@@ -11,6 +11,11 @@ contracts, gates, and evidence requirements before they claim completion.
 - Optional TDD, acceptance, review, architecture, and subagent evidence gates.
 - Durable run evidence under `.agent/runs/<timestamp>/`.
 - Machine-readable `finish-summary.json` beside the human-readable summary.
+- Optional episode package metadata through `.agent/episode.yml` and generated
+  `episode-summary.json` evidence.
+- Optional failure-attribution and intervention evidence gates controlled by
+  `.agent/task.yml` completion flags.
+- Local entropy audit reports through `scripts/agent-audit.sh`.
 - A local resource envelope for finish duration and changed-file count.
 
 ## Not Implemented
@@ -21,6 +26,8 @@ contracts, gates, and evidence requirements before they claim completion.
 - Agent-provider token accounting.
 - Model-cost enforcement.
 - Runtime tool orchestration outside local shell scripts.
+- Full tool-call replay outside local script evidence.
+- Provider-native trace capture unless an external runtime supplies it.
 - Semantic correctness guarantees beyond configured checks and evidence.
 
 ## Design Rule

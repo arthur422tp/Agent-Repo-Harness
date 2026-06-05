@@ -80,6 +80,10 @@ for required_path in \
   templates/docs/agent/policy-approval.md \
   templates/docs/agent/subagent-result-template.md \
   templates/docs/agent/review.md \
+  templates/docs/agent/episode-package.md \
+  templates/docs/agent/failure-attribution.md \
+  templates/docs/agent/interventions.md \
+  templates/docs/agent/entropy-audit.md \
   templates/scripts/validate-subagent-run.sh \
   tests/fixtures/validate-harness/broken-doc-links.md \
   tests/fixtures/validate-harness/subagent-packet-valid.yml \
@@ -187,6 +191,10 @@ for required_path in \
   docs/agent/policy-approval.md \
   docs/agent/subagent-result-template.md \
   docs/agent/review.md \
+  docs/agent/episode-package.md \
+  docs/agent/failure-attribution.md \
+  docs/agent/interventions.md \
+  docs/agent/entropy-audit.md \
   scripts/agent-preflight.sh \
   scripts/agent-finish.sh \
   scripts/check-agent-md.sh \

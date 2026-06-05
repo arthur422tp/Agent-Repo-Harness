@@ -46,6 +46,15 @@ scripts/agent-finish.sh
 Only claim verified if the finish gate passes. It runs the required policy,
 scope, repo map, and verification checks.
 
+Optional lifecycle evidence:
+- Episode package metadata: `docs/agent/episode-package.md`
+- Failure attribution: `docs/agent/failure-attribution.md`
+- Intervention records: `docs/agent/interventions.md`
+- Entropy audit: `docs/agent/entropy-audit.md`
+
+Use `scripts/agent-audit.sh` for maintenance drift checks, not as a substitute
+for `scripts/agent-finish.sh`.
+
 ## Superpowers Contract
 This repo assumes Superpowers is installed.
 
@@ -56,7 +65,10 @@ Before implementation:
 
 During implementation:
 - Keep changes within `.agent/task.yml`.
+- Keep `.agent/episode.yml` objective and status aligned when present.
 - Check `.agent/policy.yml` before touching high-risk areas.
+- Fill required `.agent/failure-attribution.yml` and `.agent/interventions.yml`
+  evidence when task completion flags require them.
 - Keep commits small and task-scoped.
 
 Before completion:

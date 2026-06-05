@@ -15,6 +15,12 @@ Use repo files for durable context:
 - `.agent/task.yml`: current task scope and completion requirements
 - `.agent/tdd-evidence.yml`: red/green/refactor evidence for tasks that
   explicitly require TDD evidence
+- `.agent/episode.yml`: optional episode package metadata for the current
+  work episode
+- `.agent/failure-attribution.yml`: optional Failure attribution evidence for
+  repaired or failure-prone tasks
+- `.agent/interventions.yml`: optional intervention records for material
+  human, tool, or runtime actions
 - `.agent/subagent-packet.yml`: optional controller-agent to subagent handoff
   context for delegated work
 - `.agent/subagent-runs/`: optional controller-agent evidence from delegated
@@ -30,8 +36,11 @@ scripts/validate-subagent-run.sh
 scripts/check-policy.sh
 scripts/check-scope.sh
 scripts/check-tdd-evidence.sh
+scripts/check-failure-attribution.sh
+scripts/check-interventions.sh
 scripts/agent-verify.sh
 scripts/agent-finish.sh
+scripts/agent-audit.sh
 ```
 
 Scope checks compare current changes against the repository's git state. After
@@ -49,7 +58,7 @@ feature-work drift.
 
 `agent-finish.sh` records evidence under `.agent/runs/<timestamp>/`, including
 `finish-summary.md`, per-gate result files, `tdd-evidence-result.txt`,
-`changed-files.txt`, and `git-diff-stat.txt`.
+`episode-summary.json`, `changed-files.txt`, and `git-diff-stat.txt`.
 
 TDD evidence is required only when `.agent/task.yml` contains
 `completion.requires_tdd_evidence: true`. When enabled, agents should fill
@@ -59,6 +68,34 @@ the tests added or changed before running `scripts/agent-finish.sh`.
 Keep `handoff.md` concise for humans and future agents. Agents may mirror
 structured current task state in `.agent/handoff.yml` for validators, CI,
 controller agents, and future automation.
+
+## Episode, Failure, And Intervention Evidence
+
+Keep `.agent/episode.yml` aligned with the current task objective and status.
+`scripts/agent-finish.sh` validates it when available and writes
+`.agent/runs/<timestamp>/episode-summary.json` as the local episode package
+summary.
+
+Failure attribution is required only when `.agent/task.yml` contains
+`completion.requires_failure_attribution: true`. When enabled, fill
+`.agent/failure-attribution.yml` with root cause, evidence, repair, and
+verification details. The finish run writes
+`failure-attribution-result.txt`.
+
+Intervention records are required only when `.agent/task.yml` contains
+`completion.requires_intervention_record: true`. When enabled, fill
+`.agent/interventions.yml` with real entries for approvals, scope changes,
+blocker resolutions, manual verification, or runtime overrides. Do not invent
+approvals or interventions.
+
+Use `scripts/agent-audit.sh` for maintenance entropy checks. It writes
+`.agent/audits/<timestamp>/entropy-report.json` and a Markdown report, but it
+does not replace `scripts/agent-finish.sh`.
+
+See [agent/episode-package.md](agent/episode-package.md),
+[agent/failure-attribution.md](agent/failure-attribution.md),
+[agent/interventions.md](agent/interventions.md), and
+[agent/entropy-audit.md](agent/entropy-audit.md).
 
 ## Operational Boundaries
 

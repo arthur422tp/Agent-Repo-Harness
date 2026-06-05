@@ -12,17 +12,27 @@ Start here before editing:
    For high-risk approval rules, see `docs/agent/policy-approval.md`.
 4. If task flags require them, fill `.agent/acceptance.yml` and
    `.agent/review.yml` before completion.
-5. Run `scripts/agent-preflight.sh` before changing files when available.
+5. If task flags require them, fill `.agent/failure-attribution.yml` and
+   `.agent/interventions.yml` with concrete evidence before completion. See
+   `docs/agent/failure-attribution.md` and `docs/agent/interventions.md`.
+6. Run `scripts/agent-preflight.sh` before changing files when available.
 
 During the task:
 
 - Keep changes inside `.agent/task.yml` scope.
+- Keep `.agent/episode.yml` status and objective aligned with the current
+  task. See `docs/agent/episode-package.md`.
 - Respect `allowed_paths`, `forbidden_paths`, `max_changed_files`, and
   `max_diff_lines`.
 - Treat `agent.md` as stable repo memory, not a task plan.
 - Treat `handoff.md` and `.agent/task.yml` as current task state.
 - Treat `.agent/acceptance.yml` and `.agent/review.yml` as optional completion
   evidence when the current task requires them.
+- Treat `.agent/failure-attribution.yml` and `.agent/interventions.yml` as
+  optional completion evidence when the current task requires them.
+- Use `scripts/agent-audit.sh` for maintenance audits when needed, but do not
+  use it as a substitute for `scripts/agent-finish.sh`. See
+  `docs/agent/entropy-audit.md`.
 - Use repo-owned scripts and adapter skills instead of long repeated prompts.
 - If Superpowers is installed, preserve its workflow role and use the
   Superpowers-compatible skills in this repo.
