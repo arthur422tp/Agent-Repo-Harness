@@ -1690,7 +1690,7 @@ git commit -m "docs: document h3 harness workflows"
 - Modify: `docs/public-packaging.md`
 - Modify: `handoff.md`
 
-- [ ] **Step 1: Run full validation**
+- [x] **Step 1: Run full validation**
 
 ```bash
 bash validate-harness.sh
@@ -1704,7 +1704,7 @@ Expected: PASS with these suites present:
 - Entropy audit report
 - Existing finish, resource envelope, architecture, acceptance, review, subagent, policy, scope, doc, adapter, and template suites
 
-- [ ] **Step 2: Run a local finish gate**
+- [x] **Step 2: Run a local finish gate**
 
 ```bash
 bash scripts/agent-finish.sh --best-effort
@@ -1712,7 +1712,7 @@ bash scripts/agent-finish.sh --best-effort
 
 Expected: `AGENT_FINISH_RESULT=pass` or a clear failure caused by current repo task state. If it fails because the live repo task state intentionally requires evidence not filled in this planning branch, record the failing run path and reason in `handoff.md`.
 
-- [ ] **Step 3: Update changelog**
+- [x] **Step 3: Update changelog**
 
 Add this under `CHANGELOG.md` Unreleased section:
 
@@ -1725,7 +1725,7 @@ Add this under `CHANGELOG.md` Unreleased section:
 - Document H3-style harness workflows while preserving the repo-local runtime boundary.
 ```
 
-- [ ] **Step 4: Update handoff**
+- [x] **Step 4: Update handoff**
 
 Update `handoff.md` with:
 
@@ -1754,7 +1754,7 @@ the changes as the next minor release.
 
 Replace `<timestamp>` with the actual run directories from Step 1 and Step 2.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add CHANGELOG.md docs/public-packaging.md handoff.md

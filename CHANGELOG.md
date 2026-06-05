@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Add optional episode package metadata and generated `episode-summary.json`.
+- Add optional failure attribution and intervention evidence gates.
+- Add `scripts/agent-audit.sh` for local entropy audit reports.
+- Document H3-style harness workflows while preserving the repo-local runtime boundary.
+
 ## v0.1.0 - Initial public baseline
 
 Initial repo-local completion gate for AI coding agents.

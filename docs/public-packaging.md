@@ -46,3 +46,11 @@ Repo-local completion gate for AI coding agents.
 - [x] `docs/runtime-boundaries.md` clearly separates implemented guardrails from sandbox/runtime features that are not implemented.
 - [x] Public wording avoids claiming filesystem isolation, network isolation, secret isolation, model-cost enforcement, or semantic correctness guarantees.
 - [x] Episode package, failure attribution, intervention records, and entropy audit evidence are documented as local harness contracts.
+
+## H3-style harness follow-up checklist
+
+- [x] Episode metadata, generated episode summaries, and finish evidence are covered by `validate-harness.sh`.
+- [x] Failure attribution and intervention records are opt-in completion gates.
+- [x] Entropy audit reports are available through `scripts/agent-audit.sh` for maintenance checks.
+- [x] H3-style workflows are documented without claiming provider-native tracing, sandboxing, or runtime enforcement.
+- [x] Latest Task 6 validation evidence is recorded in `handoff.md`.

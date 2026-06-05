@@ -1,35 +1,38 @@
 # handoff.md
 
 ## Current Task
-Finalize Task 5 from the production harness gaps plan: final alignment and
-public baseline readiness.
+Finalize Task 6 from the H3 runtime harness roadmap plan: final integration
+and public baseline readiness.
 
 ## Current State
-Completed. The production harness gap work is documented as a v0.1.0 baseline:
-the harness now documents runtime boundaries, writes machine-readable finish
-evidence, supports local resource-envelope limits, and offers optional
-architecture evidence for semantic/design-risk claims.
+Implemented the H3 runtime harness roadmap plan through episode package,
+failure attribution, intervention recording, entropy audit, and documentation
+alignment tasks.
 
 ## Changed Files
 - `CHANGELOG.md`
-- `docs/plans/agent-harness-optimization-plan.md`
 - `docs/public-packaging.md`
-- `docs/runtime-boundaries.md`
-- `docs/superpowers/plans/2026-05-29-production-harness-gaps.md`
+- `docs/superpowers/plans/2026-06-03-h3-runtime-harness-roadmap.md`
 - `handoff.md`
-- `tests/harness/doc-consistency.sh`
 
 ## Verification
-- `bash validate-harness.sh`: pass
-- `bash templates/scripts/check-doc-links.sh .`: pass
+- `bash validate-harness.sh`: PASS
+- `bash scripts/agent-finish.sh --best-effort`: PASS in installed target `/private/tmp/agent-harness-task6-target`
+- `bash scripts/agent-audit.sh`: PASS in installed target `/private/tmp/agent-harness-task6-target`
 
-## Remaining Limits
-- The harness is still not a filesystem sandbox, network sandbox, MCP server, or
-  full agent runtime.
-- Resource-envelope controls are local shell limits, not provider token-cost
-  accounting.
-- Architecture evidence improves review discipline but is not a semantic
-  correctness guarantee.
+## Evidence
+
+- Latest installed finish run: `/private/tmp/agent-harness-task6-target/.agent/runs/20260605-161030/`
+- Latest installed audit run: `/private/tmp/agent-harness-task6-target/.agent/audits/20260605-161027/`
+- Source-checkout finish attempt: `.agent/runs/20260605-160951/`
+
+## Notes
+
+The source checkout does not have root-level `scripts/agent-finish.sh`; those
+files are installable templates under `templates/scripts/`. Running the template
+script directly from the source checkout failed because it expects an installed
+target with `scripts/*` present. The installed target finish gate passed.
 
 ## Next Recommended Step
-- Review the final public-baseline wording and commit when ready.
+Review the generated episode and audit evidence, then decide whether to package
+the changes as the next minor release.
