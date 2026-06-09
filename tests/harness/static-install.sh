@@ -198,6 +198,7 @@ for required_path in \
   docs/agent/entropy-audit.md \
   scripts/agent-preflight.sh \
   scripts/agent-finish.sh \
+  scripts/agent-sandbox-run.sh \
   scripts/check-agent-md.sh \
   scripts/check-policy.sh \
   scripts/check-scope.sh \

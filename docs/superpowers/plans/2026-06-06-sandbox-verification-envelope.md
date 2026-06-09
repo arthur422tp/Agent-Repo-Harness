@@ -585,7 +585,7 @@ git commit -m "feat: add sandbox evidence gate"
 - Modify: `validate-harness.sh`
 - Modify: `tests/harness/static-install.sh`
 
-- [ ] **Step 1: Write failing fake-runner tests**
+- [x] **Step 1: Write failing fake-runner tests**
 
 Create `tests/harness/sandbox-runner.sh`:
 
@@ -720,7 +720,7 @@ bash validate-harness.sh
 
 Expected: FAIL because `templates/scripts/agent-sandbox-run.sh` is missing.
 
-- [ ] **Step 2: Add sandbox runner script**
+- [x] **Step 2: Add sandbox runner script**
 
 Create `templates/scripts/agent-sandbox-run.sh`:
 
@@ -1011,7 +1011,7 @@ echo "Sandbox run directory: $run_dir"
 exit 1
 ```
 
-- [ ] **Step 3: Update install smoke**
+- [x] **Step 3: Update install smoke**
 
 In `tests/harness/static-install.sh`, add:
 
@@ -1027,7 +1027,7 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add templates/scripts/agent-sandbox-run.sh tests/harness/sandbox-runner.sh tests/harness/static-install.sh validate-harness.sh
