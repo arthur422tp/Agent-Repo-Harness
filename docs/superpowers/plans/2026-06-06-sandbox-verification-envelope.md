@@ -65,7 +65,7 @@ Modify:
 - Modify: `tests/harness/task-validation.sh`
 - Modify: `tests/harness/static-install.sh`
 
-- [ ] **Step 1: Write failing task validation assertions**
+- [x] **Step 1: Write failing task validation assertions**
 
 In `tests/harness/task-validation.sh`, add a focused case near the existing task type validation tests:
 
@@ -132,7 +132,7 @@ bash validate-harness.sh
 
 Expected: FAIL because `validate-task.sh` does not know `requires_sandbox_verification`.
 
-- [ ] **Step 2: Add disabled sandbox config to harness template**
+- [x] **Step 2: Add disabled sandbox config to harness template**
 
 In `templates/.agent/harness.yml`, add after `runtime.resource_limits`:
 
@@ -153,7 +153,7 @@ sandbox:
     timeout_seconds: 600
 ```
 
-- [ ] **Step 3: Extend harness schema**
+- [x] **Step 3: Extend harness schema**
 
 In `schemas/harness.schema.json`, add this top-level property beside `runtime`:
 
@@ -197,7 +197,7 @@ In `schemas/harness.schema.json`, add this top-level property beside `runtime`:
 }
 ```
 
-- [ ] **Step 4: Add task flag to template and schema**
+- [x] **Step 4: Add task flag to template and schema**
 
 In `templates/.agent/task.yml`, add under `completion`:
 
@@ -211,7 +211,7 @@ In `schemas/task.schema.json`, add under `completion.properties`:
 "requires_sandbox_verification": { "type": "boolean" }
 ```
 
-- [ ] **Step 5: Validate sandbox flag in task script**
+- [x] **Step 5: Validate sandbox flag in task script**
 
 In `templates/scripts/validate-task.sh`, add the new optional boolean check next to the existing completion flags:
 
@@ -227,7 +227,7 @@ bash validate-harness.sh
 
 Expected: PASS for the new task validation cases, or FAIL only in template/example sync because example fixtures still need updates.
 
-- [ ] **Step 6: Update static install assertions**
+- [x] **Step 6: Update static install assertions**
 
 In `tests/harness/static-install.sh`, add assertions after existing installed gate checks:
 
@@ -245,7 +245,7 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add templates/.agent/harness.yml schemas/harness.schema.json templates/.agent/task.yml schemas/task.schema.json templates/scripts/validate-task.sh tests/harness/task-validation.sh tests/harness/static-install.sh

@@ -239,6 +239,11 @@ pass "installed default failure attribution gate is opt-in"
 assert_contains "$target_root/.agent/task.yml" 'requires_intervention_record: false'
 pass "installed default intervention record gate is opt-in"
 
+assert_contains "$target_root/.agent/harness.yml" "sandbox:"
+assert_contains "$target_root/.agent/harness.yml" "enabled: false"
+assert_contains "$target_root/.agent/task.yml" "requires_sandbox_verification: false"
+pass "installed default sandbox verification gate is opt-in"
+
 assert_not_exists "$target_root/adapters/hooks/README.md"
 assert_not_exists "$target_root/adapters/hooks/git/pre-commit"
 assert_not_exists "$target_root/adapters/hooks/git/pre-push"

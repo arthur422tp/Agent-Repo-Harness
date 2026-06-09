@@ -111,3 +111,54 @@ mkdir -p "$task_invalid_types_root/.agent" "$task_invalid_types_root/scripts/lib
 pass "task type validation failure"
 
 echo
+echo "== Task validation sandbox flag behavior =="
+sandbox_task_root="$tmp_root/task-sandbox-flag"
+rm -rf "$sandbox_task_root"
+mkdir -p "$sandbox_task_root/.agent" "$sandbox_task_root/scripts/lib"
+(
+  cd "$sandbox_task_root"
+  cp "$repo_root/templates/scripts/validate-task.sh" scripts/validate-task.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  chmod +x scripts/*.sh
+  printf '%s\n' \
+    'task:' \
+    '  status: "not_started"' \
+    '  goal: "Validate sandbox task flag."' \
+    '  allowed_paths: []' \
+    '  forbidden_paths: []' \
+    '  completion:' \
+    '    requires_sandbox_verification: true' \
+    > .agent/task.yml
+  bash scripts/validate-task.sh > task-sandbox.log 2>&1
+  assert_contains task-sandbox.log "task.completion.requires_sandbox_verification is boolean"
+  assert_contains task-sandbox.log "TASK_VALIDATION_RESULT=pass"
+)
+pass "task validation sandbox flag behavior"
+
+echo
+echo "== Task validation sandbox flag type failure =="
+sandbox_task_bad_root="$tmp_root/task-sandbox-flag-bad"
+rm -rf "$sandbox_task_bad_root"
+mkdir -p "$sandbox_task_bad_root/.agent" "$sandbox_task_bad_root/scripts/lib"
+(
+  cd "$sandbox_task_bad_root"
+  cp "$repo_root/templates/scripts/validate-task.sh" scripts/validate-task.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  chmod +x scripts/*.sh
+  printf '%s\n' \
+    'task:' \
+    '  status: "not_started"' \
+    '  goal: "Validate sandbox task flag failure."' \
+    '  allowed_paths: []' \
+    '  forbidden_paths: []' \
+    '  completion:' \
+    '    requires_sandbox_verification: "yes"' \
+    > .agent/task.yml
+  if bash scripts/validate-task.sh > task-sandbox-bad.log 2>&1; then
+    echo "ERROR: expected sandbox flag type failure"
+    exit 1
+  fi
+  assert_contains task-sandbox-bad.log "task.completion.requires_sandbox_verification must be boolean"
+  assert_contains task-sandbox-bad.log "TASK_VALIDATION_RESULT=fail"
+)
+pass "task validation sandbox flag type failure"
