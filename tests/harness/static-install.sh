@@ -62,6 +62,7 @@ for required_path in \
   templates/scripts/check-architecture-evidence.sh \
   templates/scripts/check-failure-attribution.sh \
   templates/scripts/check-interventions.sh \
+  templates/scripts/check-sandbox-evidence.sh \
   templates/scripts/check-subagent-evidence.sh \
   templates/.agent/handoff.yml \
   templates/.agent/tdd-evidence.yml \
@@ -206,6 +207,7 @@ for required_path in \
   scripts/check-architecture-evidence.sh \
   scripts/check-failure-attribution.sh \
   scripts/check-interventions.sh \
+  scripts/check-sandbox-evidence.sh \
   scripts/check-subagent-evidence.sh \
   scripts/validate-episode.sh \
   scripts/agent-audit.sh \
@@ -451,6 +453,11 @@ pass "hook adapters are not installed automatically"
   bash scripts/check-architecture-evidence.sh >"$architecture_evidence_skip_log" 2>&1
   assert_contains "$architecture_evidence_skip_log" "Architecture evidence is not required."
   assert_contains "$architecture_evidence_skip_log" "ARCHITECTURE_EVIDENCE_RESULT=pass"
+
+  sandbox_evidence_skip_log="$target_root/sandbox-evidence-skip.log"
+  bash scripts/check-sandbox-evidence.sh >"$sandbox_evidence_skip_log" 2>&1
+  assert_contains "$sandbox_evidence_skip_log" "Sandbox verification is not required."
+  assert_contains "$sandbox_evidence_skip_log" "SANDBOX_EVIDENCE_RESULT=pass"
   bash scripts/check-agent-md.sh agent.md
   verify_log="$target_root/agent-verify-pass.log"
   bash scripts/agent-verify.sh --best-effort >"$verify_log" 2>&1
@@ -484,6 +491,8 @@ pass "hook adapters are not installed automatically"
   assert_file_contains "$target_root" "review-result.txt" "Review evidence is not required."
   assert_file_contains "$target_root" "architecture-evidence-result.txt" "Exit status: 0"
   assert_file_contains "$target_root" "architecture-evidence-result.txt" "Architecture evidence is not required."
+  assert_file_contains "$target_root" "sandbox-evidence-result.txt" "Exit status: 0"
+  assert_file_contains "$target_root" "sandbox-evidence-result.txt" "Sandbox verification is not required."
   assert_file_contains "$target_root" "subagent-evidence-result.txt" "Exit status: 0"
   assert_file_contains "$target_root" "subagent-evidence-result.txt" "Subagent evidence is required."
   assert_file_contains "$target_root" "verify-result.txt" "Exit status: 0"

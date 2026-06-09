@@ -262,7 +262,7 @@ git commit -m "feat: add sandbox verification config contract"
 - Modify: `tests/harness/lib.sh`
 - Modify: `tests/harness/static-install.sh`
 
-- [ ] **Step 1: Write failing sandbox evidence tests**
+- [x] **Step 1: Write failing sandbox evidence tests**
 
 Create `tests/harness/sandbox-evidence.sh`:
 
@@ -361,7 +361,7 @@ bash validate-harness.sh
 
 Expected: FAIL because `templates/scripts/check-sandbox-evidence.sh` does not exist.
 
-- [ ] **Step 2: Add sandbox evidence check script**
+- [x] **Step 2: Add sandbox evidence check script**
 
 Create `templates/scripts/check-sandbox-evidence.sh`:
 
@@ -493,7 +493,7 @@ fi
 echo "SANDBOX_EVIDENCE_RESULT=pass"
 ```
 
-- [ ] **Step 3: Wire sandbox evidence into finish gate**
+- [x] **Step 3: Wire sandbox evidence into finish gate**
 
 In `templates/scripts/agent-finish.sh`, add variables near the other result files:
 
@@ -532,7 +532,7 @@ Add a JSON gate entry:
 },
 ```
 
-- [ ] **Step 4: Update finish evidence assertions**
+- [x] **Step 4: Update finish evidence assertions**
 
 In `tests/harness/lib.sh`, add `sandbox-evidence-result.txt` to `assert_run_evidence_files`:
 
@@ -554,7 +554,7 @@ if "check-sandbox-evidence" not in gate_names:
     raise SystemExit("missing check-sandbox-evidence gate")
 ```
 
-- [ ] **Step 5: Update install smoke**
+- [x] **Step 5: Update install smoke**
 
 In `tests/harness/static-install.sh`, assert the script installs:
 
@@ -570,7 +570,7 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add templates/scripts/check-sandbox-evidence.sh templates/scripts/agent-finish.sh tests/harness/sandbox-evidence.sh tests/harness/lib.sh tests/harness/static-install.sh validate-harness.sh

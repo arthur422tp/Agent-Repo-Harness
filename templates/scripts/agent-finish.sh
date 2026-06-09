@@ -55,6 +55,7 @@ review_result_file="$run_dir/review-result.txt"
 architecture_result_file="$run_dir/architecture-evidence-result.txt"
 failure_attribution_result_file="$run_dir/failure-attribution-result.txt"
 interventions_result_file="$run_dir/interventions-result.txt"
+sandbox_evidence_result_file="$run_dir/sandbox-evidence-result.txt"
 subagent_evidence_result_file="$run_dir/subagent-evidence-result.txt"
 episode_result_file="$run_dir/episode-result.txt"
 verify_result_file="$run_dir/verify-result.txt"
@@ -73,6 +74,7 @@ review_status=""
 architecture_status=""
 failure_attribution_status=""
 interventions_status=""
+sandbox_evidence_status=""
 subagent_evidence_status=""
 episode_status=""
 verify_status=""
@@ -265,6 +267,7 @@ write_summary() {
     echo "| check-architecture-evidence | $architecture_status | $architecture_result_file |"
     echo "| check-failure-attribution | $failure_attribution_status | $failure_attribution_result_file |"
     echo "| check-interventions | $interventions_status | $interventions_result_file |"
+    echo "| check-sandbox-evidence | $sandbox_evidence_status | $sandbox_evidence_result_file |"
     echo "| check-subagent-evidence | $subagent_evidence_status | $subagent_evidence_result_file |"
     echo "| validate-episode | $episode_status | $episode_result_file |"
     echo "| agent-verify | $verify_status | $verify_result_file |"
@@ -320,6 +323,7 @@ write_json_summary() {
   AGENT_FINISH_ARCHITECTURE_STATUS="${architecture_status:-0}" \
   AGENT_FINISH_FAILURE_ATTRIBUTION_STATUS="${failure_attribution_status:-0}" \
   AGENT_FINISH_INTERVENTIONS_STATUS="${interventions_status:-0}" \
+  AGENT_FINISH_SANDBOX_EVIDENCE_STATUS="${sandbox_evidence_status:-0}" \
   AGENT_FINISH_SUBAGENT_EVIDENCE_STATUS="${subagent_evidence_status:-0}" \
   AGENT_FINISH_EPISODE_STATUS="${episode_status:-0}" \
   AGENT_FINISH_VERIFY_STATUS="${verify_status:-0}" \
@@ -332,6 +336,7 @@ write_json_summary() {
   AGENT_FINISH_ARCHITECTURE_EVIDENCE="$architecture_result_file" \
   AGENT_FINISH_FAILURE_ATTRIBUTION_EVIDENCE="$failure_attribution_result_file" \
   AGENT_FINISH_INTERVENTIONS_EVIDENCE="$interventions_result_file" \
+  AGENT_FINISH_SANDBOX_EVIDENCE="$sandbox_evidence_result_file" \
   AGENT_FINISH_SUBAGENT_EVIDENCE="$subagent_evidence_result_file" \
   AGENT_FINISH_EPISODE_EVIDENCE="$episode_result_file" \
   AGENT_FINISH_VERIFY_EVIDENCE="$verify_result_file" \
@@ -399,6 +404,11 @@ data = {
             "name": "check-interventions",
             "exit_status": int(env["AGENT_FINISH_INTERVENTIONS_STATUS"]),
             "evidence": env["AGENT_FINISH_INTERVENTIONS_EVIDENCE"],
+        },
+        {
+            "name": "check-sandbox-evidence",
+            "exit_status": int(env["AGENT_FINISH_SANDBOX_EVIDENCE_STATUS"]),
+            "evidence": env["AGENT_FINISH_SANDBOX_EVIDENCE"],
         },
         {
             "name": "check-subagent-evidence",
@@ -528,6 +538,8 @@ if [ "$mode" = "strict" ]; then
   failure_attribution_status="$last_status"
   run_gate "check-interventions" "$interventions_result_file" bash scripts/check-interventions.sh
   interventions_status="$last_status"
+  run_gate "check-sandbox-evidence" "$sandbox_evidence_result_file" bash scripts/check-sandbox-evidence.sh
+  sandbox_evidence_status="$last_status"
   run_gate "check-subagent-evidence" "$subagent_evidence_result_file" bash scripts/check-subagent-evidence.sh
   subagent_evidence_status="$last_status"
   run_gate "validate-episode" "$episode_result_file" bash scripts/validate-episode.sh
@@ -553,6 +565,8 @@ else
   failure_attribution_status="$last_status"
   run_gate "check-interventions" "$interventions_result_file" bash scripts/check-interventions.sh
   interventions_status="$last_status"
+  run_gate "check-sandbox-evidence" "$sandbox_evidence_result_file" bash scripts/check-sandbox-evidence.sh
+  sandbox_evidence_status="$last_status"
   run_gate "check-subagent-evidence" "$subagent_evidence_result_file" bash scripts/check-subagent-evidence.sh
   subagent_evidence_status="$last_status"
   run_gate "validate-episode" "$episode_result_file" bash scripts/validate-episode.sh
