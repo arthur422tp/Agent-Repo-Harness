@@ -1137,7 +1137,7 @@ git commit -m "test: keep sandbox templates and examples aligned"
 - Modify: `tests/harness/doc-consistency.sh`
 - Modify: `tests/harness/adapter-sync.sh`
 
-- [ ] **Step 1: Write failing doc assertions**
+- [x] **Step 1: Write failing doc assertions**
 
 In `tests/harness/doc-consistency.sh`, add:
 
@@ -1158,7 +1158,7 @@ bash validate-harness.sh
 
 Expected: FAIL in doc consistency.
 
-- [ ] **Step 2: Update README wording**
+- [x] **Step 2: Update README wording**
 
 In `README.md`, add after `Episode And Audit Evidence`:
 
@@ -1186,7 +1186,7 @@ run by default. This keeps sandbox verification aligned with Superpowers
 
 Add equivalent Traditional Chinese wording to `README.zh-TW.md`.
 
-- [ ] **Step 3: Update runtime boundaries**
+- [x] **Step 3: Update runtime boundaries**
 
 In `docs/runtime-boundaries.md`, add under Implemented:
 
@@ -1204,7 +1204,7 @@ Add under Not Implemented:
 - Secret manager integration.
 ```
 
-- [ ] **Step 4: Update Superpowers integration docs**
+- [x] **Step 4: Update Superpowers integration docs**
 
 In `docs/superpowers-integration.md`, add a row to the responsibility table:
 
@@ -1228,7 +1228,7 @@ Add to non-goals:
   sandbox orchestration.
 ```
 
-- [ ] **Step 5: Update local skills**
+- [x] **Step 5: Update local skills**
 
 In `skills/verification-gate/SKILL.md`, add after the `agent-verify.sh` command list:
 
@@ -1249,7 +1249,7 @@ In `skills/harness-entrypoint/SKILL.md`, add before final completion:
 - run `scripts/agent-sandbox-run.sh` when sandbox verification is required
 ```
 
-- [ ] **Step 6: Update templates**
+- [x] **Step 6: Update templates**
 
 In `templates/AGENTS.md`, add during-task guidance:
 
@@ -1260,7 +1260,7 @@ In `templates/AGENTS.md`, add during-task guidance:
 
 In `templates/CLAUDE.md`, add the same concise instruction where verification guidance lives.
 
-- [ ] **Step 7: Run docs and adapter tests**
+- [x] **Step 7: Run docs and adapter tests**
 
 ```bash
 bash validate-harness.sh
@@ -1268,7 +1268,7 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add README.md README.zh-TW.md docs/runtime-boundaries.md docs/USAGE_WITH_AGENTS.md docs/superpowers-integration.md templates/AGENTS.md templates/CLAUDE.md skills/verification-gate/SKILL.md skills/harness-entrypoint/SKILL.md tests/harness/doc-consistency.sh tests/harness/adapter-sync.sh

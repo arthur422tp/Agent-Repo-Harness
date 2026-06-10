@@ -222,6 +222,27 @@ Failure attribution 與 intervention record 是選用 completion gates。當
 sandboxing、secret isolation、provider-native trace capture 或 model-cost
 accounting。
 
+## Sandbox Verification
+
+設定完成後，Agent-Repo-Harness 可以透過
+`scripts/agent-sandbox-run.sh`，在外部 container sandbox 中執行 verification
+command。Sandbox runner 會寫入
+`.agent/sandbox-runs/<timestamp>/sandbox-summary.json`，以及 stdout、
+stderr、command 與 exit-status evidence。
+
+Sandbox verification 是 opt-in。任務可以用下列設定要求既有且通過的
+sandbox evidence：
+
+```yaml
+task:
+  completion:
+    requires_sandbox_verification: true
+```
+
+Finish gate 會驗證 sandbox evidence；預設不會建立巢狀 sandbox run。這讓
+sandbox verification 與 Superpowers `verification-before-completion` 對齊，
+而不是取代 Superpowers workflow。
+
 ## Architecture Evidence
 
 當測試不足以證明設計品質時，可以在 `.agent/task.yml` 設定

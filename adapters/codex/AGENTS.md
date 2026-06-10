@@ -46,6 +46,10 @@ task file to be updated or for explicit approval.
 
 ## Completion
 
+If `.agent/task.yml` requires sandbox verification, run
+`scripts/agent-sandbox-run.sh` before final finish and preserve
+`.agent/sandbox-runs/<timestamp>/` evidence.
+
 Before claiming completion, run:
 
 ```bash

@@ -39,6 +39,10 @@ Respect the active task in `.agent/task.yml`, especially `allowed_paths`,
 
 ## Completion
 
+If `.agent/task.yml` requires sandbox verification, run
+`scripts/agent-sandbox-run.sh` before final finish and preserve
+`.agent/sandbox-runs/<timestamp>/` evidence.
+
 Before final response:
 
 ```bash

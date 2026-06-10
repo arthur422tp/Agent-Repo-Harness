@@ -39,6 +39,10 @@ pass "Git hook adapters are valid"
 
 assert_contains "$repo_root/adapters/codex/AGENTS.md" "## Context Loading Policy"
 assert_contains "$repo_root/adapters/codex/AGENTS.md" 'applicable `.agent/policy.yml` entries'
+assert_contains "$repo_root/adapters/codex/AGENTS.md" 'sandbox verification'
+assert_contains "$repo_root/adapters/codex/AGENTS.md" 'agent-sandbox-run.sh'
+assert_contains "$repo_root/adapters/codex/AGENTS.md" 'before final finish'
+assert_contains "$repo_root/adapters/codex/AGENTS.md" '.agent/sandbox-runs/<timestamp>/'
 assert_contains "$repo_root/adapters/codex/codex-start-prompt.md" "Use staged context loading"
 assert_contains "$repo_root/adapters/codex/codex-start-prompt.md" 'docs/agent/episode-package.md'
 assert_contains "$repo_root/adapters/codex/codex-start-prompt.md" '.agent/episode.yml'
@@ -82,9 +86,16 @@ assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'BLOCKED_NEE
 assert_contains "$repo_root/adapters/codex/codex-handoff-prompt.md" 'SCOPE_OR_POLICY_NEEDS_APPROVAL'
 assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" "## Context Loading Policy"
 assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" 'applicable `.agent/policy.yml` entries'
+assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" 'sandbox verification'
+assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" 'agent-sandbox-run.sh'
+assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" 'before final finish'
+assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" '.agent/sandbox-runs/<timestamp>/'
 assert_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'Read `.agent/task.yml` for active task scope.'
 assert_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'Read applicable `.agent/policy.yml` entries'
 assert_contains "$repo_root/adapters/claude-code/.claude/skills/harness-entrypoint/SKILL.md" 'before broad source inspection.'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/verification-gate/SKILL.md" 'sandbox verification'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/verification-gate/SKILL.md" 'agent-sandbox-run.sh'
+assert_contains "$repo_root/adapters/claude-code/.claude/skills/verification-gate/SKILL.md" 'finish gate validates'
 assert_contains "$repo_root/adapters/claude-code/.claude/skills/repair-failed-harness-run/SKILL.md" 'finish-summary.md'
 assert_contains "$repo_root/adapters/claude-code/.claude/skills/repair-failed-harness-run/SKILL.md" 'failing gates'
 assert_contains "$repo_root/adapters/claude-code/.claude/skills/repair-failed-harness-run/SKILL.md" 'check-subagent-evidence'

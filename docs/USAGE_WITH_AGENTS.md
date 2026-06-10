@@ -25,6 +25,8 @@ Use repo files for durable context:
   context for delegated work
 - `.agent/subagent-runs/`: optional controller-agent evidence from delegated
   subagent runs
+- `.agent/sandbox-runs/`: optional sandbox verification evidence from
+  `scripts/agent-sandbox-run.sh`
 
 Use scripts for gates:
 
@@ -38,6 +40,7 @@ scripts/check-scope.sh
 scripts/check-tdd-evidence.sh
 scripts/check-failure-attribution.sh
 scripts/check-interventions.sh
+scripts/agent-sandbox-run.sh
 scripts/agent-verify.sh
 scripts/agent-finish.sh
 scripts/agent-audit.sh
@@ -64,6 +67,12 @@ TDD evidence is required only when `.agent/task.yml` contains
 `completion.requires_tdd_evidence: true`. When enabled, agents should fill
 `.agent/tdd-evidence.yml` with the red command/failure, green command/pass, and
 the tests added or changed before running `scripts/agent-finish.sh`.
+
+Sandbox verification is required only when `.agent/task.yml` contains
+`completion.requires_sandbox_verification: true`. When enabled, agents should
+run `scripts/agent-sandbox-run.sh` before `scripts/agent-finish.sh` and
+preserve the resulting `.agent/sandbox-runs/<timestamp>/` evidence. The finish
+gate validates existing sandbox evidence; it does not dispatch the sandbox run.
 
 Keep `handoff.md` concise for humans and future agents. Agents may mirror
 structured current task state in `.agent/handoff.yml` for validators, CI,

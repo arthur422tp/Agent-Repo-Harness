@@ -231,6 +231,26 @@ These episode and audit files are local harness evidence. They do not provide
 sandboxing, secret isolation, provider-native trace capture, or model-cost
 accounting.
 
+## Sandbox Verification
+
+When configured, Agent-Repo-Harness can run a verification command inside an
+external container sandbox through `scripts/agent-sandbox-run.sh`. The sandbox
+runner writes `.agent/sandbox-runs/<timestamp>/sandbox-summary.json` plus
+stdout, stderr, command, and exit-status evidence.
+
+Sandbox verification is opt-in. A task can require existing passing sandbox
+evidence with:
+
+```yaml
+task:
+  completion:
+    requires_sandbox_verification: true
+```
+
+The finish gate validates sandbox evidence; it does not create a nested sandbox
+run by default. This keeps sandbox verification aligned with Superpowers
+`verification-before-completion` instead of replacing the Superpowers workflow.
+
 ## Architecture Evidence
 
 For changes where tests are not enough to prove design quality, set

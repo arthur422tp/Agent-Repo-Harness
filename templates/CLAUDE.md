@@ -43,6 +43,9 @@ Lifecycle docs:
 Before final response, run `scripts/agent-finish.sh`. If a gate cannot run,
 state the exact blocker and update `handoff.md`.
 
+If `.agent/task.yml` requires sandbox verification, run the sandbox runner
+before final finish and preserve `.agent/sandbox-runs/<timestamp>/` evidence.
+
 Use `scripts/agent-audit.sh` for maintenance audits when needed; it does not
 replace `scripts/agent-finish.sh`.
 

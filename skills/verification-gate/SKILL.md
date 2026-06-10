@@ -24,6 +24,15 @@ scripts/check-scope.sh --strict
 scripts/agent-verify.sh --strict
 ```
 
+If `.agent/task.yml` sets `completion.requires_sandbox_verification: true`, run:
+
+```bash
+scripts/agent-sandbox-run.sh
+```
+
+Then run `scripts/agent-finish.sh`; the finish gate validates the sandbox
+evidence instead of creating the sandbox run itself.
+
 `check-policy.sh` defaults to warn mode unless strict policy approval is
 required. `check-scope.sh` defaults to strict mode, but it only enforces
 limits configured in `.agent/task.yml`. `agent-verify.sh` defaults to strict

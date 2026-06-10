@@ -17,12 +17,18 @@ contracts, gates, and evidence requirements before they claim completion.
   `.agent/task.yml` completion flags.
 - Local entropy audit reports through `scripts/agent-audit.sh`.
 - A local resource envelope for finish duration and changed-file count.
+- Sandbox verification evidence from an external Docker or Podman runner when
+  configured.
 
 ## Not Implemented
 
 - Filesystem sandboxing.
 - Network sandboxing.
 - Secret isolation.
+- Complete sandbox security independent of the configured external runner.
+- Per-tool runtime interception.
+- Network allowlists beyond first-version disabled or host modes.
+- Secret manager integration.
 - Agent-provider token accounting.
 - Model-cost enforcement.
 - Runtime tool orchestration outside local shell scripts.

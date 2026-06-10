@@ -30,6 +30,8 @@ During the task:
   evidence when the current task requires them.
 - Treat `.agent/failure-attribution.yml` and `.agent/interventions.yml` as
   optional completion evidence when the current task requires them.
+- If `.agent/task.yml` requires sandbox verification, run the sandbox runner
+  before final finish and preserve `.agent/sandbox-runs/<timestamp>/` evidence.
 - Use `scripts/agent-audit.sh` for maintenance audits when needed, but do not
   use it as a substitute for `scripts/agent-finish.sh`. See
   `docs/agent/entropy-audit.md`.

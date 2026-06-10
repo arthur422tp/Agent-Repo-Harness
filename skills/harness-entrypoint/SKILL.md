@@ -51,6 +51,7 @@ scripts/agent-preflight.sh
 6. Before final completion:
    - run `scripts/check-policy.sh`
    - run `scripts/agent-verify.sh`
+   - run `scripts/agent-sandbox-run.sh` when sandbox verification is required
    - update `handoff.md` if needed
    - update discoveries if useful
 

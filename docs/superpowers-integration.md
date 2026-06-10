@@ -15,6 +15,10 @@ results inside the repository.
 
 Superpowers skills should respect staged context loading. Planning and execution skills can ask for focused evidence, but they should prefer `agent.md`, `handoff.md`, `.agent/task.yml`, `.agent/policy.yml`, and `scripts/collect-context.sh` before loading broad raw source or historical plans.
 
+Sandbox verification is an optional final verification envelope. It records
+evidence from a configured external runner without taking over Superpowers
+verification discipline.
+
 | Concern | Superpowers skill | Agent-Repo-Harness component |
 |---|---|---|
 | Planning | `writing-plans` | `.agent/task.yml` |
@@ -25,6 +29,7 @@ Superpowers skills should respect staged context loading. Planning and execution
 | Spec review | `subagent-driven-development` / `requesting-code-review` | subagent packet role: `spec_reviewer` |
 | Quality review | `subagent-driven-development` / `requesting-code-review` | subagent packet role: `quality_reviewer` |
 | Verification | `verification-before-completion` | `scripts/agent-verify.sh` |
+| Isolated final verification | `verification-before-completion` | `scripts/agent-sandbox-run.sh` + `.agent/sandbox-runs/<timestamp>/` |
 | Completion | `finishing-a-development-branch` | `scripts/agent-finish.sh` + `.agent/runs/<timestamp>/finish-summary.md` |
 | Handoff | `finishing-a-development-branch` / handoff-update style workflow | `handoff.md` |
 
@@ -40,8 +45,12 @@ Superpowers skills should respect staged context loading. Planning and execution
    `.agent/subagent-runs/<timestamp>-<role>-<task_id>/`.
 8. Run `scripts/check-scope.sh`, `scripts/check-policy.sh`,
    `scripts/check-tdd-evidence.sh`, and `scripts/agent-verify.sh`.
-9. Run `scripts/agent-finish.sh`.
-10. Update `handoff.md` with results and next action.
+9. If `.agent/task.yml` requires sandbox verification, run
+   `scripts/agent-sandbox-run.sh` before `scripts/agent-finish.sh`. The finish
+   gate validates the resulting sandbox evidence; it does not dispatch the
+   sandbox run itself.
+10. Run `scripts/agent-finish.sh`.
+11. Update `handoff.md` with results and next action.
 
 ## Subagent Packet Alignment
 
@@ -83,5 +92,7 @@ records that evidence but does not dispatch subagents.
 - This harness does not integrate subagent run evidence into
   `scripts/agent-finish.sh` yet.
 - This harness does not change when TDD evidence is required.
+- This harness does not replace Superpowers verification workflows with
+  sandbox orchestration.
 - This harness is not a sandbox or runtime orchestrator.
 - This harness assumes repo-owned config is trusted.
