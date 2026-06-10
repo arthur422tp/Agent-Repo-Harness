@@ -1372,7 +1372,7 @@ high-risk tasks.
 
 Replace `<timestamp>` with actual evidence directories.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add CHANGELOG.md docs/superpowers/plans/2026-06-06-sandbox-verification-envelope.md handoff.md
