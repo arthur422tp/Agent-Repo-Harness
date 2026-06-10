@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add optional sandbox verification envelope configuration and task flag.
+- Add sandbox verification runner evidence under `.agent/sandbox-runs/<timestamp>/`.
+- Add optional sandbox evidence gate to `scripts/agent-finish.sh`.
+- Document the sandbox/Superpowers responsibility split and runtime boundary.
 - Add optional episode package metadata and generated `episode-summary.json`.
 - Add optional failure attribution and intervention evidence gates.
 - Add `scripts/agent-audit.sh` for local entropy audit reports.

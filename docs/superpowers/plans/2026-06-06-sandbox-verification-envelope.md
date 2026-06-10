@@ -1279,9 +1279,10 @@ git commit -m "docs: align sandbox verification with superpowers"
 
 **Files:**
 - Modify: `CHANGELOG.md`
+- Modify: `docs/superpowers/plans/2026-06-06-sandbox-verification-envelope.md`
 - Modify: `handoff.md`
 
-- [ ] **Step 1: Run full validation**
+- [x] **Step 1: Run full validation**
 
 Run:
 
@@ -1299,7 +1300,7 @@ Expected: PASS, including:
 - resource envelope
 - entropy audit
 
-- [ ] **Step 2: Run source checkout audit**
+- [x] **Step 2: Run source checkout audit**
 
 Run:
 
@@ -1311,7 +1312,7 @@ Expected: `AGENT_AUDIT_RESULT=pass`.
 
 Record the printed audit directory.
 
-- [ ] **Step 3: Run finish gate**
+- [x] **Step 3: Run finish gate**
 
 Run:
 
@@ -1323,7 +1324,13 @@ Expected: `AGENT_FINISH_RESULT=pass`, unless the live `.agent/task.yml` intentio
 
 If it fails because live task state requires evidence, record the failing run directory and exact reason in `handoff.md`; do not claim final finish verified.
 
-- [ ] **Step 4: Update changelog**
+Result: the source-checkout command failed because root-level
+`scripts/agent-finish.sh` is not present in this template source checkout.
+The installed-target finish gate passed in
+`/private/tmp/agent-harness-sandbox-task6-target` with
+`AGENT_FINISH_RESULT=pass`, and `handoff.md` records both outcomes.
+
+- [x] **Step 4: Update changelog**
 
 In `CHANGELOG.md`, add under `Unreleased`:
 
@@ -1334,7 +1341,7 @@ In `CHANGELOG.md`, add under `Unreleased`:
 - Document the sandbox/Superpowers responsibility split and runtime boundary.
 ```
 
-- [ ] **Step 5: Update handoff**
+- [x] **Step 5: Update handoff**
 
 Update `handoff.md` with:
 
@@ -1349,12 +1356,12 @@ and Superpowers-aligned documentation.
 
 - `bash validate-harness.sh`: PASS
 - `bash templates/scripts/agent-audit.sh`: PASS
-- `bash scripts/agent-finish.sh --best-effort`: PASS
+- `bash scripts/agent-finish.sh --best-effort`: PASS in installed target `/private/tmp/agent-harness-sandbox-task6-target`
 
 ## Evidence
 
 - Latest audit run: `.agent/audits/<timestamp>/`
-- Latest finish run: `.agent/runs/<timestamp>/`
+- Latest installed finish run: `/private/tmp/agent-harness-sandbox-task6-target/.agent/runs/<timestamp>/`
 
 ## Next Action
 
@@ -1368,7 +1375,7 @@ Replace `<timestamp>` with actual evidence directories.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add CHANGELOG.md handoff.md
+git add CHANGELOG.md docs/superpowers/plans/2026-06-06-sandbox-verification-envelope.md handoff.md
 git commit -m "chore: finalize sandbox verification envelope"
 ```
 
