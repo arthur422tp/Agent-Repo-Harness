@@ -25,6 +25,21 @@ runtime:
     # 0 disables the changed-file count limit.
     max_changed_files: 0
 
+sandbox:
+  enabled: false
+  runner: docker
+  mode: verification
+  command: "bash scripts/agent-finish.sh --strict"
+  workspace:
+    strategy: "copy"
+  network: "disabled"
+  env:
+    allow: []
+  resource_limits:
+    cpus: "2"
+    memory: "2g"
+    timeout_seconds: 600
+
 audit:
   command: scripts/agent-audit.sh
   evidence_dir: .agent/audits

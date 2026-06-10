@@ -1044,7 +1044,7 @@ git commit -m "feat: add sandbox verification runner"
 - Modify: `tests/harness/template-sync.sh`
 - Modify: `tests/harness/static-install.sh`
 
-- [ ] **Step 1: Run template sync to expose example drift**
+- [x] **Step 1: Run template sync to expose example drift**
 
 Run:
 
@@ -1054,7 +1054,7 @@ bash validate-harness.sh
 
 Expected: FAIL only if template/example sync requires the universal example to mirror new config or scripts. If it already passes, continue to Step 4 and do not change examples unnecessarily.
 
-- [ ] **Step 2: Mirror disabled sandbox config in the universal example**
+- [x] **Step 2: Mirror disabled sandbox config in the universal example**
 
 If `examples/universal-minimal-repo/.agent/harness.yml` exists, add:
 
@@ -1081,7 +1081,7 @@ If `examples/universal-minimal-repo/.agent/task.yml` exists, add:
     requires_sandbox_verification: false
 ```
 
-- [ ] **Step 3: Mirror scripts only if examples carry copied scripts**
+- [x] **Step 3: Mirror scripts only if examples carry copied scripts**
 
 If `examples/universal-minimal-repo/scripts/agent-finish.sh` is a copied script, copy the new sandbox scripts:
 
@@ -1091,7 +1091,7 @@ cp templates/scripts/check-sandbox-evidence.sh examples/universal-minimal-repo/s
 chmod +x examples/universal-minimal-repo/scripts/agent-sandbox-run.sh examples/universal-minimal-repo/scripts/check-sandbox-evidence.sh
 ```
 
-- [ ] **Step 4: Add sync assertions**
+- [x] **Step 4: Add sync assertions**
 
 In `tests/harness/template-sync.sh`, add assertions matching the existing style:
 
@@ -1107,7 +1107,7 @@ assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/task.yml" "requires_sandbox_verification: false"
 ```
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 ```bash
 bash validate-harness.sh
@@ -1115,7 +1115,7 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add examples/universal-minimal-repo tests/harness/template-sync.sh tests/harness/static-install.sh

@@ -4,6 +4,18 @@ set -euo pipefail
 echo
 echo "== Template sync =="
 
+assert_files_match() {
+  local expected="$1"
+  local actual="$2"
+
+  if ! cmp -s "$expected" "$actual"; then
+    echo "ERROR: expected files to match"
+    echo "Expected: $expected"
+    echo "Actual: $actual"
+    exit 1
+  fi
+}
+
 assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$repo_root/templates/AGENTS.md" "docs/agent/context-loading.md"
@@ -21,6 +33,7 @@ assert_not_contains "$repo_root/templates/.agent/task.yml" 'requires_tdd_evidenc
 assert_contains "$repo_root/templates/.agent/task.yml" 'requires_architecture_evidence: false'
 assert_contains "$repo_root/templates/.agent/task.yml" 'requires_failure_attribution: false'
 assert_contains "$repo_root/templates/.agent/task.yml" 'requires_intervention_record: false'
+assert_contains "$repo_root/templates/.agent/task.yml" 'requires_sandbox_verification: false'
 assert_contains "$repo_root/templates/.agent/task.yml" 'expects_handoff_update: true'
 assert_contains "$repo_root/templates/.agent/task.yml" 'agent-finish.sh does not enforce'
 assert_not_contains "$repo_root/templates/.agent/task.yml" 'requires_handoff_update'
@@ -34,9 +47,17 @@ assert_contains "$repo_root/templates/.agent/harness.yml" 'evidence_dir: .agent/
 assert_contains "$repo_root/templates/.agent/harness.yml" '    - doc-links'
 assert_contains "$repo_root/templates/.agent/harness.yml" '    - git-status'
 assert_contains "$repo_root/templates/.agent/harness.yml" '    - harness-config'
+assert_contains "$repo_root/templates/.agent/harness.yml" 'sandbox:'
+assert_contains "$repo_root/templates/.agent/harness.yml" 'enabled: false'
+assert_contains "$repo_root/templates/.agent/harness.yml" 'runner: docker'
+assert_contains "$repo_root/templates/.agent/harness.yml" 'mode: verification'
+assert_contains "$repo_root/templates/.agent/harness.yml" 'command: "bash scripts/agent-finish.sh --strict"'
+assert_contains "$repo_root/templates/.agent/harness.yml" 'network: "disabled"'
+assert_contains "$repo_root/templates/.agent/harness.yml" 'timeout_seconds: 600'
 assert_contains "$repo_root/examples/strict-tdd-task.yml" 'requires_tdd_evidence: true'
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/task.yml" 'expects_handoff_update: true'
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/task.yml" 'requires_architecture_evidence: false'
+assert_contains "$repo_root/examples/universal-minimal-repo/.agent/task.yml" 'requires_sandbox_verification: false'
 assert_not_contains "$repo_root/examples/universal-minimal-repo/.agent/task.yml" 'requires_handoff_update'
 assert_contains "$repo_root/templates/.agent/architecture.yml" 'status: not_reviewed'
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/architecture.yml" 'status: not_reviewed'
@@ -50,7 +71,22 @@ assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" '    - doc-links'
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" '    - git-status'
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" '    - harness-config'
+assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 'sandbox:'
+assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 'enabled: false'
+assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 'runner: docker'
+assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 'mode: verification'
+assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 'command: "bash scripts/agent-finish.sh --strict"'
+assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 'network: "disabled"'
+assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 'timeout_seconds: 600'
 assert_exists "$repo_root/examples/universal-minimal-repo/scripts/agent-audit.sh"
+assert_exists "$repo_root/examples/universal-minimal-repo/scripts/agent-sandbox-run.sh"
+assert_exists "$repo_root/examples/universal-minimal-repo/scripts/check-sandbox-evidence.sh"
+assert_files_match \
+  "$repo_root/templates/scripts/agent-sandbox-run.sh" \
+  "$repo_root/examples/universal-minimal-repo/scripts/agent-sandbox-run.sh"
+assert_files_match \
+  "$repo_root/templates/scripts/check-sandbox-evidence.sh" \
+  "$repo_root/examples/universal-minimal-repo/scripts/check-sandbox-evidence.sh"
 
 assert_contains "$repo_root/examples/universal-minimal-repo/AGENTS.md" 'Read `.agent/task.yml` for scope'
 assert_contains "$repo_root/examples/universal-minimal-repo/AGENTS.md" 'applicable `.agent/policy.yml`'

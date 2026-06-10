@@ -101,7 +101,9 @@ for required_path in \
   examples/universal-minimal-repo/.agent/harness.yml \
   examples/universal-minimal-repo/.agent/policy.yml \
   examples/universal-minimal-repo/.agent/task.yml \
-  examples/universal-minimal-repo/.agent/architecture.yml
+  examples/universal-minimal-repo/.agent/architecture.yml \
+  examples/universal-minimal-repo/scripts/agent-sandbox-run.sh \
+  examples/universal-minimal-repo/scripts/check-sandbox-evidence.sh
 do
   assert_exists "$repo_root/$required_path"
 done
