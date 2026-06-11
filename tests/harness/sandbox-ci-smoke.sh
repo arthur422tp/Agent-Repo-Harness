@@ -22,6 +22,38 @@ mkdir -p "$sandbox_ci_skip_root/bin"
 pass "sandbox CI smoke skips when no runner is available"
 
 echo
+echo "== Sandbox CI smoke skips when runner daemon is unavailable =="
+sandbox_ci_daemon_skip_root="$tmp_root/sandbox-ci-daemon-skip"
+rm -rf "$sandbox_ci_daemon_skip_root"
+mkdir -p "$sandbox_ci_daemon_skip_root/bin"
+(
+  cd "$sandbox_ci_daemon_skip_root"
+  cat > bin/docker <<'SH'
+#!/usr/bin/env bash
+if [ "${1:-}" = "info" ]; then
+  printf '%s\n' "fake docker daemon unavailable" >&2
+  exit 1
+fi
+printf '%s\n' "fake docker should not run" >&2
+exit 1
+SH
+  chmod +x bin/docker
+
+  if PATH="$PWD/bin:$PATH" \
+    bash "$repo_root/ci/sandbox-smoke.sh" > sandbox-ci-daemon-skip.log 2>&1
+  then
+    assert_contains sandbox-ci-daemon-skip.log "SANDBOX_CI_SMOKE_RESULT=skip"
+    assert_contains sandbox-ci-daemon-skip.log "Docker or Podman is unavailable."
+    assert_not_contains sandbox-ci-daemon-skip.log "fake docker should not run"
+  else
+    echo "ERROR: expected unavailable runner daemon to skip without failing"
+    cat sandbox-ci-daemon-skip.log
+    exit 1
+  fi
+)
+pass "sandbox CI smoke skips when runner daemon is unavailable"
+
+echo
 echo "== Sandbox CI smoke fake runner pass validates finish evidence =="
 sandbox_ci_pass_root="$tmp_root/sandbox-ci-pass"
 rm -rf "$sandbox_ci_pass_root"
@@ -46,6 +78,7 @@ SH
   assert_contains sandbox-ci-pass.log "Finish evidence run:"
 
   target_root="$(awk -F': ' '/Sandbox smoke target:/ { print $2 }' sandbox-ci-pass.log | tail -n 1)"
+  assert_contains "$target_root/fake-docker-args.txt" "bash -n scripts/*.sh"
   assert_exists "$target_root/.agent/sandbox-runs"
   assert_exists "$target_root/.agent/runs"
   sandbox_summary="$(find "$target_root/.agent/sandbox-runs" -type f -name sandbox-summary.json | sort | tail -n 1)"

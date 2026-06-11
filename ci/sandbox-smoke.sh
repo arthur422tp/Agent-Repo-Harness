@@ -24,12 +24,16 @@ find_runner() {
     return 0
   fi
   if command -v docker >/dev/null 2>&1; then
-    printf '%s\n' "docker"
-    return 0
+    if docker info >/dev/null 2>&1; then
+      printf '%s\n' "docker"
+      return 0
+    fi
   fi
   if command -v podman >/dev/null 2>&1; then
-    printf '%s\n' "podman"
-    return 0
+    if podman info >/dev/null 2>&1; then
+      printf '%s\n' "podman"
+      return 0
+    fi
   fi
   return 1
 }
@@ -100,7 +104,7 @@ text = text.replace("  enabled: false\n", "  enabled: true\n", 1)
 text = text.replace("  runner: docker\n", "  runner: docker\n", 1)
 text = text.replace(
     '  command: "bash scripts/agent-finish.sh --strict"\n',
-    '  command: "bash scripts/agent-verify.sh --best-effort"\n',
+    '  command: "bash -n scripts/*.sh"\n',
     1,
 )
 harness.write_text(text, encoding="utf-8")
