@@ -38,6 +38,16 @@ printf '%s\n' "fake docker should not run" >&2
 exit 1
 SH
   chmod +x bin/docker
+  cat > bin/podman <<'SH'
+#!/usr/bin/env bash
+if [ "${1:-}" = "info" ]; then
+  printf '%s\n' "fake podman daemon unavailable" >&2
+  exit 1
+fi
+printf '%s\n' "fake podman should not run" >&2
+exit 1
+SH
+  chmod +x bin/podman
 
   if PATH="$PWD/bin:$PATH" \
     bash "$repo_root/ci/sandbox-smoke.sh" > sandbox-ci-daemon-skip.log 2>&1
@@ -45,6 +55,7 @@ SH
     assert_contains sandbox-ci-daemon-skip.log "SANDBOX_CI_SMOKE_RESULT=skip"
     assert_contains sandbox-ci-daemon-skip.log "Docker or Podman is unavailable."
     assert_not_contains sandbox-ci-daemon-skip.log "fake docker should not run"
+    assert_not_contains sandbox-ci-daemon-skip.log "fake podman should not run"
   else
     echo "ERROR: expected unavailable runner daemon to skip without failing"
     cat sandbox-ci-daemon-skip.log
