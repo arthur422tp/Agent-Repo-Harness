@@ -10,6 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: bash validate-harness.sh
+      - name: Sandbox smoke
+        run: bash ci/sandbox-smoke.sh
       - name: Verify universal adapter files are tracked
         run: |
           test -f templates/AGENTS.md

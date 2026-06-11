@@ -377,8 +377,10 @@ git commit -m "test: add sandbox CI smoke command"
 **Files:**
 - Modify: `.github/workflows/ci.yml`
 - Modify: `tests/harness/doc-consistency.sh`
+- Modify: `docs/public-packaging.md`
+- Modify: `docs/superpowers/plans/2026-06-11-v0-1-0-release-sandbox-smoke-readiness.md`
 
-- [ ] **Step 1: Add failing doc consistency assertions for CI smoke**
+- [x] **Step 1: Add failing doc consistency assertions for CI smoke**
 
 In `tests/harness/doc-consistency.sh`, add these assertions near the existing
 release documentation assertions:
@@ -390,7 +392,7 @@ assert_contains "$repo_root/.github/workflows/ci.yml" "Sandbox smoke"
 assert_contains "$repo_root/docs/public-packaging.md" "Sandbox smoke"
 ```
 
-- [ ] **Step 2: Run validation to verify CI workflow is not wired yet**
+- [x] **Step 2: Run validation to verify CI workflow is not wired yet**
 
 Run:
 
@@ -401,7 +403,7 @@ bash validate-harness.sh
 Expected: FAIL because `.github/workflows/ci.yml` does not yet run
 `bash ci/sandbox-smoke.sh`.
 
-- [ ] **Step 3: Add the CI smoke step**
+- [x] **Step 3: Add the CI smoke step**
 
 Modify `.github/workflows/ci.yml` so the `validate` job includes this step
 after `bash validate-harness.sh`:
@@ -443,7 +445,7 @@ jobs:
           test -f schemas/handoff.schema.json
 ```
 
-- [ ] **Step 4: Run validation**
+- [x] **Step 4: Run validation**
 
 Run:
 
@@ -453,10 +455,10 @@ bash validate-harness.sh
 
 Expected: PASS, including the new CI workflow assertions.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
-git add .github/workflows/ci.yml tests/harness/doc-consistency.sh
+git add .github/workflows/ci.yml tests/harness/doc-consistency.sh docs/public-packaging.md docs/superpowers/plans/2026-06-11-v0-1-0-release-sandbox-smoke-readiness.md
 git commit -m "ci: run sandbox smoke in validation workflow"
 ```
 

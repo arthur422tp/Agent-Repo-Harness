@@ -28,6 +28,7 @@ Repo-local completion gate for AI coding agents.
 - [ ] `install-agent-harness.sh` prints the short 3-step next path.
 - [ ] The default TDD evidence is opt-in.
 - [ ] `bash validate-harness.sh` passes locally.
+- [ ] Sandbox smoke is wired into CI.
 - [ ] GitHub release notes are copied or summarized from `CHANGELOG.md`.
 
 ## Before Publishing
