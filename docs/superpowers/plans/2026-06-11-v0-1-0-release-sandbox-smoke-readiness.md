@@ -44,7 +44,7 @@ Modify:
 - Create: `tests/harness/sandbox-ci-smoke.sh`
 - Modify: `validate-harness.sh`
 
-- [ ] **Step 1: Write failing validation tests for the smoke command**
+- [x] **Step 1: Write failing validation tests for the smoke command**
 
 Create `tests/harness/sandbox-ci-smoke.sh`:
 
@@ -136,7 +136,7 @@ SH
 pass "sandbox CI smoke fake runner failure is blocking"
 ```
 
-- [ ] **Step 2: Source the new failing suite**
+- [x] **Step 2: Source the new failing suite**
 
 In `validate-harness.sh`, add this line immediately after
 `tests/harness/sandbox-runner.sh`:
@@ -145,7 +145,7 @@ In `validate-harness.sh`, add this line immediately after
 source "$repo_root/tests/harness/sandbox-ci-smoke.sh"
 ```
 
-- [ ] **Step 3: Run validation to verify the command is missing**
+- [x] **Step 3: Run validation to verify the command is missing**
 
 Run:
 
@@ -161,7 +161,7 @@ Expected: FAIL in `Sandbox CI smoke skips when no runner is available` because
 **Files:**
 - Create: `ci/sandbox-smoke.sh`
 
-- [ ] **Step 1: Add the standalone smoke command**
+- [x] **Step 1: Add the standalone smoke command**
 
 Create `ci/sandbox-smoke.sh`:
 
@@ -343,7 +343,7 @@ PY
 )
 ```
 
-- [ ] **Step 2: Make the smoke command executable**
+- [x] **Step 2: Make the smoke command executable**
 
 Run:
 
@@ -351,7 +351,7 @@ Run:
 chmod +x ci/sandbox-smoke.sh
 ```
 
-- [ ] **Step 3: Run the targeted smoke tests**
+- [x] **Step 3: Run the targeted smoke tests**
 
 Run:
 
@@ -365,7 +365,7 @@ Expected: PASS for:
 - `Sandbox CI smoke fake runner pass validates finish evidence`
 - `Sandbox CI smoke fake runner failure is blocking`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add ci/sandbox-smoke.sh tests/harness/sandbox-ci-smoke.sh validate-harness.sh
