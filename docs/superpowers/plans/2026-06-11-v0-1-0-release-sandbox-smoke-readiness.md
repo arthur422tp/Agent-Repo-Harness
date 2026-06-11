@@ -469,8 +469,10 @@ git commit -m "ci: run sandbox smoke in validation workflow"
 - Modify: `CHANGELOG.md`
 - Modify: `README.md`
 - Modify: `tests/harness/doc-consistency.sh`
+- Modify: `tests/harness/lib.sh`
+- Modify: `docs/superpowers/plans/2026-06-11-v0-1-0-release-sandbox-smoke-readiness.md`
 
-- [ ] **Step 1: Add failing release-readiness assertions**
+- [x] **Step 1: Add failing release-readiness assertions**
 
 In `tests/harness/doc-consistency.sh`, add assertions near the existing public
 packaging checks:
@@ -487,7 +489,7 @@ assert_contains "$repo_root/CHANGELOG.md" "Sandbox smoke readiness"
 assert_contains "$repo_root/README.md" "SANDBOX_CI_SMOKE_RESULT"
 ```
 
-- [ ] **Step 2: Run validation to verify docs are not updated yet**
+- [x] **Step 2: Run validation to verify docs are not updated yet**
 
 Run:
 
@@ -497,7 +499,7 @@ bash validate-harness.sh
 
 Expected: FAIL on the new public packaging or README assertions.
 
-- [ ] **Step 3: Update the release checklist**
+- [x] **Step 3: Update the release checklist**
 
 In `docs/public-packaging.md`, replace the current v0.1.0 checklist block with:
 
@@ -519,7 +521,7 @@ In `docs/public-packaging.md`, replace the current v0.1.0 checklist block with:
 Keep `Before Publishing` unchanged unless the publishing action has actually
 been completed.
 
-- [ ] **Step 4: Update CHANGELOG release notes**
+- [x] **Step 4: Update CHANGELOG release notes**
 
 In `CHANGELOG.md`, keep `## Unreleased` present but empty except for a short
 sentence, and move current unreleased bullets into the `v0.1.0` highlights.
@@ -558,7 +560,7 @@ Notes:
 - sandbox verification depends on an external Docker or Podman runner
 ```
 
-- [ ] **Step 5: Update README sandbox smoke wording**
+- [x] **Step 5: Update README sandbox smoke wording**
 
 In `README.md`, add this paragraph under `## Sandbox Verification`, after the
 paragraph that says the finish gate validates sandbox evidence:
@@ -571,7 +573,7 @@ A skip means no compatible external runner was available; a runner execution or
 evidence failure is treated as a failure.
 ```
 
-- [ ] **Step 6: Run docs validation**
+- [x] **Step 6: Run docs validation**
 
 Run:
 
@@ -581,10 +583,10 @@ bash validate-harness.sh
 
 Expected: PASS for doc consistency and doc links.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
-git add docs/public-packaging.md CHANGELOG.md README.md tests/harness/doc-consistency.sh
+git add docs/public-packaging.md CHANGELOG.md README.md tests/harness/doc-consistency.sh tests/harness/lib.sh docs/superpowers/plans/2026-06-11-v0-1-0-release-sandbox-smoke-readiness.md
 git commit -m "docs: mark v0.1 release readiness evidence"
 ```
 

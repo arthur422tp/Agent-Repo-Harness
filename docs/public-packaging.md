@@ -20,16 +20,16 @@ Repo-local completion gate for AI coding agents.
 
 ## v0.1.0 release checklist
 
-- [ ] CI is passing.
-- [ ] `VERSION` is `0.1.0`.
-- [ ] `CHANGELOG.md` has a `v0.1.0` entry.
-- [ ] `README.md` has a CI badge, Quick Start, What It Is Not, Platform Support, Verification Strategy, Evidence vs Handoff, and Guardrails section.
-- [ ] `docs/handoff.md` explains `.agent/runs/<timestamp>/`, `handoff.md`, and optional `.agent/handoff.yml`.
-- [ ] `install-agent-harness.sh` prints the short 3-step next path.
-- [ ] The default TDD evidence is opt-in.
-- [ ] `bash validate-harness.sh` passes locally.
-- [ ] Sandbox smoke is wired into CI.
-- [ ] GitHub release notes are copied or summarized from `CHANGELOG.md`.
+- [ ] CI is passing on the published default branch.
+- [x] `VERSION` is `0.1.0`.
+- [x] `CHANGELOG.md` has a `v0.1.0` entry.
+- [x] `README.md` has a CI badge, Quick Start, What It Is Not, Platform Support, Verification Strategy, Evidence vs Handoff, and Guardrails section.
+- [x] `docs/handoff.md` explains `.agent/runs/<timestamp>/`, `handoff.md`, and optional `.agent/handoff.yml`.
+- [x] `install-agent-harness.sh` prints the short 3-step next path.
+- [x] The default TDD evidence is opt-in.
+- [x] `bash validate-harness.sh` passes locally.
+- [x] Sandbox smoke is wired into CI and reports `SANDBOX_CI_SMOKE_RESULT=pass|skip|fail`.
+- [x] GitHub release notes are copied or summarized from `CHANGELOG.md`.
 
 ## Before Publishing
 

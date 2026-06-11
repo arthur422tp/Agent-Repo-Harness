@@ -251,6 +251,12 @@ The finish gate validates sandbox evidence; it does not create a nested sandbox
 run by default. This keeps sandbox verification aligned with Superpowers
 `verification-before-completion` instead of replacing the Superpowers workflow.
 
+CI and release smoke checks use `ci/sandbox-smoke.sh`. The command installs the
+harness into a temporary target, runs sandbox verification when Docker or Podman
+is available, and prints `SANDBOX_CI_SMOKE_RESULT=pass`, `skip`, or `fail`.
+A skip means no compatible external runner was available; a runner execution or
+evidence failure is treated as a failure.
+
 ## Architecture Evidence
 
 For changes where tests are not enough to prove design quality, set

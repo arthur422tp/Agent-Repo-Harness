@@ -28,6 +28,15 @@ assert_exists "$repo_root/ci/sandbox-smoke.sh"
 assert_contains "$repo_root/.github/workflows/ci.yml" "bash ci/sandbox-smoke.sh"
 assert_contains "$repo_root/.github/workflows/ci.yml" "Sandbox smoke"
 assert_contains "$repo_root/docs/public-packaging.md" "Sandbox smoke"
+assert_contains "$repo_root/docs/public-packaging.md" '- [x] `VERSION` is `0.1.0`.'
+assert_contains "$repo_root/docs/public-packaging.md" '- [x] `CHANGELOG.md` has a `v0.1.0` entry.'
+assert_contains "$repo_root/docs/public-packaging.md" '- [x] `README.md` has a CI badge'
+assert_contains "$repo_root/docs/public-packaging.md" '- [x] `install-agent-harness.sh` prints the short 3-step next path.'
+assert_contains "$repo_root/docs/public-packaging.md" "- [x] Sandbox smoke is wired into CI"
+assert_contains "$repo_root/docs/public-packaging.md" "- [ ] Set the GitHub description."
+assert_contains "$repo_root/docs/public-packaging.md" '- [ ] Create the GitHub release tag `v0.1.0`.'
+assert_contains "$repo_root/CHANGELOG.md" "Sandbox smoke readiness"
+assert_contains "$repo_root/README.md" "SANDBOX_CI_SMOKE_RESULT"
 pass "release version documentation is present and referenced"
 
 assert_contains "$repo_root/README.md" "## Context Loading Policy"

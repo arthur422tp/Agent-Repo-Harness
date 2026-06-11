@@ -57,7 +57,7 @@ assert_contains() {
   local file="$1"
   local expected="$2"
 
-  if ! grep -Fq "$expected" "$file"; then
+  if ! grep -Fq -- "$expected" "$file"; then
     echo "ERROR: expected output to contain: $expected"
     echo "File: $file"
     exit 1
@@ -68,7 +68,7 @@ assert_not_contains() {
   local file="$1"
   local unexpected="$2"
 
-  if grep -Fq "$unexpected" "$file"; then
+  if grep -Fq -- "$unexpected" "$file"; then
     echo "ERROR: expected output not to contain: $unexpected"
     echo "File: $file"
     exit 1

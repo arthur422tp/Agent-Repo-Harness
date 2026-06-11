@@ -2,14 +2,7 @@
 
 ## Unreleased
 
-- Add optional sandbox verification envelope configuration and task flag.
-- Add sandbox verification runner evidence under `.agent/sandbox-runs/<timestamp>/`.
-- Add optional sandbox evidence gate to `scripts/agent-finish.sh`.
-- Document the sandbox/Superpowers responsibility split and runtime boundary.
-- Add optional episode package metadata and generated `episode-summary.json`.
-- Add optional failure attribution and intervention evidence gates.
-- Add `scripts/agent-audit.sh` for local entropy audit reports.
-- Document H3-style harness workflows while preserving the repo-local runtime boundary.
+No unreleased changes.
 
 ## v0.1.0 - Initial public baseline
 
@@ -22,9 +15,12 @@ Highlights:
 - `scripts/agent-finish.sh` completion gate
 - scope and policy checks
 - repo-defined verification via `.agent/harness.yml`
-- opt-in TDD, acceptance, review, and subagent evidence gates
+- opt-in TDD, acceptance, review, architecture, subagent, failure attribution, intervention, and sandbox evidence gates
 - durable `.agent/runs/<timestamp>/` finish evidence
-- machine-readable finish evidence, local resource-envelope controls, architecture evidence, and runtime-boundary documentation
+- machine-readable `finish-summary.json` and `episode-summary.json`
+- local resource-envelope controls and entropy audit reports
+- external sandbox verification envelope with `.agent/sandbox-runs/<timestamp>/` evidence
+- Sandbox smoke readiness through `ci/sandbox-smoke.sh` and GitHub Actions
 - Codex and Claude Code adapters
 - GitHub Actions CI running `bash validate-harness.sh`
 
@@ -33,3 +29,4 @@ Notes:
 - not a runtime
 - not a sandbox
 - not a semantic correctness guarantee
+- sandbox verification depends on an external Docker or Podman runner
