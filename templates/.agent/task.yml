@@ -31,6 +31,9 @@ task:
     requires_failure_attribution: false
     requires_intervention_record: false
     requires_sandbox_verification: false
+    requires_command_ledger: false
+    # Set true when important local commands must be recorded through
+    # scripts/agent-run.sh and validated before finish.
     # Set true when tests are insufficient to prove design quality and
     # .agent/architecture.yml must record reviewer-backed invariants.
     requires_subagent_evidence: false

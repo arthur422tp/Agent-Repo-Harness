@@ -159,6 +159,7 @@ check_task_types() {
     requires_failure_attribution \
     requires_intervention_record \
     requires_sandbox_verification \
+    requires_command_ledger \
     requires_subagent_evidence
   do
     check_optional_boolean "task.completion.$flag"

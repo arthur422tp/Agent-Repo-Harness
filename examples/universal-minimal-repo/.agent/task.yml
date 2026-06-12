@@ -18,6 +18,7 @@ task:
     expects_handoff_update: true
     requires_architecture_evidence: false
     requires_sandbox_verification: false
+    requires_command_ledger: false
 
 last_verified:
   command: ""

@@ -162,3 +162,56 @@ mkdir -p "$sandbox_task_bad_root/.agent" "$sandbox_task_bad_root/scripts/lib"
   assert_contains task-sandbox-bad.log "TASK_VALIDATION_RESULT=fail"
 )
 pass "task validation sandbox flag type failure"
+
+echo
+echo "== Task validation command ledger flag behavior =="
+command_ledger_task_root="$tmp_root/task-command-ledger-flag"
+rm -rf "$command_ledger_task_root"
+mkdir -p "$command_ledger_task_root/.agent" "$command_ledger_task_root/scripts/lib"
+(
+  cd "$command_ledger_task_root"
+  cp "$repo_root/templates/scripts/validate-task.sh" scripts/validate-task.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  chmod +x scripts/*.sh
+  printf '%s\n' \
+    'task:' \
+    '  status: "not_started"' \
+    '  goal: "Validate command ledger task flag."' \
+    '  allowed_paths: []' \
+    '  forbidden_paths: []' \
+    '  completion:' \
+    '    requires_command_ledger: true' \
+    > .agent/task.yml
+  bash scripts/validate-task.sh > task-command-ledger.log 2>&1
+  assert_contains task-command-ledger.log "task.completion.requires_command_ledger is boolean"
+  assert_contains task-command-ledger.log "TASK_VALIDATION_RESULT=pass"
+)
+pass "task validation command ledger flag behavior"
+
+echo
+echo "== Task validation command ledger flag type failure =="
+command_ledger_task_bad_root="$tmp_root/task-command-ledger-flag-bad"
+rm -rf "$command_ledger_task_bad_root"
+mkdir -p "$command_ledger_task_bad_root/.agent" "$command_ledger_task_bad_root/scripts/lib"
+(
+  cd "$command_ledger_task_bad_root"
+  cp "$repo_root/templates/scripts/validate-task.sh" scripts/validate-task.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  chmod +x scripts/*.sh
+  printf '%s\n' \
+    'task:' \
+    '  status: "not_started"' \
+    '  goal: "Validate command ledger task flag failure."' \
+    '  allowed_paths: []' \
+    '  forbidden_paths: []' \
+    '  completion:' \
+    '    requires_command_ledger: "yes"' \
+    > .agent/task.yml
+  if bash scripts/validate-task.sh > task-command-ledger-bad.log 2>&1; then
+    echo "ERROR: expected command ledger flag type failure"
+    exit 1
+  fi
+  assert_contains task-command-ledger-bad.log "task.completion.requires_command_ledger must be boolean"
+  assert_contains task-command-ledger-bad.log "TASK_VALIDATION_RESULT=fail"
+)
+pass "task validation command ledger flag type failure"

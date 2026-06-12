@@ -249,6 +249,9 @@ assert_contains "$target_root/.agent/harness.yml" "enabled: false"
 assert_contains "$target_root/.agent/task.yml" "requires_sandbox_verification: false"
 pass "installed default sandbox verification gate is opt-in"
 
+assert_contains "$target_root/.agent/task.yml" "requires_command_ledger: false"
+pass "installed default command ledger gate is opt-in"
+
 assert_not_exists "$target_root/adapters/hooks/README.md"
 assert_not_exists "$target_root/adapters/hooks/git/pre-commit"
 assert_not_exists "$target_root/adapters/hooks/git/pre-push"
