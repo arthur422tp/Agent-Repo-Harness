@@ -596,7 +596,7 @@ git commit -m "docs: mark v0.1 release readiness evidence"
 - Modify: `handoff.md`
 - Modify: `docs/superpowers/plans/2026-06-11-v0-1-0-release-sandbox-smoke-readiness.md`
 
-- [ ] **Step 1: Run full validation**
+- [x] **Step 1: Run full validation**
 
 Run:
 
@@ -606,7 +606,7 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 2: Run source checkout audit**
+- [x] **Step 2: Run source checkout audit**
 
 Run:
 
@@ -616,7 +616,7 @@ bash templates/scripts/agent-audit.sh
 
 Expected: `AGENT_AUDIT_RESULT=pass`.
 
-- [ ] **Step 3: Run sandbox smoke**
+- [x] **Step 3: Run sandbox smoke**
 
 Run:
 
@@ -633,7 +633,7 @@ Unexpected:
 
 - `SANDBOX_CI_SMOKE_RESULT=fail` must be fixed before completing the plan.
 
-- [ ] **Step 4: Update handoff**
+- [x] **Step 4: Update handoff**
 
 Add a concise current-state entry to `handoff.md`:
 
@@ -664,12 +664,12 @@ the external publishing checklist in `docs/public-packaging.md`.
 
 Replace the result labels and evidence paths with the actual command output.
 
-- [ ] **Step 5: Mark this plan complete**
+- [x] **Step 5: Mark this plan complete**
 
 In this plan file, mark completed steps with `[x]` only after the commands above
 have run and the handoff reflects the actual results.
 
-- [ ] **Step 6: Inspect final status**
+- [x] **Step 6: Inspect final status**
 
 Run:
 
@@ -680,7 +680,7 @@ git status --short
 Expected: only intended tracked changes plus expected untracked `.agent/`
 runtime evidence.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add handoff.md docs/superpowers/plans/2026-06-11-v0-1-0-release-sandbox-smoke-readiness.md

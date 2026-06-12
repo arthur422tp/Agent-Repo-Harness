@@ -1,38 +1,30 @@
 # handoff.md
 
 ## Current Task
-Finalize Task 6 from the sandbox verification envelope plan: final verification
-and handoff.
+Finalize Task 5 from the v0.1.0 release and sandbox smoke readiness plan:
+final verification and handoff.
 
 ## Current State
-Implemented the sandbox verification envelope: disabled-by-default sandbox
-configuration, sandbox runner evidence, sandbox evidence finish gate, tests,
-and Superpowers-aligned documentation.
+v0.1.0 release readiness has been tightened: repository-verifiable public
+packaging checklist items are marked complete, CI runs the normal harness
+validation plus sandbox smoke, and sandbox smoke reports explicit pass, skip,
+or fail evidence.
 
 ## Changed Files
-- `CHANGELOG.md`
-- `docs/superpowers/plans/2026-06-06-sandbox-verification-envelope.md`
 - `handoff.md`
+- `docs/superpowers/plans/2026-06-11-v0-1-0-release-sandbox-smoke-readiness.md`
 
 ## Verification
 - `bash validate-harness.sh`: PASS
 - `bash templates/scripts/agent-audit.sh`: PASS
-- `bash scripts/agent-finish.sh --best-effort`: PASS in installed target `/private/tmp/agent-harness-sandbox-task6-target`
+- `bash ci/sandbox-smoke.sh`: SKIP because Docker or Podman is unavailable
 
 ## Evidence
 
-- Latest audit run: `.agent/audits/20260610-133822/`
-- Latest installed finish run: `/private/tmp/agent-harness-sandbox-task6-target/.agent/runs/20260610-132724/`
-- Source-checkout finish command: `bash scripts/agent-finish.sh --best-effort` failed because root-level `scripts/agent-finish.sh` is not present in the template source checkout.
-
-## Notes
-
-The source checkout stores installable scripts under `templates/scripts/`.
-`scripts/agent-finish.sh` exists after running `install-agent-harness.sh` into a
-target repository, so final finish verification was run in the installed target
-above.
+- Latest audit run: `.agent/audits/20260612-160245/`
+- Latest sandbox smoke target: none; `bash ci/sandbox-smoke.sh` skipped before
+  creating an installed target because Docker or Podman is unavailable.
 
 ## Next Action
-Review sandbox verification behavior in a repository with Docker or Podman
-installed, then decide whether to enable `requires_sandbox_verification` for
-high-risk tasks.
+Run the GitHub Actions workflow on the published default branch and complete
+the external publishing checklist in `docs/public-packaging.md`.
