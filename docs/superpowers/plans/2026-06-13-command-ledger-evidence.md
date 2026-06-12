@@ -58,7 +58,7 @@ Modify:
 - Modify: `tests/harness/template-sync.sh`
 - Modify: `examples/universal-minimal-repo/.agent/task.yml`
 
-- [ ] **Step 1: Add failing task-validation tests**
+- [x] **Step 1: Add failing task-validation tests**
 
 Append these cases to `tests/harness/task-validation.sh` after the sandbox flag
 tests:
@@ -118,7 +118,7 @@ mkdir -p "$command_ledger_task_bad_root/.agent" "$command_ledger_task_bad_root/s
 pass "task validation command ledger flag type failure"
 ```
 
-- [ ] **Step 2: Run validation to verify the new flag is not implemented**
+- [x] **Step 2: Run validation to verify the new flag is not implemented**
 
 Run:
 
@@ -129,7 +129,7 @@ bash validate-harness.sh
 Expected: FAIL in `Task validation command ledger flag behavior` because
 `validate-task.sh` does not yet validate the new flag.
 
-- [ ] **Step 3: Add the task flag to templates and schema**
+- [x] **Step 3: Add the task flag to templates and schema**
 
 In `templates/.agent/task.yml`, add the flag near the other completion gates:
 
@@ -152,7 +152,7 @@ In `schemas/task.schema.json`, add this property under
 "requires_command_ledger": { "type": "boolean" },
 ```
 
-- [ ] **Step 4: Validate the flag in `validate-task.sh`**
+- [x] **Step 4: Validate the flag in `validate-task.sh`**
 
 In `templates/scripts/validate-task.sh`, add the new flag to the `for flag in`
 list:
@@ -161,7 +161,7 @@ list:
     requires_command_ledger \
 ```
 
-- [ ] **Step 5: Add install and template sync assertions**
+- [x] **Step 5: Add install and template sync assertions**
 
 In `tests/harness/static-install.sh`, add after the sandbox opt-in assertion:
 
@@ -177,7 +177,7 @@ assert_contains "$repo_root/templates/.agent/task.yml" 'requires_command_ledger:
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/task.yml" 'requires_command_ledger: false'
 ```
 
-- [ ] **Step 6: Run validation**
+- [x] **Step 6: Run validation**
 
 Run:
 
@@ -187,7 +187,7 @@ bash validate-harness.sh
 
 Expected: PASS for the new task validation cases and install/template assertions.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add templates/.agent/task.yml examples/universal-minimal-repo/.agent/task.yml schemas/task.schema.json templates/scripts/validate-task.sh tests/harness/task-validation.sh tests/harness/static-install.sh tests/harness/template-sync.sh
