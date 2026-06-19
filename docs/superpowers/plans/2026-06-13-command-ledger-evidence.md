@@ -921,7 +921,7 @@ git commit -m "feat: add command ledger evidence gate"
 - Modify: `tests/harness/finish-examples.sh`
 - Modify: `tests/harness/resource-envelope.sh`
 
-- [ ] **Step 1: Add failing finish evidence assertions**
+- [x] **Step 1: Add failing finish evidence assertions**
 
 In `tests/harness/lib.sh`, update `assert_run_evidence_files()` to include:
 
@@ -967,7 +967,7 @@ resource fixtures:
   cp "$repo_root/templates/scripts/check-command-ledger.sh" scripts/check-command-ledger.sh
 ```
 
-- [ ] **Step 2: Run validation to verify finish integration is missing**
+- [x] **Step 2: Run validation to verify finish integration is missing**
 
 Run:
 
@@ -978,7 +978,7 @@ bash validate-harness.sh
 Expected: FAIL because `agent-finish.sh` does not write
 `command-ledger-result.txt` yet.
 
-- [ ] **Step 3: Wire command ledger into `agent-finish.sh` state**
+- [x] **Step 3: Wire command ledger into `agent-finish.sh` state**
 
 In `templates/scripts/agent-finish.sh`, add variables near the other result
 files:
@@ -993,7 +993,7 @@ Add status variable near the other gate statuses:
 command_ledger_status=""
 ```
 
-- [ ] **Step 4: Add command ledger to Markdown summary**
+- [x] **Step 4: Add command ledger to Markdown summary**
 
 In `write_summary()`, add this row after `check-interventions` and before
 `check-sandbox-evidence`:
@@ -1002,7 +1002,7 @@ In `write_summary()`, add this row after `check-interventions` and before
     echo "| check-command-ledger | $command_ledger_status | $command_ledger_result_file |"
 ```
 
-- [ ] **Step 5: Add command ledger to JSON summary**
+- [x] **Step 5: Add command ledger to JSON summary**
 
 In `write_json_summary()`, add environment entries:
 
@@ -1021,7 +1021,7 @@ In the Python `gates` list, add after `check-interventions`:
         },
 ```
 
-- [ ] **Step 6: Run the command ledger gate in strict and best-effort modes**
+- [x] **Step 6: Run the command ledger gate in strict and best-effort modes**
 
 In both strict and best-effort gate sequences, add after
 `check-interventions` and before `check-sandbox-evidence`:
@@ -1031,7 +1031,7 @@ In both strict and best-effort gate sequences, add after
   command_ledger_status="$last_status"
 ```
 
-- [ ] **Step 7: Run validation**
+- [x] **Step 7: Run validation**
 
 Run:
 
@@ -1041,7 +1041,7 @@ bash validate-harness.sh
 
 Expected: PASS for finish evidence examples and resource-envelope scenarios.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add templates/scripts/agent-finish.sh tests/harness/lib.sh tests/harness/finish-examples.sh tests/harness/resource-envelope.sh
