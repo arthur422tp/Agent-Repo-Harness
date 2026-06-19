@@ -201,6 +201,16 @@ TDD 證據由每項任務自行選用。當 `.agent/task.yml` 包含
 `.agent/review.yml` 中填入核准狀態、reviewer、證據，且不得有阻擋性
 疑慮。
 
+## Command Ledger
+
+重要的本地驗證命令可透過已安裝的 command runner 明確記錄，例如
+`scripts/agent-run.sh -- npm test`。每次執行會在
+`.agent/command-runs/<timestamp>/` 寫入 summary、stdout、stderr、command、
+cwd 與 exit-status evidence，命令失敗時保留原本的 exit status。設定
+`completion.requires_command_ledger: true` 可要求 finish gate 驗證這些
+證據；這不是自動 command interception、provider trace 或完整 tool-call
+replay。
+
 ## Episode And Audit Evidence
 
 安裝後，`.agent/episode.yml` 可描述本地 episode 的 objective、actor、

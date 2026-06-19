@@ -33,6 +33,15 @@ scripts/agent-sandbox-run.sh
 Then run `scripts/agent-finish.sh`; the finish gate validates the sandbox
 evidence instead of creating the sandbox run itself.
 
+If `.agent/task.yml` sets `completion.requires_command_ledger: true`, record
+important local verification commands through:
+
+```bash
+scripts/agent-run.sh -- <command>
+```
+
+The finish gate validates the resulting command ledger evidence.
+
 `check-policy.sh` defaults to warn mode unless strict policy approval is
 required. `check-scope.sh` defaults to strict mode, but it only enforces
 limits configured in `.agent/task.yml`. `agent-verify.sh` defaults to strict

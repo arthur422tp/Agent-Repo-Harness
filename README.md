@@ -210,6 +210,25 @@ or verification. When it contains
 `completion.requires_review_evidence: true`, fill `.agent/review.yml` with an
 approving status, reviewer, evidence, and no blocking concerns.
 
+## Command Ledger
+
+Use the installed command runner for important local verification commands:
+
+```bash
+scripts/agent-run.sh -- npm test
+scripts/agent-run.sh -- bash scripts/agent-verify.sh --best-effort
+```
+
+Each invocation writes `.agent/command-runs/<timestamp>/command-summary.json`
+plus stdout, stderr, command, cwd, and exit-status evidence. The runner returns
+the wrapped command's original exit status when that command fails.
+
+Command ledger evidence is opt-in. Set
+`completion.requires_command_ledger: true` in `.agent/task.yml` to require
+existing command-run evidence at finish time. This is explicit evidence only
+for commands run through `agent-run`; it is not automatic command interception,
+provider-native trace capture, or full tool-call replay.
+
 ## Episode And Audit Evidence
 
 When installed, `.agent/episode.yml` can describe the local episode objective,

@@ -40,6 +40,7 @@ scripts/check-scope.sh
 scripts/check-tdd-evidence.sh
 scripts/check-failure-attribution.sh
 scripts/check-interventions.sh
+scripts/agent-run.sh
 scripts/agent-sandbox-run.sh
 scripts/agent-verify.sh
 scripts/agent-finish.sh
@@ -67,6 +68,13 @@ TDD evidence is required only when `.agent/task.yml` contains
 `completion.requires_tdd_evidence: true`. When enabled, agents should fill
 `.agent/tdd-evidence.yml` with the red command/failure, green command/pass, and
 the tests added or changed before running `scripts/agent-finish.sh`.
+
+Command ledger evidence is required only when `.agent/task.yml` contains
+`completion.requires_command_ledger: true`. When enabled, run important local
+verification commands through `scripts/agent-run.sh -- <command>` and preserve
+the resulting `.agent/command-runs/<timestamp>/` evidence. The finish gate
+validates existing Command ledger evidence; it does not intercept commands run
+outside the installed runner.
 
 Sandbox verification is required only when `.agent/task.yml` contains
 `completion.requires_sandbox_verification: true`. When enabled, agents should

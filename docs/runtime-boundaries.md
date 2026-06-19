@@ -17,6 +17,7 @@ contracts, gates, and evidence requirements before they claim completion.
   `.agent/task.yml` completion flags.
 - Local entropy audit reports through `scripts/agent-audit.sh`.
 - A local resource envelope for finish duration and changed-file count.
+- Explicit command ledger evidence for commands run through installed command runner.
 - Sandbox verification evidence from an external Docker or Podman runner when
   configured.
 

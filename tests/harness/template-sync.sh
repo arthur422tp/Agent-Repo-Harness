@@ -83,12 +83,20 @@ assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 
 assert_exists "$repo_root/examples/universal-minimal-repo/scripts/agent-audit.sh"
 assert_exists "$repo_root/examples/universal-minimal-repo/scripts/agent-sandbox-run.sh"
 assert_exists "$repo_root/examples/universal-minimal-repo/scripts/check-sandbox-evidence.sh"
+assert_exists "$repo_root/examples/universal-minimal-repo/scripts/agent-run.sh"
+assert_exists "$repo_root/examples/universal-minimal-repo/scripts/check-command-ledger.sh"
 assert_files_match \
   "$repo_root/templates/scripts/agent-sandbox-run.sh" \
   "$repo_root/examples/universal-minimal-repo/scripts/agent-sandbox-run.sh"
 assert_files_match \
   "$repo_root/templates/scripts/check-sandbox-evidence.sh" \
   "$repo_root/examples/universal-minimal-repo/scripts/check-sandbox-evidence.sh"
+assert_files_match \
+  "$repo_root/templates/scripts/agent-run.sh" \
+  "$repo_root/examples/universal-minimal-repo/scripts/agent-run.sh"
+assert_files_match \
+  "$repo_root/templates/scripts/check-command-ledger.sh" \
+  "$repo_root/examples/universal-minimal-repo/scripts/check-command-ledger.sh"
 
 assert_contains "$repo_root/examples/universal-minimal-repo/AGENTS.md" 'Read `.agent/task.yml` for scope'
 assert_contains "$repo_root/examples/universal-minimal-repo/AGENTS.md" 'applicable `.agent/policy.yml`'

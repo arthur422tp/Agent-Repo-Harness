@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-No unreleased changes.
+- Explicit command ledger evidence through the installed `agent-run.sh`
+  command runner and an opt-in `requires_command_ledger` completion gate.
 
 ## v0.1.0 - Initial public baseline
 

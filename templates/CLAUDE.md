@@ -46,6 +46,9 @@ state the exact blocker and update `handoff.md`.
 If `.agent/task.yml` requires sandbox verification, run the sandbox runner
 before final finish and preserve `.agent/sandbox-runs/<timestamp>/` evidence.
 
+If `.agent/task.yml` requires command ledger evidence, run important local
+verification commands through `scripts/agent-run.sh -- <command>`.
+
 Use `scripts/agent-audit.sh` for maintenance audits when needed; it does not
 replace `scripts/agent-finish.sh`.
 

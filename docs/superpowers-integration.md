@@ -19,6 +19,11 @@ Sandbox verification is an optional final verification envelope. It records
 evidence from a configured external runner without taking over Superpowers
 verification discipline.
 
+Command ledger evidence complements Superpowers
+`verification-before-completion` by recording important local verification
+commands run explicitly through `scripts/agent-run.sh`. It does not replace
+the skill's evidence discipline or capture commands outside that runner.
+
 | Concern | Superpowers skill | Agent-Repo-Harness component |
 |---|---|---|
 | Planning | `writing-plans` | `.agent/task.yml` |
@@ -29,6 +34,7 @@ verification discipline.
 | Spec review | `subagent-driven-development` / `requesting-code-review` | subagent packet role: `spec_reviewer` |
 | Quality review | `subagent-driven-development` / `requesting-code-review` | subagent packet role: `quality_reviewer` |
 | Verification | `verification-before-completion` | `scripts/agent-verify.sh` |
+| Command ledger | `verification-before-completion` | `scripts/agent-run.sh` + `.agent/command-runs/<timestamp>/` |
 | Isolated final verification | `verification-before-completion` | `scripts/agent-sandbox-run.sh` + `.agent/sandbox-runs/<timestamp>/` |
 | Completion | `finishing-a-development-branch` | `scripts/agent-finish.sh` + `.agent/runs/<timestamp>/finish-summary.md` |
 | Handoff | `finishing-a-development-branch` / handoff-update style workflow | `handoff.md` |

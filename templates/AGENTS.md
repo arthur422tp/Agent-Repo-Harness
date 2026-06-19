@@ -32,6 +32,8 @@ During the task:
   optional completion evidence when the current task requires them.
 - If `.agent/task.yml` requires sandbox verification, run the sandbox runner
   before final finish and preserve `.agent/sandbox-runs/<timestamp>/` evidence.
+- If `.agent/task.yml` requires command ledger evidence, run important local
+  verification commands through `scripts/agent-run.sh -- <command>`.
 - Use `scripts/agent-audit.sh` for maintenance audits when needed, but do not
   use it as a substitute for `scripts/agent-finish.sh`. See
   `docs/agent/entropy-audit.md`.
