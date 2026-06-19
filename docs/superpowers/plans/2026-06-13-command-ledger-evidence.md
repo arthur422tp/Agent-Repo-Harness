@@ -202,7 +202,7 @@ git commit -m "feat: add command ledger task contract"
 - Modify: `validate-harness.sh`
 - Modify: `tests/harness/static-install.sh`
 
-- [ ] **Step 1: Write failing command runner tests**
+- [x] **Step 1: Write failing command runner tests**
 
 Create `tests/harness/command-runner.sh`:
 
@@ -316,7 +316,7 @@ mkdir -p "$command_runner_usage_root/scripts"
 pass "command runner requires separator and command"
 ```
 
-- [ ] **Step 2: Source the failing suite**
+- [x] **Step 2: Source the failing suite**
 
 In `validate-harness.sh`, source the suite after `task-validation.sh`:
 
@@ -324,7 +324,7 @@ In `validate-harness.sh`, source the suite after `task-validation.sh`:
 source "$repo_root/tests/harness/command-runner.sh"
 ```
 
-- [ ] **Step 3: Run validation to verify the runner is missing**
+- [x] **Step 3: Run validation to verify the runner is missing**
 
 Run:
 
@@ -334,7 +334,7 @@ bash validate-harness.sh
 
 Expected: FAIL because `templates/scripts/agent-run.sh` does not exist.
 
-- [ ] **Step 4: Implement `agent-run.sh`**
+- [x] **Step 4: Implement `agent-run.sh`**
 
 Create `templates/scripts/agent-run.sh`:
 
@@ -484,12 +484,12 @@ echo "Command run directory: $run_dir"
 exit "$command_status"
 ```
 
-- [ ] **Step 5: Add install assertions**
+- [x] **Step 5: Add install assertions**
 
 In `tests/harness/static-install.sh`, add `scripts/agent-run.sh` to the
 installed required paths list.
 
-- [ ] **Step 6: Run validation**
+- [x] **Step 6: Run validation**
 
 Run:
 
@@ -499,7 +499,7 @@ bash validate-harness.sh
 
 Expected: PASS for command runner tests.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add templates/scripts/agent-run.sh tests/harness/command-runner.sh validate-harness.sh tests/harness/static-install.sh
