@@ -52,10 +52,22 @@ refresh_evidence_paths() {
 
 create_run_dir() {
   local base_run_dir="$run_dir"
+  local mkdir_status
   local suffix=0
 
   mkdir -p "$(dirname "$base_run_dir")"
-  while ! mkdir "$run_dir" 2>/dev/null; do
+  while true; do
+    if mkdir "$run_dir"; then
+      return 0
+    else
+      mkdir_status=$?
+    fi
+
+    if [ ! -e "$run_dir" ]; then
+      echo "ERROR: could not create command run directory: $run_dir" >&2
+      return "$mkdir_status"
+    fi
+
     suffix=$((suffix + 1))
     run_dir="$(printf '%s-%02d' "$base_run_dir" "$suffix")"
     refresh_evidence_paths
@@ -131,13 +143,27 @@ set -e
 printf '%s\n' "$command_status" > "$exit_status_file"
 
 if [ "$command_status" -eq 0 ]; then
-  write_summary "pass" "$command_status"
+  if ! write_summary "pass" "$command_status"; then
+    set +e
+    rm -f "$summary_json_file"
+    echo "ERROR: could not write command summary: $summary_json_file" >&2
+    echo "COMMAND_RUN_RESULT=fail"
+    echo "Command run directory: $run_dir"
+    exit 1
+  fi
   echo "COMMAND_RUN_RESULT=pass"
   echo "Command run directory: $run_dir"
   exit 0
 fi
 
-write_summary "fail" "$command_status"
+if ! write_summary "fail" "$command_status"; then
+  set +e
+  rm -f "$summary_json_file"
+  echo "ERROR: could not write command summary: $summary_json_file" >&2
+  echo "COMMAND_RUN_RESULT=fail"
+  echo "Command run directory: $run_dir"
+  exit "$command_status"
+fi
 echo "COMMAND_RUN_RESULT=fail"
 echo "Command run directory: $run_dir"
 exit "$command_status"

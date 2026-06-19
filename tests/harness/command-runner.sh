@@ -71,6 +71,43 @@ mkdir -p "$command_runner_collision_root/scripts" "$command_runner_collision_roo
 pass "command runner avoids same-second evidence overwrite"
 
 echo
+echo "== Command runner stops on non-collision mkdir failure =="
+command_runner_mkdir_fail_root="$tmp_root/command-runner-mkdir-fail"
+rm -rf "$command_runner_mkdir_fail_root"
+mkdir -p "$command_runner_mkdir_fail_root/scripts" "$command_runner_mkdir_fail_root/bin"
+(
+  cd "$command_runner_mkdir_fail_root"
+  cp "$repo_root/templates/scripts/agent-run.sh" scripts/agent-run.sh
+  chmod +x scripts/*.sh
+  cat > bin/mkdir <<'SH'
+#!/usr/bin/env bash
+count=0
+if [ -f mkdir-count ]; then
+  read -r count < mkdir-count
+fi
+count=$((count + 1))
+printf '%s\n' "$count" > mkdir-count
+if [ "$count" -eq 2 ]; then
+  echo "injected non-collision mkdir failure" >&2
+  exit 42
+fi
+exec /bin/mkdir "$@"
+SH
+  chmod +x bin/mkdir
+  set +e
+  PATH="$PWD/bin:$PATH" bash scripts/agent-run.sh -- true > command-mkdir-fail.log 2>&1
+  run_status=$?
+  set -e
+  if [ "$run_status" -eq 0 ]; then
+    echo "ERROR: expected non-collision mkdir failure"
+    exit 1
+  fi
+  assert_contains command-mkdir-fail.log "ERROR: could not create command run directory"
+  assert_contains mkdir-count "2"
+)
+pass "command runner stops on non-collision mkdir failure"
+
+echo
 echo "== Command runner summary does not leak environment values =="
 command_runner_env_root="$tmp_root/command-runner-env"
 rm -rf "$command_runner_env_root"
@@ -85,6 +122,61 @@ mkdir -p "$command_runner_env_root/scripts"
   assert_not_contains "$command_summary" "secret-value"
 )
 pass "command runner summary does not leak environment values"
+
+echo
+echo "== Command runner preserves wrapped failure when summary write fails =="
+command_runner_summary_fail_root="$tmp_root/command-runner-summary-fail"
+rm -rf "$command_runner_summary_fail_root"
+mkdir -p "$command_runner_summary_fail_root/scripts" "$command_runner_summary_fail_root/bin"
+(
+  cd "$command_runner_summary_fail_root"
+  cp "$repo_root/templates/scripts/agent-run.sh" scripts/agent-run.sh
+  chmod +x scripts/*.sh
+  cat > bin/python3 <<'SH'
+#!/usr/bin/env bash
+exit 42
+SH
+  chmod +x bin/python3
+  set +e
+  PATH="$PWD/bin:$PATH" bash scripts/agent-run.sh -- sh -c 'exit 7' > command-summary-fail.log 2>&1
+  run_status=$?
+  set -e
+  if [ "$run_status" -ne 7 ]; then
+    echo "ERROR: expected wrapped command status 7, got $run_status"
+    exit 1
+  fi
+  assert_contains command-summary-fail.log "ERROR: could not write command summary"
+  assert_contains command-summary-fail.log "COMMAND_RUN_RESULT=fail"
+)
+pass "command runner preserves wrapped failure when summary write fails"
+
+echo
+echo "== Command runner reports evidence failure when pass summary write fails =="
+command_runner_pass_summary_fail_root="$tmp_root/command-runner-pass-summary-fail"
+rm -rf "$command_runner_pass_summary_fail_root"
+mkdir -p "$command_runner_pass_summary_fail_root/scripts" "$command_runner_pass_summary_fail_root/bin"
+(
+  cd "$command_runner_pass_summary_fail_root"
+  cp "$repo_root/templates/scripts/agent-run.sh" scripts/agent-run.sh
+  chmod +x scripts/*.sh
+  cat > bin/python3 <<'SH'
+#!/usr/bin/env bash
+exit 42
+SH
+  chmod +x bin/python3
+  set +e
+  PATH="$PWD/bin:$PATH" bash scripts/agent-run.sh -- true > command-pass-summary-fail.log 2>&1
+  run_status=$?
+  set -e
+  if [ "$run_status" -eq 0 ]; then
+    echo "ERROR: expected evidence failure for missing pass summary"
+    exit 1
+  fi
+  assert_contains command-pass-summary-fail.log "ERROR: could not write command summary"
+  assert_contains command-pass-summary-fail.log "COMMAND_RUN_RESULT=fail"
+  assert_not_contains command-pass-summary-fail.log "COMMAND_RUN_RESULT=pass"
+)
+pass "command runner reports evidence failure when pass summary write fails"
 
 echo
 echo "== Command runner requires separator and command =="
