@@ -514,7 +514,7 @@ git commit -m "feat: add command ledger runner"
 - Modify: `validate-harness.sh`
 - Modify: `tests/harness/static-install.sh`
 
-- [ ] **Step 1: Write failing command ledger gate tests**
+- [x] **Step 1: Write failing command ledger gate tests**
 
 Create `tests/harness/command-ledger.sh`:
 
@@ -707,7 +707,7 @@ mkdir -p "$command_ledger_bad_task_root/.agent" "$command_ledger_bad_task_root/s
 pass "command ledger malformed task YAML failure"
 ```
 
-- [ ] **Step 2: Source the failing suite**
+- [x] **Step 2: Source the failing suite**
 
 In `validate-harness.sh`, source the suite after `command-runner.sh`:
 
@@ -715,7 +715,7 @@ In `validate-harness.sh`, source the suite after `command-runner.sh`:
 source "$repo_root/tests/harness/command-ledger.sh"
 ```
 
-- [ ] **Step 3: Run validation to verify the gate is missing**
+- [x] **Step 3: Run validation to verify the gate is missing**
 
 Run:
 
@@ -726,7 +726,7 @@ bash validate-harness.sh
 Expected: FAIL because `templates/scripts/check-command-ledger.sh` does not
 exist.
 
-- [ ] **Step 4: Implement `check-command-ledger.sh`**
+- [x] **Step 4: Implement `check-command-ledger.sh`**
 
 Create `templates/scripts/check-command-ledger.sh`:
 
@@ -891,12 +891,12 @@ set -e
 exit "$status"
 ```
 
-- [ ] **Step 5: Add install assertions**
+- [x] **Step 5: Add install assertions**
 
 In `tests/harness/static-install.sh`, add `scripts/check-command-ledger.sh` to
 the installed required paths list.
 
-- [ ] **Step 6: Run validation**
+- [x] **Step 6: Run validation**
 
 Run:
 
@@ -906,7 +906,7 @@ bash validate-harness.sh
 
 Expected: PASS for command ledger gate tests.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add templates/scripts/check-command-ledger.sh tests/harness/command-ledger.sh validate-harness.sh tests/harness/static-install.sh
