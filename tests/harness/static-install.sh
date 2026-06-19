@@ -60,6 +60,7 @@ for required_path in \
   templates/scripts/check-acceptance.sh \
   templates/scripts/check-review-evidence.sh \
   templates/scripts/check-architecture-evidence.sh \
+  templates/scripts/check-command-ledger.sh \
   templates/scripts/check-failure-attribution.sh \
   templates/scripts/check-interventions.sh \
   templates/scripts/check-sandbox-evidence.sh \
@@ -209,6 +210,7 @@ for required_path in \
   scripts/check-acceptance.sh \
   scripts/check-review-evidence.sh \
   scripts/check-architecture-evidence.sh \
+  scripts/check-command-ledger.sh \
   scripts/check-failure-attribution.sh \
   scripts/check-interventions.sh \
   scripts/check-sandbox-evidence.sh \
