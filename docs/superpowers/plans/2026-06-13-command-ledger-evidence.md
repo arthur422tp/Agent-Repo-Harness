@@ -1066,7 +1066,7 @@ git commit -m "feat: include command ledger in finish evidence"
 - Modify: `skills/verification-gate/SKILL.md`
 - Modify: `CHANGELOG.md`
 
-- [ ] **Step 1: Mirror copied example scripts**
+- [x] **Step 1: Mirror copied example scripts**
 
 Run:
 
@@ -1076,7 +1076,7 @@ cp templates/scripts/check-command-ledger.sh examples/universal-minimal-repo/scr
 chmod +x examples/universal-minimal-repo/scripts/agent-run.sh examples/universal-minimal-repo/scripts/check-command-ledger.sh
 ```
 
-- [ ] **Step 2: Add template sync assertions**
+- [x] **Step 2: Add template sync assertions**
 
 In `tests/harness/template-sync.sh`, add:
 
@@ -1091,7 +1091,7 @@ assert_files_match \
   "$repo_root/examples/universal-minimal-repo/scripts/check-command-ledger.sh"
 ```
 
-- [ ] **Step 3: Add failing doc consistency assertions**
+- [x] **Step 3: Add failing doc consistency assertions**
 
 In `tests/harness/doc-consistency.sh`, add:
 
@@ -1108,7 +1108,7 @@ assert_contains "$repo_root/templates/CLAUDE.md" "agent-run"
 assert_contains "$repo_root/skills/verification-gate/SKILL.md" "agent-run"
 ```
 
-- [ ] **Step 4: Run validation to verify docs are not updated yet**
+- [x] **Step 4: Run validation to verify docs are not updated yet**
 
 Run:
 
@@ -1118,7 +1118,7 @@ bash validate-harness.sh
 
 Expected: FAIL on doc consistency assertions.
 
-- [ ] **Step 5: Update README command ledger section**
+- [x] **Step 5: Update README command ledger section**
 
 In `README.md`, add this section after `## Evidence And Optional Gates` and
 before `## Episode And Audit Evidence`:
@@ -1144,7 +1144,7 @@ structurally complete. This is explicit local command evidence, not automatic
 tool-call interception or provider-native trace capture.
 ```
 
-- [ ] **Step 6: Update Traditional Chinese README**
+- [x] **Step 6: Update Traditional Chinese README**
 
 In `README.zh-TW.md`, add a concise `## Command Ledger` section near the
 English README's equivalent location:
@@ -1169,7 +1169,7 @@ evidence，並回傳原本的 exit status。
 trace capture。
 ```
 
-- [ ] **Step 7: Update usage and Superpowers docs**
+- [x] **Step 7: Update usage and Superpowers docs**
 
 In `docs/USAGE_WITH_AGENTS.md`, add `scripts/agent-run.sh` to the scripts list
 and add a short paragraph:
@@ -1190,7 +1190,7 @@ installed command runner for important local commands when a task requires
 replayable command evidence.
 ```
 
-- [ ] **Step 8: Update runtime boundaries**
+- [x] **Step 8: Update runtime boundaries**
 
 In `docs/runtime-boundaries.md`, add under `Implemented`:
 
@@ -1203,7 +1203,7 @@ Keep `Full tool-call replay outside local script evidence` and
 `Provider-native trace capture unless an external runtime supplies it` under
 `Not Implemented`.
 
-- [ ] **Step 9: Update templates and skill guidance**
+- [x] **Step 9: Update templates and skill guidance**
 
 In `templates/AGENTS.md` and `templates/CLAUDE.md`, add a short bullet near
 verification guidance:
@@ -1221,7 +1221,7 @@ important local verification commands through the installed command runner
 before running the finish gate.
 ```
 
-- [ ] **Step 10: Update changelog**
+- [x] **Step 10: Update changelog**
 
 In `CHANGELOG.md`, add under `Unreleased`:
 
@@ -1230,7 +1230,7 @@ In `CHANGELOG.md`, add under `Unreleased`:
   optional finish gate.
 ```
 
-- [ ] **Step 11: Run validation**
+- [x] **Step 11: Run validation**
 
 Run:
 
@@ -1240,7 +1240,7 @@ bash validate-harness.sh
 
 Expected: PASS for template sync and doc consistency.
 
-- [ ] **Step 12: Commit**
+- [x] **Step 12: Commit**
 
 ```bash
 git add examples/universal-minimal-repo/scripts/agent-run.sh examples/universal-minimal-repo/scripts/check-command-ledger.sh examples/universal-minimal-repo/.agent/task.yml tests/harness/template-sync.sh tests/harness/doc-consistency.sh README.md README.zh-TW.md docs/USAGE_WITH_AGENTS.md docs/runtime-boundaries.md docs/superpowers-integration.md templates/AGENTS.md templates/CLAUDE.md skills/verification-gate/SKILL.md CHANGELOG.md
