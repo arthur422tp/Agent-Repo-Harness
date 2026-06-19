@@ -18,6 +18,7 @@ git init -q "$finish_acceptance_review_root"
   cp "$repo_root/templates/scripts/check-architecture-evidence.sh" scripts/check-architecture-evidence.sh
   cp "$repo_root/templates/scripts/check-failure-attribution.sh" scripts/check-failure-attribution.sh
   cp "$repo_root/templates/scripts/check-interventions.sh" scripts/check-interventions.sh
+  cp "$repo_root/templates/scripts/check-command-ledger.sh" scripts/check-command-ledger.sh
   cp "$repo_root/templates/scripts/check-sandbox-evidence.sh" scripts/check-sandbox-evidence.sh
   cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
   cp "$repo_root/templates/scripts/validate-episode.sh" scripts/validate-episode.sh
@@ -69,6 +70,7 @@ git init -q "$finish_acceptance_review_root"
   assert_file_contains "$finish_acceptance_review_root" "review-result.txt" "Review evidence is required."
   assert_file_contains "$finish_acceptance_review_root" "review-result.txt" "OK: review evidence"
   assert_file_contains "$finish_acceptance_review_root" "architecture-evidence-result.txt" "Architecture evidence is not required."
+  assert_file_contains "$finish_acceptance_review_root" "command-ledger-result.txt" "Command ledger evidence is not required."
   assert_file_contains "$finish_acceptance_review_root" "subagent-evidence-result.txt" "Subagent evidence is not required."
 )
 pass "finish gate acceptance and review evidence"
@@ -90,6 +92,7 @@ git init -q "$finish_strict_root"
   cp "$repo_root/templates/scripts/check-architecture-evidence.sh" scripts/check-architecture-evidence.sh
   cp "$repo_root/templates/scripts/check-failure-attribution.sh" scripts/check-failure-attribution.sh
   cp "$repo_root/templates/scripts/check-interventions.sh" scripts/check-interventions.sh
+  cp "$repo_root/templates/scripts/check-command-ledger.sh" scripts/check-command-ledger.sh
   cp "$repo_root/templates/scripts/check-sandbox-evidence.sh" scripts/check-sandbox-evidence.sh
   cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
   cp "$repo_root/templates/scripts/validate-episode.sh" scripts/validate-episode.sh
@@ -143,6 +146,7 @@ git init -q "$finish_strict_root"
   assert_file_contains "$finish_strict_root" "review-result.txt" "Review evidence is not required."
   assert_file_contains "$finish_strict_root" "architecture-evidence-result.txt" "Exit status: 0"
   assert_file_contains "$finish_strict_root" "architecture-evidence-result.txt" "Architecture evidence is not required."
+  assert_file_contains "$finish_strict_root" "command-ledger-result.txt" "Command ledger evidence is not required."
   assert_file_contains "$finish_strict_root" "subagent-evidence-result.txt" "Exit status: 0"
   assert_file_contains "$finish_strict_root" "subagent-evidence-result.txt" "Subagent evidence is not required."
   assert_file_contains "$finish_strict_root" "verify-result.txt" "Exit status: 0"
@@ -170,6 +174,7 @@ git init -q "$tdd_required_failure_root"
   cp "$repo_root/templates/scripts/check-architecture-evidence.sh" scripts/check-architecture-evidence.sh
   cp "$repo_root/templates/scripts/check-failure-attribution.sh" scripts/check-failure-attribution.sh
   cp "$repo_root/templates/scripts/check-interventions.sh" scripts/check-interventions.sh
+  cp "$repo_root/templates/scripts/check-command-ledger.sh" scripts/check-command-ledger.sh
   cp "$repo_root/templates/scripts/check-sandbox-evidence.sh" scripts/check-sandbox-evidence.sh
   cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
   cp "$repo_root/templates/scripts/validate-episode.sh" scripts/validate-episode.sh
@@ -204,6 +209,7 @@ git init -q "$tdd_required_failure_root"
   assert_file_contains "$tdd_required_failure_root" "acceptance-result.txt" "Acceptance check is not required."
   assert_file_contains "$tdd_required_failure_root" "review-result.txt" "Review evidence is not required."
   assert_file_contains "$tdd_required_failure_root" "architecture-evidence-result.txt" "Architecture evidence is not required."
+  assert_file_contains "$tdd_required_failure_root" "command-ledger-result.txt" "Command ledger evidence is not required."
   assert_file_contains "$tdd_required_failure_root" "subagent-evidence-result.txt" "Subagent evidence is not required."
   assert_file_contains "$tdd_required_failure_root" "verify-result.txt" "Exit status: 0"
 )
@@ -228,6 +234,7 @@ git init -q "$subagent_required_failure_root"
   cp "$repo_root/templates/scripts/check-architecture-evidence.sh" scripts/check-architecture-evidence.sh
   cp "$repo_root/templates/scripts/check-failure-attribution.sh" scripts/check-failure-attribution.sh
   cp "$repo_root/templates/scripts/check-interventions.sh" scripts/check-interventions.sh
+  cp "$repo_root/templates/scripts/check-command-ledger.sh" scripts/check-command-ledger.sh
   cp "$repo_root/templates/scripts/check-sandbox-evidence.sh" scripts/check-sandbox-evidence.sh
   cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
   cp "$repo_root/templates/scripts/validate-episode.sh" scripts/validate-episode.sh
@@ -260,6 +267,7 @@ git init -q "$subagent_required_failure_root"
   assert_finish_summary_contract "$subagent_required_failure_root" "fail"
   assert_finish_json_contract "$subagent_required_failure_root" "fail"
   assert_file_contains "$subagent_required_failure_root" "subagent-evidence-result.txt" "Exit status: 1"
+  assert_file_contains "$subagent_required_failure_root" "command-ledger-result.txt" "Command ledger evidence is not required."
   assert_file_contains "$subagent_required_failure_root" "subagent-evidence-result.txt" "no valid subagent run evidence found"
 )
 pass "finish gate strict subagent evidence failure"
@@ -280,6 +288,7 @@ mkdir -p "$finish_nongit_root/.agent" "$finish_nongit_root/scripts/lib"
   cp "$repo_root/templates/scripts/check-architecture-evidence.sh" scripts/check-architecture-evidence.sh
   cp "$repo_root/templates/scripts/check-failure-attribution.sh" scripts/check-failure-attribution.sh
   cp "$repo_root/templates/scripts/check-interventions.sh" scripts/check-interventions.sh
+  cp "$repo_root/templates/scripts/check-command-ledger.sh" scripts/check-command-ledger.sh
   cp "$repo_root/templates/scripts/check-sandbox-evidence.sh" scripts/check-sandbox-evidence.sh
   cp "$repo_root/templates/scripts/check-subagent-evidence.sh" scripts/check-subagent-evidence.sh
   cp "$repo_root/templates/scripts/validate-episode.sh" scripts/validate-episode.sh
@@ -295,6 +304,7 @@ mkdir -p "$finish_nongit_root/.agent" "$finish_nongit_root/scripts/lib"
   assert_file_contains "$finish_nongit_root" "acceptance-result.txt" "Acceptance check is not required."
   assert_file_contains "$finish_nongit_root" "review-result.txt" "Review evidence is not required."
   assert_file_contains "$finish_nongit_root" "architecture-evidence-result.txt" "Architecture evidence is not required."
+  assert_file_contains "$finish_nongit_root" "command-ledger-result.txt" "Command ledger evidence is not required."
   assert_file_contains "$finish_nongit_root" "subagent-evidence-result.txt" "Subagent evidence is not required."
   assert_file_contains "$finish_nongit_root" "changed-files.txt" "Not inside a git repository"
   assert_file_contains "$finish_nongit_root" "git-diff-stat.txt" "Not inside a git repository"

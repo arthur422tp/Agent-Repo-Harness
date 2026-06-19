@@ -158,6 +158,7 @@ assert_run_evidence_files() {
     architecture-evidence-result.txt \
     failure-attribution-result.txt \
     interventions-result.txt \
+    command-ledger-result.txt \
     sandbox-evidence-result.txt \
     subagent-evidence-result.txt \
     episode-result.txt \
@@ -190,6 +191,7 @@ assert_finish_summary_contract() {
   assert_file_contains "$root" "finish-summary.md" "| check-architecture-evidence |"
   assert_file_contains "$root" "finish-summary.md" "| check-failure-attribution |"
   assert_file_contains "$root" "finish-summary.md" "| check-interventions |"
+  assert_file_contains "$root" "finish-summary.md" "| check-command-ledger |"
   assert_file_contains "$root" "finish-summary.md" "| check-sandbox-evidence |"
   assert_file_contains "$root" "finish-summary.md" "| check-subagent-evidence |"
   assert_file_contains "$root" "finish-summary.md" "| validate-episode |"
@@ -203,6 +205,7 @@ assert_finish_summary_contract() {
   assert_file_contains "$root" "finish-summary.md" "architecture-evidence-result.txt"
   assert_file_contains "$root" "finish-summary.md" "failure-attribution-result.txt"
   assert_file_contains "$root" "finish-summary.md" "interventions-result.txt"
+  assert_file_contains "$root" "finish-summary.md" "command-ledger-result.txt"
   assert_file_contains "$root" "finish-summary.md" "sandbox-evidence-result.txt"
   assert_file_contains "$root" "finish-summary.md" "subagent-evidence-result.txt"
   assert_file_contains "$root" "finish-summary.md" "episode-result.txt"
@@ -267,6 +270,7 @@ expected_gate_names = [
     "check-architecture-evidence",
     "check-failure-attribution",
     "check-interventions",
+    "check-command-ledger",
     "check-sandbox-evidence",
     "check-subagent-evidence",
     "validate-episode",
@@ -293,6 +297,7 @@ expected_gate_evidence = {
     "check-architecture-evidence": "architecture-evidence-result.txt",
     "check-failure-attribution": "failure-attribution-result.txt",
     "check-interventions": "interventions-result.txt",
+    "check-command-ledger": "command-ledger-result.txt",
     "check-sandbox-evidence": "sandbox-evidence-result.txt",
     "check-subagent-evidence": "subagent-evidence-result.txt",
     "validate-episode": "episode-result.txt",
