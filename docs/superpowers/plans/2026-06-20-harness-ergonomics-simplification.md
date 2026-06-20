@@ -421,7 +421,7 @@ git commit -m "docs: simplify harness gate selection"
 - Modify: `tests/harness/doc-consistency.sh`
 - Modify: `tests/harness/template-sync.sh`
 
-- [ ] **Step 1: Add failing entrypoint navigation assertions**
+- [x] **Step 1: Add failing entrypoint navigation assertions**
 
 In `tests/harness/doc-consistency.sh`, add:
 
@@ -438,7 +438,7 @@ assert_contains "$target_root/AGENTS.md" "docs/agent/gate-guide.md"
 assert_contains "$target_root/CLAUDE.md" "docs/agent/gate-guide.md"
 ```
 
-- [ ] **Step 2: Run validation to verify navigation is absent**
+- [x] **Step 2: Run validation to verify navigation is absent**
 
 Run:
 
@@ -448,7 +448,7 @@ bash validate-harness.sh
 
 Expected: FAIL because installed entrypoints do not yet reference the guide.
 
-- [ ] **Step 3: Add concise entrypoint guidance**
+- [x] **Step 3: Add concise entrypoint guidance**
 
 In both `templates/AGENTS.md` and `templates/CLAUDE.md`, add near task setup or
 verification guidance:
@@ -460,7 +460,7 @@ verification guidance:
 
 Do not copy the profile tables or per-gate explanations into these files.
 
-- [ ] **Step 4: Simplify verification skill guidance**
+- [x] **Step 4: Simplify verification skill guidance**
 
 In `skills/verification-gate/SKILL.md`, add near the task flag instructions:
 
@@ -473,7 +473,7 @@ Retain command-specific instructions for running sandbox and command-ledger
 evidence, but remove prose that duplicates the guide's enable/disable decision
 rules.
 
-- [ ] **Step 5: Run validation**
+- [x] **Step 5: Run validation**
 
 Run:
 
@@ -483,7 +483,7 @@ bash validate-harness.sh
 
 Expected: PASS for source and installed entrypoint navigation.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add templates/AGENTS.md templates/CLAUDE.md skills/verification-gate/SKILL.md tests/harness/doc-consistency.sh tests/harness/template-sync.sh
