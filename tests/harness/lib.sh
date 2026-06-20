@@ -143,6 +143,29 @@ assert_file_not_contains() {
   assert_not_contains "$file" "$unexpected"
 }
 
+assert_file_occurrences() {
+  local root="$1"
+  local name="$2"
+  local expected="$3"
+  local expected_count="$4"
+  local file
+  local actual_count
+
+  file="$(find "$root/.agent/runs" -type f -name "$name" | head -n 1)"
+  if [ -z "$file" ]; then
+    echo "ERROR: expected run evidence file named: $name"
+    exit 1
+  fi
+
+  actual_count="$(grep -Fc -- "$expected" "$file" || true)"
+  if [ "$actual_count" -ne "$expected_count" ]; then
+    echo "ERROR: expected $expected_count occurrences of: $expected"
+    echo "Actual: $actual_count"
+    echo "File: $file"
+    exit 1
+  fi
+}
+
 assert_run_evidence_files() {
   local root="$1"
   local file
@@ -182,6 +205,9 @@ assert_finish_summary_contract() {
   assert_file_contains "$root" "finish-summary.md" "Mode:"
   assert_file_contains "$root" "finish-summary.md" "Run directory: .agent/runs/"
   assert_file_contains "$root" "finish-summary.md" "Overall result: $expected_result"
+  assert_file_contains "$root" "finish-summary.md" "### Core Guardrails"
+  assert_file_contains "$root" "finish-summary.md" "### Optional Evidence"
+  assert_file_contains "$root" "finish-summary.md" "### Verification And Limits"
   assert_file_contains "$root" "finish-summary.md" "| check-agent-md |"
   assert_file_contains "$root" "finish-summary.md" "| check-scope |"
   assert_file_contains "$root" "finish-summary.md" "| check-policy |"
@@ -196,6 +222,25 @@ assert_finish_summary_contract() {
   assert_file_contains "$root" "finish-summary.md" "| check-subagent-evidence |"
   assert_file_contains "$root" "finish-summary.md" "| validate-episode |"
   assert_file_contains "$root" "finish-summary.md" "| agent-verify |"
+  for gate in \
+    check-agent-md \
+    check-scope \
+    check-policy \
+    check-tdd-evidence \
+    check-acceptance \
+    check-review-evidence \
+    check-architecture-evidence \
+    check-failure-attribution \
+    check-interventions \
+    check-command-ledger \
+    check-sandbox-evidence \
+    check-subagent-evidence \
+    validate-episode \
+    agent-verify \
+    resource-envelope
+  do
+    assert_file_occurrences "$root" "finish-summary.md" "| $gate |" 1
+  done
   assert_file_contains "$root" "finish-summary.md" "check-agent-md-result.txt"
   assert_file_contains "$root" "finish-summary.md" "scope-result.txt"
   assert_file_contains "$root" "finish-summary.md" "policy-result.txt"

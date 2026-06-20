@@ -258,11 +258,18 @@ write_summary() {
     echo
     echo "## Gate Results"
     echo
+    echo "### Core Guardrails"
+    echo
     echo "| Check | Exit status | Evidence |"
     echo "| --- | ---: | --- |"
     echo "| check-agent-md | $agent_md_status | $check_agent_md_result_file |"
     echo "| check-scope | $scope_status | $scope_result_file |"
     echo "| check-policy | $policy_status | $policy_result_file |"
+    echo
+    echo "### Optional Evidence"
+    echo
+    echo "| Check | Exit status | Evidence |"
+    echo "| --- | ---: | --- |"
     echo "| check-tdd-evidence | $tdd_evidence_status | $tdd_evidence_result_file |"
     echo "| check-acceptance | $acceptance_status | $acceptance_result_file |"
     echo "| check-review-evidence | $review_status | $review_result_file |"
@@ -272,6 +279,11 @@ write_summary() {
     echo "| check-command-ledger | $command_ledger_status | $command_ledger_result_file |"
     echo "| check-sandbox-evidence | $sandbox_evidence_status | $sandbox_evidence_result_file |"
     echo "| check-subagent-evidence | $subagent_evidence_status | $subagent_evidence_result_file |"
+    echo
+    echo "### Verification And Limits"
+    echo
+    echo "| Check | Exit status | Evidence |"
+    echo "| --- | ---: | --- |"
     echo "| validate-episode | $episode_status | $episode_result_file |"
     echo "| agent-verify | $verify_status | $verify_result_file |"
     echo "| resource-envelope | $resource_status | $resource_result_file |"
