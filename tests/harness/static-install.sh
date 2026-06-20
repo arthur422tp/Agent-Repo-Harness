@@ -36,6 +36,7 @@ for required_path in \
   docs/agent-support-matrix.md \
   docs/config-format.md \
   docs/codex-usage.md \
+  docs/agent/gate-guide.md \
   docs/handoff.md \
   docs/superpowers-integration.md \
   schemas/harness.schema.json \
@@ -192,6 +193,7 @@ for required_path in \
   .agent/subagent-runs/README.md \
   .agent/subagent-runs/.gitkeep \
   docs/agent/context-loading.md \
+  docs/agent/gate-guide.md \
   docs/agent/policy-approval.md \
   docs/agent/subagent-result-template.md \
   docs/agent/review.md \

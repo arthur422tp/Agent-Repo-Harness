@@ -67,6 +67,31 @@ assert_exists "$repo_root/docs/agent/episode-package.md"
 assert_exists "$repo_root/docs/agent/failure-attribution.md"
 assert_exists "$repo_root/docs/agent/interventions.md"
 assert_exists "$repo_root/docs/agent/entropy-audit.md"
+assert_exists "$repo_root/docs/agent/gate-guide.md"
+assert_contains "$repo_root/docs/agent/gate-guide.md" "# Gate Guide"
+assert_contains "$repo_root/docs/agent/gate-guide.md" "## Minimal Profile"
+assert_contains "$repo_root/docs/agent/gate-guide.md" "## Standard Profile"
+assert_contains "$repo_root/docs/agent/gate-guide.md" "## High-Risk Profile"
+assert_contains "$repo_root/docs/agent/gate-guide.md" "Profiles are recommendations"
+
+completion_flags="$(
+  awk '
+    /^  completion:/ { in_completion = 1; next }
+    in_completion && /^[^ ]/ { in_completion = 0 }
+    in_completion && $1 ~ /^(requires_|expects_)/ {
+      flag = $1
+      sub(/:$/, "", flag)
+      print flag
+    }
+  ' "$repo_root/templates/.agent/task.yml"
+)"
+
+while IFS= read -r flag; do
+  [ -n "$flag" ] || continue
+  assert_contains "$repo_root/docs/agent/gate-guide.md" "$flag"
+done <<EOF
+$completion_flags
+EOF
 assert_contains "$repo_root/README.md" "episode-summary.json"
 assert_contains "$repo_root/README.md" "scripts/agent-audit.sh"
 assert_contains "$repo_root/docs/runtime-boundaries.md" "episode package"

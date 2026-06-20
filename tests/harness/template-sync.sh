@@ -16,6 +16,11 @@ assert_files_match() {
   fi
 }
 
+assert_exists "$repo_root/templates/docs/agent/gate-guide.md"
+assert_files_match \
+  "$repo_root/docs/agent/gate-guide.md" \
+  "$repo_root/templates/docs/agent/gate-guide.md"
+
 assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$repo_root/templates/AGENTS.md" "docs/agent/context-loading.md"
