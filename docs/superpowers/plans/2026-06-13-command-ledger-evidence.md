@@ -1253,7 +1253,7 @@ git commit -m "docs: document command ledger evidence"
 - Modify: `handoff.md`
 - Modify: `docs/superpowers/plans/2026-06-13-command-ledger-evidence.md`
 
-- [ ] **Step 1: Run full validation**
+- [x] **Step 1: Run full validation**
 
 Run:
 
@@ -1263,7 +1263,7 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 2: Run doc-link validation**
+- [x] **Step 2: Run doc-link validation**
 
 Run:
 
@@ -1273,7 +1273,7 @@ bash templates/scripts/check-doc-links.sh .
 
 Expected: `DOC_LINKS_RESULT=pass`.
 
-- [ ] **Step 3: Run installed-target command ledger smoke**
+- [x] **Step 3: Run installed-target command ledger smoke**
 
 Run:
 
@@ -1299,7 +1299,7 @@ Expected:
 - `.agent/command-runs/<timestamp>/command-summary.json` exists
 - `.agent/runs/<timestamp>/command-ledger-result.txt` exists
 
-- [ ] **Step 4: Run source checkout audit**
+- [x] **Step 4: Run source checkout audit**
 
 Run from the source checkout:
 
@@ -1309,7 +1309,7 @@ bash templates/scripts/agent-audit.sh
 
 Expected: `AGENT_AUDIT_RESULT=pass`.
 
-- [ ] **Step 5: Update handoff**
+- [x] **Step 5: Update handoff**
 
 Update `handoff.md` with:
 
@@ -1343,11 +1343,11 @@ true` in those task files.
 
 Replace `<timestamp>` values with actual evidence directories.
 
-- [ ] **Step 6: Mark this plan complete**
+- [x] **Step 6: Mark this plan complete**
 
 Mark completed plan steps with `[x]` after validation and handoff are updated.
 
-- [ ] **Step 7: Inspect final status**
+- [x] **Step 7: Inspect final status**
 
 Run:
 
@@ -1358,7 +1358,7 @@ git status --short
 Expected: only intended tracked changes plus expected untracked `.agent/`
 runtime evidence.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add handoff.md docs/superpowers/plans/2026-06-13-command-ledger-evidence.md
