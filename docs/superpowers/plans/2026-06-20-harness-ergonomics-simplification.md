@@ -262,7 +262,7 @@ git commit -m "docs: add canonical harness gate guide"
 - Modify: `docs/agent-support-matrix.md`
 - Modify: `tests/harness/doc-consistency.sh`
 
-- [ ] **Step 1: Add failing documentation navigation assertions**
+- [x] **Step 1: Add failing documentation navigation assertions**
 
 In `tests/harness/doc-consistency.sh`, add:
 
@@ -287,7 +287,7 @@ assert_not_contains "$repo_root/README.md" "## Architecture Evidence"
 assert_not_contains "$repo_root/README.md" "## Episode And Audit Evidence"
 ```
 
-- [ ] **Step 2: Run validation to verify the profile chooser is absent**
+- [x] **Step 2: Run validation to verify the profile chooser is absent**
 
 Run:
 
@@ -298,7 +298,7 @@ bash validate-harness.sh
 Expected: FAIL because README and usage docs do not yet contain the new
 profile-based navigation.
 
-- [ ] **Step 3: Add a concise profile chooser to README**
+- [x] **Step 3: Add a concise profile chooser to README**
 
 In `README.md`, insert after `## Verification Strategy`:
 
@@ -320,7 +320,7 @@ See [Gate Guide](docs/agent/gate-guide.md) for the decision matrix, profile
 examples, evidence files, and failure meanings.
 ```
 
-- [ ] **Step 4: Replace README's detailed optional-gate catalog**
+- [x] **Step 4: Replace README's detailed optional-gate catalog**
 
 Replace content from `## Evidence And Optional Gates` through the end of the
 current architecture/subagent details, stopping before `## Useful Commands`,
@@ -345,7 +345,7 @@ difference between run evidence and continuity notes, and
 limits.
 ```
 
-- [ ] **Step 5: Mirror concise guidance in Traditional Chinese README**
+- [x] **Step 5: Mirror concise guidance in Traditional Chinese README**
 
 Add this section after the verification strategy section in `README.zh-TW.md`:
 
@@ -370,7 +370,7 @@ profile 名稱或自動啟用 gates。
 Replace detailed optional-gate sections with a concise summary equivalent to
 the English README while preserving the runtime-boundary links.
 
-- [ ] **Step 6: Refocus usage and support docs**
+- [x] **Step 6: Refocus usage and support docs**
 
 In `docs/USAGE_WITH_AGENTS.md`, add near `## Shared Pattern`:
 
@@ -393,7 +393,7 @@ evidence through [Gate Guide](agent/gate-guide.md). Agent adapters change the
 entrypoint, not the underlying task flags or finish semantics.
 ```
 
-- [ ] **Step 7: Run validation and inspect documentation size**
+- [x] **Step 7: Run validation and inspect documentation size**
 
 Run:
 
@@ -405,7 +405,7 @@ wc -l README.md README.zh-TW.md docs/USAGE_WITH_AGENTS.md
 Expected: validation PASS. Record line counts in the task notes; the combined
 documents should not grow during this simplification task.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add README.md README.zh-TW.md docs/USAGE_WITH_AGENTS.md docs/agent-support-matrix.md tests/harness/doc-consistency.sh
