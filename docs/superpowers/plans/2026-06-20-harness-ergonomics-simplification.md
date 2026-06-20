@@ -639,7 +639,7 @@ git commit -m "refactor: group finish summary checks"
 - Modify: `handoff.md`
 - Modify: `docs/superpowers/plans/2026-06-20-harness-ergonomics-simplification.md`
 
-- [ ] **Step 1: Update changelog**
+- [x] **Step 1: Update changelog**
 
 Under `## Unreleased` in `CHANGELOG.md`, add:
 
@@ -651,7 +651,7 @@ Under `## Unreleased` in `CHANGELOG.md`, add:
   contract.
 ```
 
-- [ ] **Step 2: Run full validation**
+- [x] **Step 2: Run full validation**
 
 Run:
 
@@ -661,7 +661,7 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 3: Run doc-link validation**
+- [x] **Step 3: Run doc-link validation**
 
 Run:
 
@@ -671,7 +671,7 @@ bash templates/scripts/check-doc-links.sh .
 
 Expected: `DOC_LINKS_RESULT=pass`.
 
-- [ ] **Step 4: Run installed-target finish smoke**
+- [x] **Step 4: Run installed-target finish smoke**
 
 Run:
 
@@ -699,7 +699,7 @@ Expected:
 - latest `finish-summary.json` passes the unchanged test contract through the
   full validation suite
 
-- [ ] **Step 5: Run source checkout audit**
+- [x] **Step 5: Run source checkout audit**
 
 Return to the source checkout and run:
 
@@ -710,7 +710,7 @@ bash templates/scripts/agent-audit.sh
 
 Expected: `AGENT_AUDIT_RESULT=pass`.
 
-- [ ] **Step 6: Review simplification boundaries**
+- [x] **Step 6: Review simplification boundaries**
 
 Run:
 
@@ -725,7 +725,7 @@ Expected:
 - no new gate scripts
 - `agent-finish.sh` changes are limited to Markdown summary grouping
 
-- [ ] **Step 7: Update handoff**
+- [x] **Step 7: Update handoff**
 
 Update `handoff.md` with actual results:
 
@@ -757,12 +757,12 @@ Use the simplified profile guidance in real repositories and collect adoption
 feedback before considering additional runtime or evidence capabilities.
 ```
 
-- [ ] **Step 8: Mark this plan complete**
+- [x] **Step 8: Mark this plan complete**
 
 Mark completed steps `[x]` only after validation, smoke, audit, and handoff are
 complete.
 
-- [ ] **Step 9: Inspect final status**
+- [x] **Step 9: Inspect final status**
 
 Run:
 
@@ -773,7 +773,7 @@ git status --short
 Expected: only intended tracked changes plus expected untracked `.agent/`
 runtime evidence.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add CHANGELOG.md handoff.md docs/superpowers/plans/2026-06-20-harness-ergonomics-simplification.md

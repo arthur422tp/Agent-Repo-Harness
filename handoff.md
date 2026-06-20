@@ -2,26 +2,31 @@
 
 ## Current State
 
-Command ledger evidence has been designed and implemented. Installed projects
-can run important commands through the command runner, store
-`.agent/command-runs/<timestamp>/command-summary.json`, and optionally require
-command ledger evidence during finish.
+Harness ergonomics and simplification are complete. Gate-selection detail now
+lives in `docs/agent/gate-guide.md`, Minimal/Standard/High-Risk profiles remain
+documentation-only recommendations, public and installed entrypoints use
+concise navigation, and the human-readable finish summary groups existing
+checks without changing the JSON contract.
 
 ## Verification
 
 - `bash validate-harness.sh`: PASS
 - `bash templates/scripts/check-doc-links.sh .`: PASS
-- Installed target command ledger smoke: PASS in `/private/tmp/agent-harness-command-ledger-target`
+- Installed-target finish smoke: PASS in `/private/tmp/agent-harness-ergonomics-target`
 - `bash templates/scripts/agent-audit.sh`: PASS
 
 ## Evidence
 
-- Latest installed command run: `/private/tmp/agent-harness-command-ledger-target/.agent/command-runs/20260620-033521/`
-- Latest installed finish run: `/private/tmp/agent-harness-command-ledger-target/.agent/runs/20260620-033521/`
-- Latest source audit run: `.agent/audits/20260620-033527/`
+- Latest installed finish run: `/private/tmp/agent-harness-ergonomics-target/.agent/runs/20260620-125802/`
+- Latest source audit run: `.agent/audits/20260620-125815/`
+
+## Compatibility
+
+- No completion flags, schemas, or gates added or removed.
+- Gate execution order and strict/best-effort semantics unchanged.
+- `finish-summary.json` contract unchanged.
 
 ## Next Action
 
-Decide whether command ledger evidence should become required for selected
-high-risk or release tasks by setting `completion.requires_command_ledger:
-true` in those task files.
+Use the simplified profile guidance in real repositories and collect adoption
+feedback before considering additional runtime or evidence capabilities.

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add a canonical gate guide with Minimal, Standard, and High-Risk documentation profiles.
+- Simplify public and installed gate-selection guidance.
+- Group human-readable finish checks without changing the JSON evidence contract.
 - Explicit command ledger evidence through the installed `agent-run.sh`
   command runner and an opt-in `requires_command_ledger` completion gate.
 
