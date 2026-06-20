@@ -118,12 +118,14 @@ assert_contains "$target_root/AGENTS.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$target_root/AGENTS.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$target_root/AGENTS.md" "docs/agent/context-loading.md"
 assert_contains "$target_root/AGENTS.md" "docs/agent/policy-approval.md"
+assert_contains "$target_root/AGENTS.md" "docs/agent/gate-guide.md"
 assert_not_contains "$target_root/AGENTS.md" "## Context Loading Policy"
 assert_not_contains "$target_root/AGENTS.md" 'Read `.agent/policy.yml` for high-risk areas and approval rules.'
 assert_contains "$target_root/CLAUDE.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$target_root/CLAUDE.md" 'Read `.agent/policy.yml` only for policy rules that apply'
 assert_contains "$target_root/CLAUDE.md" "docs/agent/context-loading.md"
 assert_contains "$target_root/CLAUDE.md" "docs/agent/policy-approval.md"
+assert_contains "$target_root/CLAUDE.md" "docs/agent/gate-guide.md"
 assert_not_contains "$target_root/CLAUDE.md" "## Context Loading Policy"
 assert_not_contains "$target_root/CLAUDE.md" '3. Read `.agent/policy.yml`.'
 assert_contains "$target_root/.agent/architecture.yml" 'status: not_reviewed'

@@ -24,6 +24,9 @@ scripts/check-scope.sh --strict
 scripts/agent-verify.sh --strict
 ```
 
+Use `docs/agent/gate-guide.md` to choose optional evidence. Profiles are
+recommendations; read the task's existing flags as the actual contract.
+
 If `.agent/task.yml` sets `completion.requires_sandbox_verification: true`, run:
 
 ```bash

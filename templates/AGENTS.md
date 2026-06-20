@@ -30,6 +30,8 @@ During the task:
   evidence when the current task requires them.
 - Treat `.agent/failure-attribution.yml` and `.agent/interventions.yml` as
   optional completion evidence when the current task requires them.
+- Choose optional completion evidence through `docs/agent/gate-guide.md`.
+  Start with Minimal; add gates only for named task risks.
 - If `.agent/task.yml` requires sandbox verification, run the sandbox runner
   before final finish and preserve `.agent/sandbox-runs/<timestamp>/` evidence.
 - If `.agent/task.yml` requires command ledger evidence, run important local

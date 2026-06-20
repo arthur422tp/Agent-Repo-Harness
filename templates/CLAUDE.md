@@ -33,6 +33,9 @@ state in `handoff.md` and `.agent/task.yml`, optional episode metadata in
 `.agent/review.yml`, `.agent/failure-attribution.yml`, and
 `.agent/interventions.yml`, and reusable workflow rules in skills.
 
+- Choose optional completion evidence through `docs/agent/gate-guide.md`.
+  Start with Minimal; add gates only for named task risks.
+
 Lifecycle docs:
 
 - `docs/agent/episode-package.md`
