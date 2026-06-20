@@ -84,6 +84,22 @@ verification:
 When project-specific tooling differs from the default heuristics, the
 repo-defined verification commands are the source of truth.
 
+## Choose A Gate Profile
+
+Profiles are recommendations expressed through existing `.agent/task.yml`
+flags; the harness does not read a profile name or enable gates automatically.
+
+- **Minimal:** scope, policy, verification, and handoff expectation for small,
+  low-risk maintenance.
+- **Standard:** Minimal plus TDD for behavior changes, with acceptance or review
+  evidence when the task requires it.
+- **High-Risk:** Standard plus only the architecture, command ledger, sandbox,
+  subagent, failure-attribution, or intervention evidence that answers a named
+  risk.
+
+See [Gate Guide](docs/agent/gate-guide.md) for the decision matrix, profile
+examples, evidence files, and failure meanings.
+
 ## Guardrails, Not A Sandbox
 
 Scope and policy gates are process guardrails, not security boundaries. They
@@ -188,115 +204,20 @@ without explicit human instruction.
 
 ## Evidence And Optional Gates
 
-`agent-finish.sh` writes authoritative run evidence under
-`.agent/runs/<timestamp>/`, including
-`finish-summary.md`, gate result files such as `tdd-evidence-result.txt`,
-`acceptance-result.txt`, `review-result.txt`,
-`architecture-evidence-result.txt`, `subagent-evidence-result.txt`,
-`changed-files.txt`, and `git-diff-stat.txt`.
+`agent-finish.sh` writes authoritative evidence under
+`.agent/runs/<timestamp>/`, including `finish-summary.md`,
+`finish-summary.json`, per-check result files, changed files, and diff stat.
 
-For the full handoff/evidence model, see
-[docs/handoff.md](docs/handoff.md).
+Optional evidence gates remain disabled by default. Enable one only when it
+answers a concrete completion risk. The available categories cover TDD,
+acceptance, review, architecture, failure attribution, interventions, command
+ledger, sandbox verification, and delegated subagent runs.
 
-TDD evidence is opt-in per task. When `.agent/task.yml` contains
-`completion.requires_tdd_evidence: true`, fill `.agent/tdd-evidence.yml` with
-non-empty red and green phase commands/results plus at least one changed test
-entry before running `scripts/agent-finish.sh`.
-
-Acceptance and review evidence are also opt-in. When `.agent/task.yml`
-contains `completion.requires_acceptance_check: true`, fill
-`.agent/acceptance.yml` with at least one met criterion and concrete evidence
-or verification. When it contains
-`completion.requires_review_evidence: true`, fill `.agent/review.yml` with an
-approving status, reviewer, evidence, and no blocking concerns.
-
-## Command Ledger
-
-Use the installed command runner for important local verification commands:
-
-```bash
-scripts/agent-run.sh -- npm test
-scripts/agent-run.sh -- bash scripts/agent-verify.sh --best-effort
-```
-
-Each invocation writes `.agent/command-runs/<timestamp>/command-summary.json`
-plus stdout, stderr, command, cwd, and exit-status evidence. The runner returns
-the wrapped command's original exit status when that command fails.
-
-Command ledger evidence is opt-in. Set
-`completion.requires_command_ledger: true` in `.agent/task.yml` to require
-existing command-run evidence at finish time. This is explicit evidence only
-for commands run through `agent-run`; it is not automatic command interception,
-provider-native trace capture, or full tool-call replay.
-
-## Episode And Audit Evidence
-
-When installed, `.agent/episode.yml` can describe the local episode objective,
-actor, status, and compact context. Each finish run writes
-`.agent/runs/<timestamp>/episode-summary.json` beside `finish-summary.json` so
-tools can inspect the episode package, enabled contracts, and evidence paths.
-
-Failure attribution and intervention records are optional completion gates.
-When `.agent/task.yml` enables them, fill `.agent/failure-attribution.yml` or
-`.agent/interventions.yml` with concrete evidence before running
-`scripts/agent-finish.sh`.
-
-For maintenance drift checks, run `scripts/agent-audit.sh`. It writes
-`.agent/audits/<timestamp>/entropy-report.json` and a Markdown report with
-local doc-link, Git status, and harness config evidence. The audit command is
-not a substitute for `scripts/agent-finish.sh`.
-
-These episode and audit files are local harness evidence. They do not provide
-sandboxing, secret isolation, provider-native trace capture, or model-cost
-accounting.
-
-## Sandbox Verification
-
-When configured, Agent-Repo-Harness can run a verification command inside an
-external container sandbox through `scripts/agent-sandbox-run.sh`. The sandbox
-runner writes `.agent/sandbox-runs/<timestamp>/sandbox-summary.json` plus
-stdout, stderr, command, and exit-status evidence.
-
-Sandbox verification is opt-in. A task can require existing passing sandbox
-evidence with:
-
-```yaml
-task:
-  completion:
-    requires_sandbox_verification: true
-```
-
-The finish gate validates sandbox evidence; it does not create a nested sandbox
-run by default. This keeps sandbox verification aligned with Superpowers
-`verification-before-completion` instead of replacing the Superpowers workflow.
-
-CI and release smoke checks use `ci/sandbox-smoke.sh`. The command installs the
-harness into a temporary target, runs sandbox verification when Docker or Podman
-is available, and prints `SANDBOX_CI_SMOKE_RESULT=pass`, `skip`, or `fail`.
-A skip means no compatible external runner was available; a runner execution or
-evidence failure is treated as a failure.
-
-## Architecture Evidence
-
-For changes where tests are not enough to prove design quality, set
-`completion.requires_architecture_evidence: true` in `.agent/task.yml` and fill
-`.agent/architecture.yml`. The gate requires a reviewer, summary evidence, and
-at least one invariant marked `upheld`, `upheld_with_concerns`, or
-`not_applicable` with concrete evidence.
-
-Subagent packets are optional. Fill `.agent/subagent-packet.yml` when a
-controller agent needs to hand precise task text, allowed paths, required
-verification, and expected status values to a fresh subagent. Validate it with
-`scripts/validate-subagent-packet.sh`. Packet validation is not itself part of
-`agent-finish.sh`.
-
-Controller agents can optionally record delegated results under
-`.agent/subagent-runs/<timestamp>-<role>-<task_id>/` with `packet.yml`,
-`result.md`, and `status.txt`, then validate a directory with
-`scripts/validate-subagent-run.sh`. This becomes a completion gate only when
-`.agent/task.yml` contains `completion.requires_subagent_evidence: true`; in
-that mode, `scripts/check-subagent-evidence.sh` and `scripts/agent-finish.sh`
-require at least one valid run directory.
+Use [Gate Guide](docs/agent/gate-guide.md) for detailed flag selection and
+evidence requirements. See [Handoff And Evidence](docs/handoff.md) for the
+difference between run evidence and continuity notes, and
+[Runtime Boundaries](docs/runtime-boundaries.md) for containment and tracing
+limits.
 
 ## Useful Commands
 

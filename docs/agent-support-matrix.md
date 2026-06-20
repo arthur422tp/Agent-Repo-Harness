@@ -2,8 +2,9 @@
 
 Agent-Repo-Harness is a repo-local framework for giving coding agents shared
 context, scope boundaries, policy gates, and verification expectations.
-Optional acceptance and review evidence gates can be enabled per task through
-`.agent/task.yml`.
+All supported agents use the same repo-local contracts and select completion
+evidence through [Gate Guide](agent/gate-guide.md). Agent adapters change the
+entrypoint, not the underlying task flags or finish semantics.
 
 ## Supported Agents
 

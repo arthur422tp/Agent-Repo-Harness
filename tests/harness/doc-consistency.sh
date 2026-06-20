@@ -36,18 +36,28 @@ assert_contains "$repo_root/docs/public-packaging.md" "- [x] Sandbox smoke is wi
 assert_contains "$repo_root/docs/public-packaging.md" "- [ ] Set the GitHub description."
 assert_contains "$repo_root/docs/public-packaging.md" '- [ ] Create the GitHub release tag `v0.1.0`.'
 assert_contains "$repo_root/CHANGELOG.md" "Sandbox smoke readiness"
-assert_contains "$repo_root/README.md" "SANDBOX_CI_SMOKE_RESULT"
 pass "release version documentation is present and referenced"
 
 assert_contains "$repo_root/README.md" "## Context Loading Policy"
 assert_contains "$repo_root/README.md" 'applicable `.agent/policy.yml` entries'
 assert_not_contains "$repo_root/README.md" 'inspect `agent.md`, `handoff.md`, `.agent/policy.yml`, and `.agent/task.yml`'
-assert_contains "$repo_root/README.md" 'TDD evidence is opt-in per task.'
 assert_not_contains "$repo_root/README.md" 'the installed default task requires TDD evidence'
 assert_contains "$repo_root/README.md" "## Platform Support"
 assert_contains "$repo_root/README.md" "Unix-like shell environments"
 assert_contains "$repo_root/README.md" "WSL"
 assert_contains "$repo_root/README.md" "## Verification Strategy"
+assert_contains "$repo_root/README.md" "## Choose A Gate Profile"
+assert_contains "$repo_root/README.md" "docs/agent/gate-guide.md"
+assert_contains "$repo_root/README.md" "Minimal"
+assert_contains "$repo_root/README.md" "Standard"
+assert_contains "$repo_root/README.md" "High-Risk"
+assert_contains "$repo_root/README.md" "Profiles are recommendations"
+assert_not_contains "$repo_root/README.md" "## Architecture Evidence"
+assert_not_contains "$repo_root/README.md" "## Episode And Audit Evidence"
+assert_contains "$repo_root/README.zh-TW.md" "## 選擇 Gate Profile"
+assert_contains "$repo_root/README.zh-TW.md" "docs/agent/gate-guide.md"
+assert_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" "agent/gate-guide.md"
+assert_contains "$repo_root/docs/agent-support-matrix.md" "agent/gate-guide.md"
 assert_contains "$repo_root/README.md" '.agent/harness.yml'
 assert_contains "$repo_root/README.md" '.agent/handoff.yml'
 assert_contains "$repo_root/README.md" "## Evidence Vs Handoff"
@@ -59,10 +69,7 @@ assert_contains "$repo_root/README.md" "process guardrails"
 assert_contains "$repo_root/README.md" "not security boundaries"
 assert_contains "$repo_root/README.md" "docs/runtime-boundaries.md"
 assert_contains "$repo_root/README.md" 'finish-summary.json'
-assert_contains "$repo_root/README.md" "Architecture Evidence"
 assert_contains "$repo_root/README.md" "Resource Envelope"
-assert_contains "$repo_root/README.md" "Sandbox Verification"
-assert_contains "$repo_root/README.md" "external container sandbox"
 assert_exists "$repo_root/docs/agent/episode-package.md"
 assert_exists "$repo_root/docs/agent/failure-attribution.md"
 assert_exists "$repo_root/docs/agent/interventions.md"
@@ -92,15 +99,12 @@ while IFS= read -r flag; do
 done <<EOF
 $completion_flags
 EOF
-assert_contains "$repo_root/README.md" "episode-summary.json"
-assert_contains "$repo_root/README.md" "scripts/agent-audit.sh"
 assert_contains "$repo_root/docs/runtime-boundaries.md" "episode package"
 assert_contains "$repo_root/docs/runtime-boundaries.md" "Sandbox verification"
 assert_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" "Failure attribution"
 assert_contains "$repo_root/templates/AGENTS.md" "docs/agent/episode-package.md"
 assert_contains "$repo_root/templates/AGENTS.md" "scripts/agent-audit.sh"
 assert_contains "$repo_root/templates/AGENTS.md" "sandbox verification"
-assert_contains "$repo_root/README.zh-TW.md" "Architecture Evidence"
 assert_contains "$repo_root/README.zh-TW.md" "Resource Envelope"
 assert_exists "$repo_root/docs/runtime-boundaries.md"
 assert_contains "$repo_root/docs/runtime-boundaries.md" "Implemented"
@@ -135,9 +139,6 @@ assert_contains "$repo_root/docs/codex-usage.md" "repair outcome"
 assert_contains "$repo_root/docs/superpowers-integration.md" "staged context loading"
 assert_contains "$repo_root/docs/superpowers-integration.md" "Sandbox verification"
 assert_contains "$repo_root/skills/verification-gate/SKILL.md" "agent-sandbox-run.sh"
-assert_contains "$repo_root/README.md" "Command Ledger"
-assert_contains "$repo_root/README.md" "agent-run"
-assert_contains "$repo_root/README.md" "requires_command_ledger"
 assert_contains "$repo_root/docs/USAGE_WITH_AGENTS.md" "Command ledger"
 assert_contains "$repo_root/docs/runtime-boundaries.md" "Explicit command ledger evidence"
 assert_contains "$repo_root/docs/runtime-boundaries.md" "Full tool-call replay"

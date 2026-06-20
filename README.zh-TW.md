@@ -81,6 +81,22 @@ verification:
 當專案特定工具與預設啟發式檢查不同時，以 repository 定義的驗證命令
 為準。
 
+## 選擇 Gate Profile
+
+Profiles 是使用現有 `.agent/task.yml` flags 的建議組合；harness 不會讀取
+profile 名稱或自動啟用 gates。
+
+- **Minimal：** 適合低風險維護，使用 scope、policy、verification 與 handoff
+  expectation。
+- **Standard：** 在 Minimal 之上，對行為變更加上 TDD，並依任務需求啟用
+  acceptance 或 review evidence。
+- **High-Risk：** 在 Standard 之上，只啟用能回答具體風險的 architecture、
+  command ledger、sandbox、subagent、failure attribution 或 intervention
+  evidence。
+
+完整決策矩陣、profile 範例與 evidence 要求請見
+[Gate Guide](docs/agent/gate-guide.md)。
+
 ## 防護措施，不是 Sandbox
 
 範圍與政策閘門是流程防護措施，不是安全邊界。它們會檢查 Git 變更與
@@ -180,99 +196,19 @@ git commit -m "Initialize project with Agent-Repo-Harness baseline"
 
 ## 證據與選用閘門
 
-`agent-finish.sh` 會將權威 run evidence 寫入 `.agent/runs/<timestamp>/`，
-包含
-`finish-summary.md`、`tdd-evidence-result.txt`、
-`acceptance-result.txt`、`review-result.txt`、
-`architecture-evidence-result.txt`、`subagent-evidence-result.txt`、
-`changed-files.txt` 與 `git-diff-stat.txt` 等閘門結果檔案。
+`agent-finish.sh` 會將權威 evidence 寫入 `.agent/runs/<timestamp>/`，包含
+`finish-summary.md`、`finish-summary.json`、各檢查結果檔案、變更檔案與
+diff stat。
 
-完整 handoff/evidence model 請見 [docs/handoff.md](docs/handoff.md)。
+選用 evidence gates 預設停用；只有在能回答具體完成風險時才啟用。可用
+類別包括 TDD、acceptance、review、architecture、failure attribution、
+interventions、command ledger、sandbox verification 與 delegated subagent
+runs。
 
-TDD 證據由每項任務自行選用。當 `.agent/task.yml` 包含
-`completion.requires_tdd_evidence: true` 時，請在執行
-`scripts/agent-finish.sh` 前，於 `.agent/tdd-evidence.yml` 中填入非空
-的 red 與 green 階段命令/結果，並加入至少一項已變更測試的條目。
-
-驗收與 review 證據亦為選用。當 `.agent/task.yml` 包含
-`completion.requires_acceptance_check: true` 時，請在
-`.agent/acceptance.yml` 中填入至少一項已達成的準則，以及具體證據或
-驗證。當其中包含 `completion.requires_review_evidence: true` 時，請在
-`.agent/review.yml` 中填入核准狀態、reviewer、證據，且不得有阻擋性
-疑慮。
-
-## Command Ledger
-
-重要的本地驗證命令可透過已安裝的 command runner 明確記錄，例如
-`scripts/agent-run.sh -- npm test`。每次執行會在
-`.agent/command-runs/<timestamp>/` 寫入 summary、stdout、stderr、command、
-cwd 與 exit-status evidence，命令失敗時保留原本的 exit status。設定
-`completion.requires_command_ledger: true` 可要求 finish gate 驗證這些
-證據；這不是自動 command interception、provider trace 或完整 tool-call
-replay。
-
-## Episode And Audit Evidence
-
-安裝後，`.agent/episode.yml` 可描述本地 episode 的 objective、actor、
-status 與精簡 context。每次 finish run 都會在 `finish-summary.json` 旁
-寫入 `.agent/runs/<timestamp>/episode-summary.json`，讓工具可檢查
-episode package、已啟用契約與 evidence paths。
-
-Failure attribution 與 intervention record 是選用 completion gates。當
-`.agent/task.yml` 啟用它們時，請在執行 `scripts/agent-finish.sh` 前，
-以具體證據填寫 `.agent/failure-attribution.yml` 或
-`.agent/interventions.yml`。
-
-維護 drift check 可執行 `scripts/agent-audit.sh`。它會寫入
-`.agent/audits/<timestamp>/entropy-report.json` 與 Markdown report，內容
-包含本地 doc-link、Git status 與 harness config evidence。Audit command
-不是 `scripts/agent-finish.sh` 的替代品。
-
-這些 episode 與 audit 檔案只是本地 harness evidence。它們不提供
-sandboxing、secret isolation、provider-native trace capture 或 model-cost
-accounting。
-
-## Sandbox Verification
-
-設定完成後，Agent-Repo-Harness 可以透過
-`scripts/agent-sandbox-run.sh`，在外部 container sandbox 中執行 verification
-command。Sandbox runner 會寫入
-`.agent/sandbox-runs/<timestamp>/sandbox-summary.json`，以及 stdout、
-stderr、command 與 exit-status evidence。
-
-Sandbox verification 是 opt-in。任務可以用下列設定要求既有且通過的
-sandbox evidence：
-
-```yaml
-task:
-  completion:
-    requires_sandbox_verification: true
-```
-
-Finish gate 會驗證 sandbox evidence；預設不會建立巢狀 sandbox run。這讓
-sandbox verification 與 Superpowers `verification-before-completion` 對齊，
-而不是取代 Superpowers workflow。
-
-## Architecture Evidence
-
-當測試不足以證明設計品質時，可以在 `.agent/task.yml` 設定
-`completion.requires_architecture_evidence: true`，並填寫
-`.agent/architecture.yml`。此 gate 會要求 reviewer、summary evidence，以及至少
-一個標記為 `upheld`、`upheld_with_concerns` 或 `not_applicable` 且包含具體
-evidence 的 invariant。
-
-Subagent packet 為選用項目。當 controller agent 需要將精確的任務文字、
-允許路徑、必要驗證與預期 status 值交給新的 subagent 時，請填寫
-`.agent/subagent-packet.yml`，並以 `scripts/validate-subagent-packet.sh`
-驗證。Packet 驗證本身不是 `agent-finish.sh` 的一部分。
-
-Controller agent 可選擇將委派結果記錄在
-`.agent/subagent-runs/<timestamp>-<role>-<task_id>/` 下的 `packet.yml`、
-`result.md` 與 `status.txt` 中，再以 `scripts/validate-subagent-run.sh`
-驗證該目錄。只有當 `.agent/task.yml` 包含
-`completion.requires_subagent_evidence: true` 時，這才成為完成閘門；
-在該模式下，`scripts/check-subagent-evidence.sh` 與
-`scripts/agent-finish.sh` 會要求至少一個有效的執行目錄。
+詳細 flag 選擇與 evidence 要求請見 [Gate Guide](docs/agent/gate-guide.md)；
+run evidence 與 continuity notes 的差異請見
+[Handoff And Evidence](docs/handoff.md)，containment 與 tracing 限制請見
+[Runtime Boundaries](docs/runtime-boundaries.md)。
 
 ## 常用命令
 

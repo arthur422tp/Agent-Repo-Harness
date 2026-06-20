@@ -6,6 +6,11 @@ files, scripts, skills, and adapters.
 
 ## Shared Pattern
 
+Choose completion evidence with the [Gate Guide](agent/gate-guide.md): start
+with Minimal, use Standard for behavior changes, and add High-Risk evidence
+only for named risks. These profiles are documentation guidance, not runtime
+configuration; the existing `.agent/task.yml` flags remain authoritative.
+
 Use repo files for durable context:
 
 - `agent.md`: stable repo map and operating rules
@@ -64,23 +69,9 @@ feature-work drift.
 `finish-summary.md`, per-gate result files, `tdd-evidence-result.txt`,
 `episode-summary.json`, `changed-files.txt`, and `git-diff-stat.txt`.
 
-TDD evidence is required only when `.agent/task.yml` contains
-`completion.requires_tdd_evidence: true`. When enabled, agents should fill
-`.agent/tdd-evidence.yml` with the red command/failure, green command/pass, and
-the tests added or changed before running `scripts/agent-finish.sh`.
-
-Command ledger evidence is required only when `.agent/task.yml` contains
-`completion.requires_command_ledger: true`. When enabled, run important local
-verification commands through `scripts/agent-run.sh -- <command>` and preserve
-the resulting `.agent/command-runs/<timestamp>/` evidence. The finish gate
-validates existing Command ledger evidence; it does not intercept commands run
-outside the installed runner.
-
-Sandbox verification is required only when `.agent/task.yml` contains
-`completion.requires_sandbox_verification: true`. When enabled, agents should
-run `scripts/agent-sandbox-run.sh` before `scripts/agent-finish.sh` and
-preserve the resulting `.agent/sandbox-runs/<timestamp>/` evidence. The finish
-gate validates existing sandbox evidence; it does not dispatch the sandbox run.
+Use the [Gate Guide](agent/gate-guide.md) for TDD, Command ledger, and sandbox
+gate selection and evidence paths. Enable each only when its named task risk
+requires it.
 
 Keep `handoff.md` concise for humans and future agents. Agents may mirror
 structured current task state in `.agent/handoff.yml` for validators, CI,
@@ -88,22 +79,9 @@ controller agents, and future automation.
 
 ## Episode, Failure, And Intervention Evidence
 
-Keep `.agent/episode.yml` aligned with the current task objective and status.
-`scripts/agent-finish.sh` validates it when available and writes
-`.agent/runs/<timestamp>/episode-summary.json` as the local episode package
-summary.
-
-Failure attribution is required only when `.agent/task.yml` contains
-`completion.requires_failure_attribution: true`. When enabled, fill
-`.agent/failure-attribution.yml` with root cause, evidence, repair, and
-verification details. The finish run writes
-`failure-attribution-result.txt`.
-
-Intervention records are required only when `.agent/task.yml` contains
-`completion.requires_intervention_record: true`. When enabled, fill
-`.agent/interventions.yml` with real entries for approvals, scope changes,
-blocker resolutions, manual verification, or runtime overrides. Do not invent
-approvals or interventions.
+`.agent/episode.yml` supplies optional episode metadata, and finish runs write
+`episode-summary.json`. Select Failure attribution and intervention gates with
+the [Gate Guide](agent/gate-guide.md), and record only concrete evidence.
 
 Use `scripts/agent-audit.sh` for maintenance entropy checks. It writes
 `.agent/audits/<timestamp>/entropy-report.json` and a Markdown report, but it
@@ -148,10 +126,9 @@ Expand only into files relevant to this task.
 ```
 
 Subagent packets are intended for controller-agent to subagent handoffs. A
-controller can fill `.agent/subagent-packet.yml` with the task id, subagent
-role, allowed paths, relevant files, required verification, and expected status
-enum, then run `scripts/validate-subagent-packet.sh` before spawning or
-prompting the subagent. Packets are not mandatory for all tasks.
+controller can fill `.agent/subagent-packet.yml` and validate it before
+delegation. Use the [Gate Guide](agent/gate-guide.md) to decide whether the task
+also needs subagent completion evidence.
 
 ## Subagent Run Evidence
 
@@ -176,10 +153,9 @@ Validate the evidence with:
 bash scripts/validate-subagent-run.sh .agent/subagent-runs/<timestamp>-<role>-<task_id>
 ```
 
-When `.agent/task.yml` sets `completion.requires_subagent_evidence: true`,
-`scripts/agent-finish.sh` requires at least one valid directory under
-`.agent/subagent-runs/`. When the flag is false or missing, subagent evidence
-remains an optional continuity artifact.
+The [Gate Guide](agent/gate-guide.md) explains when
+`completion.requires_subagent_evidence: true` should require one of these run
+directories; otherwise they remain optional continuity artifacts.
 
 `agent-finish.sh` writes both human-readable and machine-readable evidence:
 
