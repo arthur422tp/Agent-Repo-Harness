@@ -1,4 +1,5 @@
 .codex
+.worktrees/
 plan.md
 *.log
 *.tmp
