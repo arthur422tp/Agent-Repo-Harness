@@ -496,7 +496,7 @@ git commit -m "docs: route agents through gate guide"
 - Modify: `tests/harness/lib.sh`
 - Modify: `templates/scripts/agent-finish.sh`
 
-- [ ] **Step 1: Add a reusable occurrence assertion**
+- [x] **Step 1: Add a reusable occurrence assertion**
 
 In `tests/harness/lib.sh`, add after `assert_file_not_contains()`:
 
@@ -525,7 +525,7 @@ assert_file_occurrences() {
 }
 ```
 
-- [ ] **Step 2: Add failing grouped-summary assertions**
+- [x] **Step 2: Add failing grouped-summary assertions**
 
 In `assert_finish_summary_contract()`, add:
 
@@ -562,7 +562,7 @@ After the existing gate row assertions, add exactly-once checks:
 Do not change `assert_finish_json_contract()`; its existing expected gate list
 is the compatibility regression test.
 
-- [ ] **Step 3: Run validation to verify headings are missing**
+- [x] **Step 3: Run validation to verify headings are missing**
 
 Run:
 
@@ -573,7 +573,7 @@ bash validate-harness.sh
 Expected: FAIL because current `finish-summary.md` has one flat table and no
 group headings.
 
-- [ ] **Step 4: Group Markdown rows in `agent-finish.sh`**
+- [x] **Step 4: Group Markdown rows in `agent-finish.sh`**
 
 In `write_summary()`, replace the single `## Gate Results` table block with:
 
@@ -613,7 +613,7 @@ In `write_summary()`, replace the single `## Gate Results` table block with:
 
 Do not edit `write_json_summary()` or the gate execution blocks.
 
-- [ ] **Step 5: Run targeted and full validation**
+- [x] **Step 5: Run targeted and full validation**
 
 Run:
 
@@ -625,7 +625,7 @@ git diff -- templates/scripts/agent-finish.sh tests/harness/lib.sh
 Expected: validation PASS. The diff must contain only Markdown summary rendering
 and its assertions; JSON writer and gate execution order must be unchanged.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add templates/scripts/agent-finish.sh tests/harness/lib.sh
