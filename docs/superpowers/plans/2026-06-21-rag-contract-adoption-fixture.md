@@ -395,7 +395,7 @@ git commit -m "feat: scaffold deterministic contract RAG"
 - Create: `examples/rag-contract-system/tests/test_retriever.py`
 - Create: `examples/rag-contract-system/tests/test_pipeline.py`
 
-- [ ] **Step 1: Write failing retrieval and pipeline tests**
+- [x] **Step 1: Write failing retrieval and pipeline tests**
 
 Create `examples/rag-contract-system/tests/test_retriever.py`:
 
@@ -474,7 +474,7 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 2: Run tests to verify modules are missing**
+- [x] **Step 2: Run tests to verify modules are missing**
 
 Run inside the active `.venv`:
 
@@ -484,7 +484,7 @@ PYTHONPATH=src python -m unittest discover -s tests -v
 
 Expected: FAIL because retriever, answerer, and pipeline modules do not exist.
 
-- [ ] **Step 3: Implement deterministic retrieval**
+- [x] **Step 3: Implement deterministic retrieval**
 
 Create `examples/rag-contract-system/src/contract_rag/retriever.py`:
 
@@ -526,7 +526,7 @@ class Retriever:
         return results[:top_k]
 ```
 
-- [ ] **Step 4: Implement extractive answer composition**
+- [x] **Step 4: Implement extractive answer composition**
 
 Create `examples/rag-contract-system/src/contract_rag/answerer.py`:
 
@@ -581,7 +581,7 @@ def compose_answer(query: str, results: list[SearchResult], threshold: float = 0
     return Answer(sentence, (citation,), True, result.score)
 ```
 
-- [ ] **Step 5: Implement the pipeline**
+- [x] **Step 5: Implement the pipeline**
 
 Create `examples/rag-contract-system/src/contract_rag/pipeline.py`:
 
@@ -613,7 +613,7 @@ class ContractRAG:
         return compose_answer(query, self._retriever.search(query, filters=filters))
 ```
 
-- [ ] **Step 6: Run tests**
+- [x] **Step 6: Run tests**
 
 ```bash
 PYTHONPATH=src python -m unittest discover -s tests -v
@@ -621,7 +621,7 @@ PYTHONPATH=src python -m unittest discover -s tests -v
 
 Expected: PASS.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add examples/rag-contract-system/src/contract_rag examples/rag-contract-system/tests/test_retriever.py examples/rag-contract-system/tests/test_pipeline.py
