@@ -98,6 +98,19 @@ for required_path in \
   tests/fixtures/validate-harness/verification-required.yml \
   tests/fixtures/validate-harness/yaml-reader-harness.yml \
   examples/strict-tdd-task.yml \
+  examples/rag-contract-system/pyproject.toml \
+  examples/rag-contract-system/src/contract_rag/cli.py \
+  examples/rag-contract-system/evals/cases.json \
+  examples/rag-contract-system/tests/test_chunker.py \
+  examples/rag-contract-system/tests/test_retriever.py \
+  examples/rag-contract-system/tests/test_pipeline.py \
+  examples/rag-contract-system/tests/test_security.py \
+  examples/rag-contract-system/tests/test_evals.py \
+  examples/rag-contract-system/adoption/minimal-task.yml \
+  examples/rag-contract-system/adoption/standard-task.yml \
+  examples/rag-contract-system/adoption/high-risk-task.yml \
+  examples/rag-contract-system/adoption/scenarios.md \
+  examples/rag-contract-system/adoption/report.md \
   examples/universal-minimal-repo/AGENTS.md \
   examples/universal-minimal-repo/CLAUDE.md \
   examples/universal-minimal-repo/.agent/harness.yml \
