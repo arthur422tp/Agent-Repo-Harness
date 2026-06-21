@@ -1,0 +1,6 @@
+[project]
+name = "contract-rag-fixture"
+version = "0.1.0"
+description = "Offline deterministic RAG fixture for Agent-Repo-Harness adoption tests"
+requires-python = ">=3.10"
+dependencies = []
