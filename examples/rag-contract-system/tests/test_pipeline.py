@@ -1,6 +1,7 @@
 import unittest
 
-from contract_rag.models import Chunk
+from contract_rag.answerer import compose_answer
+from contract_rag.models import Chunk, SearchResult
 from contract_rag.pipeline import ContractRAG
 
 
@@ -53,6 +54,39 @@ class ContractRAGTest(unittest.TestCase):
             answer.text,
             "The provided contracts do not contain enough evidence to answer.",
         )
+
+    def test_below_threshold_result_cannot_support_answer(self) -> None:
+        results = [
+            SearchResult(
+                chunk=Chunk(
+                    chunk_id="top:000",
+                    document_id="top",
+                    heading="Breach",
+                    text="This sentence is unrelated.",
+                    ordinal=0,
+                    metadata={},
+                ),
+                score=0.5,
+                matched_terms=("breach",),
+            ),
+            SearchResult(
+                chunk=Chunk(
+                    chunk_id="low:000",
+                    document_id="low",
+                    heading="Other",
+                    text="A breach must be reported.",
+                    ordinal=0,
+                    metadata={},
+                ),
+                score=0.25,
+                matched_terms=("breach",),
+            ),
+        ]
+
+        answer = compose_answer("breach", results)
+
+        self.assertEqual((answer.supported, answer.confidence), (False, 0.0))
+        self.assertEqual(answer.citations, ())
 
 
 if __name__ == "__main__":

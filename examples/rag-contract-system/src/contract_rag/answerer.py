@@ -39,6 +39,8 @@ def compose_answer(
     query_terms = tokenize(query)
     candidates: list[tuple[int, str, SearchResult]] = []
     for result in results:
+        if result.score < threshold:
+            continue
         for sentence in _sentences(result.chunk.text):
             if _safe_sentence(sentence):
                 overlap = len(query_terms & tokenize(sentence))
