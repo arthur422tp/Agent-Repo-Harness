@@ -1,0 +1,38 @@
+[
+  {
+    "id": "msa-termination",
+    "query": "What is the termination notice period?",
+    "filters": {"contract_type": "msa"},
+    "expected_document_ids": ["msa-001"],
+    "required_terms": ["30 days"],
+    "forbidden_terms": ["72 hours"],
+    "expected_supported": true
+  },
+  {
+    "id": "dpa-breach",
+    "query": "When must the processor report a personal data breach?",
+    "filters": {"contract_type": "dpa"},
+    "expected_document_ids": ["dpa-001"],
+    "required_terms": ["72 hours"],
+    "forbidden_terms": ["30 days"],
+    "expected_supported": true
+  },
+  {
+    "id": "license-audit",
+    "query": "How much notice is required before a license audit?",
+    "filters": {"contract_type": "license"},
+    "expected_document_ids": ["license-001"],
+    "required_terms": ["10 business days"],
+    "forbidden_terms": [],
+    "expected_supported": true
+  },
+  {
+    "id": "unsupported-vacation",
+    "query": "What is the employee vacation policy?",
+    "filters": {},
+    "expected_document_ids": [],
+    "required_terms": [],
+    "forbidden_terms": ["30 days", "72 hours"],
+    "expected_supported": false
+  }
+]
