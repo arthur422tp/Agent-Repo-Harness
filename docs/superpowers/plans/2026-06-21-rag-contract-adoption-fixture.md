@@ -1232,7 +1232,7 @@ git commit -m "docs: add RAG harness adoption scenarios"
 - Modify: `tests/harness/static-install.sh`
 - Modify: `tests/harness/doc-consistency.sh`
 
-- [ ] **Step 1: Add failing fixture-presence assertions**
+- [x] **Step 1: Add failing fixture-presence assertions**
 
 In `tests/harness/static-install.sh`, add source required paths for the RAG
 fixture's `pyproject.toml`, CLI, eval cases, tests, and three adoption task
@@ -1264,7 +1264,7 @@ assert_contains "$repo_root/examples/rag-contract-system/README.md" "Never use g
 assert_contains "$repo_root/examples/rag-contract-system/adoption/report.md" "Harness files edited"
 ```
 
-- [ ] **Step 2: Create the adoption validation suite**
+- [x] **Step 2: Create the adoption validation suite**
 
 Create `tests/harness/rag-adoption.sh`:
 
@@ -1415,7 +1415,7 @@ fi
 pass "RAG contract fixture application and harness adoption"
 ```
 
-- [ ] **Step 3: Source the new suite**
+- [x] **Step 3: Source the new suite**
 
 In `validate-harness.sh`, add after `sandbox-ci-smoke.sh`:
 
@@ -1423,7 +1423,7 @@ In `validate-harness.sh`, add after `sandbox-ci-smoke.sh`:
 source "$repo_root/tests/harness/rag-adoption.sh"
 ```
 
-- [ ] **Step 4: Run full validation**
+- [x] **Step 4: Run full validation**
 
 From the repository root with the project virtual environment active if one is
 being used:
@@ -1435,13 +1435,13 @@ bash validate-harness.sh
 Expected: PASS including RAG application tests, evals, three task validations,
 Standard finish, and fake-runner High-Risk sandbox evidence.
 
-- [ ] **Step 5: Update report with observed automated results**
+- [x] **Step 5: Update report with observed automated results**
 
 Replace `not_run` in `adoption/report.md` for automated scenarios with actual
 commands, files edited, pass/fail result, and observed friction. Keep
 application failures separate from harness friction.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add tests/harness/rag-adoption.sh validate-harness.sh tests/harness/static-install.sh tests/harness/doc-consistency.sh examples/rag-contract-system/adoption/report.md
