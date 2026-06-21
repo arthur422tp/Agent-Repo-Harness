@@ -1,0 +1,23 @@
+task:
+  status: "not_started"
+  goal: "Handle empty Markdown headings without producing empty chunks."
+  allowed_paths:
+    - "src/contract_rag/loader.py"
+    - "src/contract_rag/chunker.py"
+    - "tests/test_chunker.py"
+  forbidden_paths:
+    - "data/contracts/**"
+  completion:
+    requires_scope_check: true
+    requires_policy_check: true
+    requires_verification: true
+    expects_handoff_update: true
+    requires_tdd_evidence: false
+    requires_acceptance_check: false
+    requires_review_evidence: false
+    requires_architecture_evidence: false
+    requires_failure_attribution: false
+    requires_intervention_record: false
+    requires_command_ledger: false
+    requires_sandbox_verification: false
+    requires_subagent_evidence: false

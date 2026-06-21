@@ -1,0 +1,24 @@
+task:
+  status: "not_started"
+  goal: "Add jurisdiction metadata filtering to contract retrieval."
+  allowed_paths:
+    - "src/contract_rag/retriever.py"
+    - "src/contract_rag/pipeline.py"
+    - "tests/test_retriever.py"
+    - "tests/test_pipeline.py"
+  forbidden_paths:
+    - "data/contracts/**"
+  completion:
+    requires_scope_check: true
+    requires_policy_check: true
+    requires_verification: true
+    expects_handoff_update: true
+    requires_tdd_evidence: true
+    requires_acceptance_check: true
+    requires_review_evidence: false
+    requires_architecture_evidence: false
+    requires_failure_attribution: false
+    requires_intervention_record: false
+    requires_command_ledger: false
+    requires_sandbox_verification: false
+    requires_subagent_evidence: false

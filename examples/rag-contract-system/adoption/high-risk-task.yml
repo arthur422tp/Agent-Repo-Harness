@@ -1,0 +1,25 @@
+task:
+  status: "not_started"
+  goal: "Prevent untrusted retrieved instructions from influencing answers."
+  allowed_paths:
+    - "src/contract_rag/answerer.py"
+    - "tests/test_security.py"
+    - "evals/cases.json"
+  forbidden_paths:
+    - "data/contracts/master-services-agreement.md"
+    - "data/contracts/data-processing-addendum.md"
+    - "data/contracts/software-license.md"
+  completion:
+    requires_scope_check: true
+    requires_policy_check: true
+    requires_verification: true
+    expects_handoff_update: true
+    requires_tdd_evidence: true
+    requires_acceptance_check: true
+    requires_review_evidence: true
+    requires_architecture_evidence: true
+    requires_failure_attribution: false
+    requires_intervention_record: false
+    requires_command_ledger: true
+    requires_sandbox_verification: true
+    requires_subagent_evidence: false
