@@ -962,7 +962,7 @@ git commit -m "test: add contract RAG corpus and evaluations"
 - Create: `examples/rag-contract-system/adoption/report.md`
 - Modify: `examples/rag-contract-system/README.md`
 
-- [ ] **Step 1: Add three complete task configurations**
+- [x] **Step 1: Add three complete task configurations**
 
 Each task file must include `task.status`, `goal`, `allowed_paths`,
 `forbidden_paths`, and `completion`.
@@ -1054,7 +1054,7 @@ task:
     requires_subagent_evidence: false
 ```
 
-- [ ] **Step 2: Document reproducible adoption scenarios**
+- [x] **Step 2: Document reproducible adoption scenarios**
 
 Create `adoption/scenarios.md`:
 
@@ -1101,7 +1101,7 @@ If a Python package or optional tool must be installed, create and activate
   sandbox runners were handled.
 ```
 
-- [ ] **Step 3: Create the adoption report template with initial findings**
+- [x] **Step 3: Create the adoption report template with initial findings**
 
 Create `adoption/report.md`:
 
@@ -1127,7 +1127,7 @@ Record RAG application defects separately from harness installation,
 configuration, evidence, or finish friction.
 ```
 
-- [ ] **Step 4: Replace the example README**
+- [x] **Step 4: Replace the example README**
 
 Replace `examples/rag-contract-system/README.md` with:
 
@@ -1204,7 +1204,7 @@ installing Agent-Repo-Harness. Generated harness state and run evidence do not
 belong in this source fixture.
 ````
 
-- [ ] **Step 5: Run application tests and doc links**
+- [x] **Step 5: Run application tests and doc links**
 
 ```bash
 cd examples/rag-contract-system
@@ -1217,7 +1217,7 @@ bash templates/scripts/check-doc-links.sh .
 
 Expected: tests/evals PASS and `DOC_LINKS_RESULT=pass`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add examples/rag-contract-system/README.md examples/rag-contract-system/adoption
