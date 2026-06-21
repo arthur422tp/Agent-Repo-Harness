@@ -97,7 +97,7 @@ Modify:
 - Create: `examples/rag-contract-system/src/contract_rag/chunker.py`
 - Create: `examples/rag-contract-system/tests/test_chunker.py`
 
-- [ ] **Step 1: Add environment isolation files**
+- [x] **Step 1: Add environment isolation files**
 
 Create `examples/rag-contract-system/.gitignore`:
 
@@ -119,7 +119,7 @@ requires-python = ">=3.10"
 dependencies = []
 ```
 
-- [ ] **Step 2: Write failing model and chunker tests**
+- [x] **Step 2: Write failing model and chunker tests**
 
 Create `examples/rag-contract-system/tests/test_chunker.py`:
 
@@ -193,7 +193,7 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 3: Run the test to verify imports fail**
+- [x] **Step 3: Run the test to verify imports fail**
 
 Run inside an isolated environment:
 
@@ -208,7 +208,7 @@ PYTHONPATH=src python -m unittest discover -s tests -p 'test_chunker.py' -v
 
 Expected: FAIL because `contract_rag` modules do not exist.
 
-- [ ] **Step 4: Add immutable data models**
+- [x] **Step 4: Add immutable data models**
 
 Create `examples/rag-contract-system/src/contract_rag/__init__.py`:
 
@@ -265,7 +265,7 @@ class Answer:
     confidence: float
 ```
 
-- [ ] **Step 5: Implement metadata loading**
+- [x] **Step 5: Implement metadata loading**
 
 Create `examples/rag-contract-system/src/contract_rag/loader.py`:
 
@@ -317,7 +317,7 @@ def load_corpus(root: Path) -> list[Document]:
     return [load_document(path) for path in sorted(root.glob("*.md"))]
 ```
 
-- [ ] **Step 6: Implement deterministic chunking**
+- [x] **Step 6: Implement deterministic chunking**
 
 Create `examples/rag-contract-system/src/contract_rag/chunker.py`:
 
@@ -369,7 +369,7 @@ def chunk_documents(documents: list[Document]) -> list[Chunk]:
     return [chunk for document in documents for chunk in chunk_document(document)]
 ```
 
-- [ ] **Step 7: Run tests**
+- [x] **Step 7: Run tests**
 
 Run with the virtual environment still active:
 
@@ -379,7 +379,7 @@ PYTHONPATH=src python -m unittest discover -s tests -p 'test_chunker.py' -v
 
 Expected: PASS.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add examples/rag-contract-system/.gitignore examples/rag-contract-system/pyproject.toml examples/rag-contract-system/src/contract_rag examples/rag-contract-system/tests/test_chunker.py
