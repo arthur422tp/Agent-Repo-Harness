@@ -6,24 +6,24 @@ from contract_rag.retriever import Retriever
 
 CHUNKS = [
     Chunk(
-        chunk_id="msa-001:000",
-        document_id="msa-001",
+        chunk_id="msa:000",
+        document_id="msa",
         heading="Termination",
         text="Either party may terminate with 30 days written notice.",
         ordinal=0,
         metadata={"contract_type": "msa", "jurisdiction": "US"},
     ),
     Chunk(
-        chunk_id="dpa-001:000",
-        document_id="dpa-001",
-        heading="Breach Notification",
+        chunk_id="dpa:000",
+        document_id="dpa",
+        heading="Breach",
         text="The processor must report a personal data breach within 72 hours.",
         ordinal=0,
         metadata={"contract_type": "dpa", "jurisdiction": "EU"},
     ),
     Chunk(
-        chunk_id="license-001:000",
-        document_id="license-001",
+        chunk_id="license:000",
+        document_id="license",
         heading="Audit",
         text="The licensee receives 10 business days notice before an audit.",
         ordinal=0,
@@ -39,14 +39,14 @@ class RetrieverTest(unittest.TestCase):
     def test_termination_written_notice_ranks_msa_first(self) -> None:
         results = self.retriever.search("termination written notice")
 
-        self.assertEqual(results[0].chunk.document_id, "msa-001")
+        self.assertEqual(results[0].chunk.document_id, "msa")
 
     def test_contract_type_filter_returns_only_matching_dpa(self) -> None:
         results = self.retriever.search(
             "report data breach", filters={"contract_type": "dpa"}
         )
 
-        self.assertEqual([result.chunk.document_id for result in results], ["dpa-001"])
+        self.assertEqual([result.chunk.document_id for result in results], ["dpa"])
 
     def test_repeated_notice_search_is_deterministic(self) -> None:
         first = self.retriever.search("notice")
