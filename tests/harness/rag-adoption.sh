@@ -131,6 +131,14 @@ SH
   assert_contains high-risk-sandbox.log "SANDBOX_RUN_RESULT=pass"
   bash scripts/check-sandbox-evidence.sh > high-risk-evidence.log 2>&1
   assert_contains high-risk-evidence.log "SANDBOX_EVIDENCE_RESULT=pass"
+  PYTHONPATH=src bash scripts/agent-finish.sh --best-effort > high-risk-finish.log 2>&1
+  assert_contains high-risk-finish.log "AGENT_FINISH_RESULT=pass"
+  assert_file_contains "$rag_root" "finish-summary.md" "check-review-evidence"
+  assert_file_contains "$rag_root" "finish-summary.md" "check-architecture-evidence"
+  assert_file_contains "$rag_root" "finish-summary.md" "check-command-ledger"
+  assert_file_contains "$rag_root" "finish-summary.md" "check-sandbox-evidence"
+  assert_file_contains "$rag_root" "finish-summary.md" "agent-verify"
+  assert_contains high-risk-finish.log "HARNESS_VERIFY_RESULT=pass"
 )
 
 if find "$rag_source" -type d \
