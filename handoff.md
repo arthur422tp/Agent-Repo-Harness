@@ -2,31 +2,31 @@
 
 ## Current State
 
-Harness ergonomics and simplification are complete. Gate-selection detail now
-lives in `docs/agent/gate-guide.md`, Minimal/Standard/High-Risk profiles remain
-documentation-only recommendations, public and installed entrypoints use
-concise navigation, and the human-readable finish summary groups existing
-checks without changing the JSON contract.
+The contract RAG example is now an offline deterministic adoption fixture with
+synthetic contracts, lexical retrieval, cited extractive answers, fixed evals,
+security tests, and Minimal/Standard/High-Risk harness scenarios.
 
 ## Verification
 
 - `bash validate-harness.sh`: PASS
 - `bash templates/scripts/check-doc-links.sh .`: PASS
-- Installed-target finish smoke: PASS in `/private/tmp/agent-harness-ergonomics-target`
 - `bash templates/scripts/agent-audit.sh`: PASS
+- RAG unit tests and evals: PASS through the repository validation suite
+- Standard installed-target finish: PASS
+- High-Risk fake-runner sandbox evidence: PASS
 
-## Evidence
+## Environment Isolation
 
-- Latest installed finish run: `/private/tmp/agent-harness-ergonomics-target/.agent/runs/20260620-125802/`
-- Latest source audit run: `.agent/audits/20260620-125815/`
+- No third-party runtime packages required.
+- No global Python package installation performed.
+- Local `.venv` and generated Python caches remain ignored and untracked.
 
-## Compatibility
+## Adoption Findings
 
-- No completion flags, schemas, or gates added or removed.
-- Gate execution order and strict/best-effort semantics unchanged.
-- `finish-summary.json` contract unchanged.
+- See `examples/rag-contract-system/adoption/report.md` for measured setup,
+  evidence cost, useful gates, and follow-up actions.
 
 ## Next Action
 
-Use the simplified profile guidance in real repositories and collect adoption
-feedback before considering additional runtime or evidence capabilities.
+Use the fixture to evaluate future harness changes before adding new gates or
+runtime capabilities.

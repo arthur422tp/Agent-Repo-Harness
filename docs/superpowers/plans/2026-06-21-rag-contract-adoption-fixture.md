@@ -1455,7 +1455,7 @@ git commit -m "test: add RAG harness adoption validation"
 - Modify: `handoff.md`
 - Modify: `docs/superpowers/plans/2026-06-21-rag-contract-adoption-fixture.md`
 
-- [ ] **Step 1: Update changelog**
+- [x] **Step 1: Update changelog**
 
 Under `## Unreleased`, add:
 
@@ -1464,7 +1464,7 @@ Under `## Unreleased`, add:
   evaluation suite, and harness adoption fixture.
 ```
 
-- [ ] **Step 2: Run full validation**
+- [x] **Step 2: Run full validation**
 
 ```bash
 bash validate-harness.sh
@@ -1472,7 +1472,7 @@ bash validate-harness.sh
 
 Expected: PASS.
 
-- [ ] **Step 3: Run doc links and source audit**
+- [x] **Step 3: Run doc links and source audit**
 
 ```bash
 bash templates/scripts/check-doc-links.sh .
@@ -1481,7 +1481,7 @@ bash templates/scripts/agent-audit.sh
 
 Expected: `DOC_LINKS_RESULT=pass` and `AGENT_AUDIT_RESULT=pass`.
 
-- [ ] **Step 4: Verify no environment pollution**
+- [x] **Step 4: Verify no environment pollution**
 
 Run:
 
@@ -1497,7 +1497,7 @@ Expected:
   evidence remain
 - no global package installation was performed
 
-- [ ] **Step 5: Update handoff**
+- [x] **Step 5: Update handoff**
 
 Add actual results to `handoff.md`:
 
@@ -1534,12 +1534,12 @@ Use the fixture to evaluate future harness changes before adding new gates or
 runtime capabilities.
 ```
 
-- [ ] **Step 6: Mark this plan complete**
+- [x] **Step 6: Mark this plan complete**
 
 Mark completed steps `[x]` only after validation, audit, adoption report, and
 handoff evidence are current.
 
-- [ ] **Step 7: Inspect final status**
+- [x] **Step 7: Inspect final status**
 
 ```bash
 git status --short
@@ -1548,7 +1548,7 @@ git status --short
 Expected: only intended tracked changes and expected untracked repository
 `.agent/` evidence.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add CHANGELOG.md handoff.md docs/superpowers/plans/2026-06-21-rag-contract-adoption-fixture.md
