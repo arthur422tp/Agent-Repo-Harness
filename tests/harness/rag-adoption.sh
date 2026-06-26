@@ -133,11 +133,21 @@ SH
   assert_contains high-risk-evidence.log "SANDBOX_EVIDENCE_RESULT=pass"
   PYTHONPATH=src bash scripts/agent-finish.sh --best-effort > high-risk-finish.log 2>&1
   assert_contains high-risk-finish.log "AGENT_FINISH_RESULT=pass"
-  assert_file_contains "$rag_root" "finish-summary.md" "check-review-evidence"
-  assert_file_contains "$rag_root" "finish-summary.md" "check-architecture-evidence"
-  assert_file_contains "$rag_root" "finish-summary.md" "check-command-ledger"
-  assert_file_contains "$rag_root" "finish-summary.md" "check-sandbox-evidence"
-  assert_file_contains "$rag_root" "finish-summary.md" "agent-verify"
+  high_risk_run_dir="$(sed -n 's/^Run directory: //p' high-risk-finish.log | tail -n 1)"
+  if [ -z "$high_risk_run_dir" ]; then
+    echo "ERROR: expected high-risk finish log to include run directory"
+    exit 1
+  fi
+  high_risk_summary_file="$high_risk_run_dir/finish-summary.md"
+  if [ ! -f "$high_risk_summary_file" ]; then
+    echo "ERROR: expected high-risk finish summary: $high_risk_summary_file"
+    exit 1
+  fi
+  assert_contains "$high_risk_summary_file" "check-review-evidence"
+  assert_contains "$high_risk_summary_file" "check-architecture-evidence"
+  assert_contains "$high_risk_summary_file" "check-command-ledger"
+  assert_contains "$high_risk_summary_file" "check-sandbox-evidence"
+  assert_contains "$high_risk_summary_file" "agent-verify"
   assert_contains high-risk-finish.log "HARNESS_VERIFY_RESULT=pass"
 )
 
