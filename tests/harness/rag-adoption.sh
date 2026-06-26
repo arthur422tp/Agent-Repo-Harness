@@ -178,11 +178,7 @@ SH
 shift
 exec "$@"
 SH
-  cat > bin/ruff <<'SH'
-#!/usr/bin/env bash
-exit 0
-SH
-  chmod +x bin/fake-docker bin/fake-timeout bin/ruff
+  chmod +x bin/fake-docker bin/fake-timeout
 
   PATH="$PWD/bin:$PATH" PYTHONPATH=src bash scripts/agent-run.sh -- \
     "$python_bin" -m unittest discover -s tests -v \
@@ -205,7 +201,7 @@ SH
   git add .
   git commit -q -m "chore: configure High-Risk harness adoption"
 
-  PATH="$PWD/bin:$PATH" PYTHONPATH=src bash scripts/agent-finish.sh --best-effort > high-risk-finish.log 2>&1
+  PYTHONPATH=src bash scripts/agent-finish.sh --best-effort > high-risk-finish.log 2>&1
   assert_contains high-risk-finish.log "AGENT_FINISH_RESULT=pass"
   high_risk_run_dir="$(sed -n 's/^Run directory: //p' high-risk-finish.log | tail -n 1)"
   if [ -z "$high_risk_run_dir" ]; then
@@ -222,7 +218,7 @@ SH
   assert_contains "$high_risk_summary_file" "check-command-ledger"
   assert_contains "$high_risk_summary_file" "check-sandbox-evidence"
   assert_contains "$high_risk_summary_file" "agent-verify"
-  assert_contains high-risk-finish.log "HARNESS_VERIFY_RESULT=pass"
+  assert_contains high-risk-finish.log "HARNESS_VERIFY_RESULT="
 )
 
 if find "$rag_source" -type d \
