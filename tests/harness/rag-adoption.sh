@@ -102,6 +102,61 @@ EOF
   assert_file_contains "$rag_root" "finish-summary.md" "### Optional Evidence"
 
   cp adoption/high-risk-task.yml .agent/task.yml
+  cat > .agent/tdd-evidence.yml <<EOF
+status: required
+red_phase:
+  command: "PYTHONPATH=src $python_bin -m unittest tests/test_security.py"
+  observed_failure: "Security regression failed before answer composition treated retrieved instructions as untrusted data."
+green_phase:
+  command: "PYTHONPATH=src $python_bin -m unittest discover -s tests -v"
+  observed_pass: "All RAG fixture tests passed with malicious retrieved instructions treated as data."
+refactor_phase:
+  command: "PYTHONPATH=src $python_bin -m contract_rag.cli eval"
+  result: "All fixed evaluation cases passed."
+tests_added_or_changed:
+  - "tests/test_security.py"
+  - "evals/cases.json"
+notes: "Recorded High-Risk evidence for malicious retrieval isolation."
+EOF
+  cat > .agent/acceptance.yml <<EOF
+acceptance:
+  criteria:
+    - id: malicious-instructions-untrusted
+      description: "Retrieved instructions cannot suppress citations or change answer policy."
+      met: true
+      evidence: "tests/test_security.py"
+      verification: "PYTHONPATH=src $python_bin -m unittest discover -s tests -v"
+    - id: fixed-evals-still-pass
+      description: "Security handling does not break fixed contract evaluation cases."
+      met: true
+      evidence: "evals/cases.json and contract_rag.cli eval"
+      verification: "PYTHONPATH=src $python_bin -m contract_rag.cli eval"
+EOF
+  cat > .agent/review.yml <<EOF
+review:
+  required: true
+  status: approved
+  reviewer: "rag-adoption-fixture"
+  evidence: "tests/test_security.py, evals/cases.json, and high-risk command ledger evidence"
+  summary: "Security-sensitive retrieval behavior is covered by tests and evals."
+  concerns: []
+EOF
+  cat > .agent/architecture.yml <<EOF
+architecture:
+  status: upheld
+  reviewer: "rag-adoption-fixture"
+  evidence: "src/contract_rag/answerer.py, tests/test_security.py, and evals/cases.json"
+  invariants:
+    - id: retrieved-text-is-data
+      description: "Contract text and metadata are never interpreted as executable instructions."
+      status: upheld
+      evidence: "src/contract_rag/answerer.py and tests/test_security.py"
+    - id: citations-remain-required
+      description: "Supported answers retain citations even when retrieved chunks contain hostile text."
+      status: upheld
+      evidence: "tests/test_pipeline.py and tests/test_security.py"
+  notes: "The fixture measures harness evidence flow; it does not claim semantic proof beyond deterministic tests."
+EOF
   "$python_bin" - <<'PY'
 from pathlib import Path
 
@@ -123,15 +178,34 @@ SH
 shift
 exec "$@"
 SH
-  chmod +x bin/fake-docker bin/fake-timeout
+  cat > bin/ruff <<'SH'
+#!/usr/bin/env bash
+exit 0
+SH
+  chmod +x bin/fake-docker bin/fake-timeout bin/ruff
 
-  HARNESS_SANDBOX_RUNNER_BIN="$PWD/bin/fake-docker" \
+  PATH="$PWD/bin:$PATH" PYTHONPATH=src bash scripts/agent-run.sh -- \
+    "$python_bin" -m unittest discover -s tests -v \
+    > high-risk-command-tests.log 2>&1
+  assert_contains high-risk-command-tests.log "COMMAND_RUN_RESULT=pass"
+
+  PATH="$PWD/bin:$PATH" PYTHONPATH=src bash scripts/agent-run.sh -- \
+    "$python_bin" -m contract_rag.cli eval \
+    > high-risk-command-evals.log 2>&1
+  assert_contains high-risk-command-evals.log "COMMAND_RUN_RESULT=pass"
+
+  PATH="$PWD/bin:$PATH" \
+    HARNESS_SANDBOX_RUNNER_BIN="$PWD/bin/fake-docker" \
     HARNESS_SANDBOX_TIMEOUT_BIN="$PWD/bin/fake-timeout" \
     bash scripts/agent-sandbox-run.sh > high-risk-sandbox.log 2>&1
   assert_contains high-risk-sandbox.log "SANDBOX_RUN_RESULT=pass"
   bash scripts/check-sandbox-evidence.sh > high-risk-evidence.log 2>&1
   assert_contains high-risk-evidence.log "SANDBOX_EVIDENCE_RESULT=pass"
-  PYTHONPATH=src bash scripts/agent-finish.sh --best-effort > high-risk-finish.log 2>&1
+
+  git add .
+  git commit -q -m "chore: configure High-Risk harness adoption"
+
+  PATH="$PWD/bin:$PATH" PYTHONPATH=src bash scripts/agent-finish.sh --best-effort > high-risk-finish.log 2>&1
   assert_contains high-risk-finish.log "AGENT_FINISH_RESULT=pass"
   high_risk_run_dir="$(sed -n 's/^Run directory: //p' high-risk-finish.log | tail -n 1)"
   if [ -z "$high_risk_run_dir" ]; then
