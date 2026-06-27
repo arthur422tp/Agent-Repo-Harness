@@ -2,31 +2,36 @@
 
 ## Current State
 
-The contract RAG example is now an offline deterministic adoption fixture with
-synthetic contracts, lexical retrieval, cited extractive answers, fixed evals,
-security tests, and Minimal/Standard/High-Risk harness scenarios.
+The contract RAG fixture now measures a complete High-Risk Agent-Repo-Harness
+adoption flow. The installed-target scenario records TDD, acceptance, review,
+architecture, command-ledger, sandbox, and repository verification evidence
+without adding new gates, schemas, profile engines, or runtime abstractions.
 
 ## Verification
 
 - `bash validate-harness.sh`: PASS
 - `bash templates/scripts/check-doc-links.sh .`: PASS
 - `bash templates/scripts/agent-audit.sh`: PASS
-- RAG unit tests and evals: PASS through the repository validation suite
-- Standard installed-target finish: PASS
-- High-Risk fake-runner sandbox evidence: PASS
+- RAG Minimal, Standard, and complete High-Risk adoption scenarios: PASS through
+  the repository validation suite
+
+## Adoption Findings
+
+- High-Risk gates add value when each gate maps to a named risk.
+- `PYTHONPATH=src` remains an explicit fixture contract because the example is
+  intentionally not installed as a package.
+- Failure attribution and intervention records stay disabled when no repaired
+  failure or material manual override occurs.
 
 ## Environment Isolation
 
 - No third-party runtime packages required.
 - No global Python package installation performed.
-- Local `.venv` and generated Python caches remain ignored and untracked.
-
-## Adoption Findings
-
-- See `examples/rag-contract-system/adoption/report.md` for measured setup,
-  evidence cost, useful gates, and follow-up actions.
+- The source RAG fixture remains free of `.agent/`, `.venv/`, and
+  `__pycache__/` generated state.
 
 ## Next Action
 
-Use the fixture to evaluate future harness changes before adding new gates or
-runtime capabilities.
+Use the measured adoption report before changing harness gate behavior. Prefer
+docs or fixture configuration unless repeated validation evidence proves a
+harness behavior change is needed.

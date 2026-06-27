@@ -49,7 +49,7 @@ Do not modify:
 **Files:**
 - Modify: `tests/harness/rag-adoption.sh`
 
-- [ ] **Step 1: Add assertions that require High-Risk finish evidence**
+- [x] **Step 1: Add assertions that require High-Risk finish evidence**
 
 In `tests/harness/rag-adoption.sh`, after the existing sandbox evidence check:
 
@@ -71,7 +71,7 @@ add:
   assert_contains high-risk-finish.log "HARNESS_VERIFY_RESULT=pass"
 ```
 
-- [ ] **Step 2: Run validation to verify the missing evidence fails**
+- [x] **Step 2: Run validation to verify the missing evidence fails**
 
 ```bash
 bash validate-harness.sh
@@ -82,7 +82,7 @@ target has not populated review, architecture, command-ledger, or finish
 evidence yet. The failure should occur before the final
 `PASS: validation completed` marker.
 
-- [ ] **Step 3: Confirm the failure is scoped to High-Risk adoption**
+- [x] **Step 3: Confirm the failure is scoped to High-Risk adoption**
 
 Inspect the validation output and confirm these earlier checks still pass:
 
@@ -101,7 +101,7 @@ continuing.
 **Files:**
 - Modify: `tests/harness/rag-adoption.sh`
 
-- [ ] **Step 1: Add High-Risk TDD evidence**
+- [x] **Step 1: Add High-Risk TDD evidence**
 
 After `cp adoption/high-risk-task.yml .agent/task.yml`, write:
 
@@ -124,7 +124,7 @@ notes: "Recorded High-Risk evidence for malicious retrieval isolation."
 EOF
 ```
 
-- [ ] **Step 2: Add High-Risk acceptance evidence**
+- [x] **Step 2: Add High-Risk acceptance evidence**
 
 Immediately after the High-Risk TDD evidence, write:
 
@@ -145,7 +145,7 @@ acceptance:
 EOF
 ```
 
-- [ ] **Step 3: Add High-Risk review evidence**
+- [x] **Step 3: Add High-Risk review evidence**
 
 Immediately after the acceptance evidence, write:
 
@@ -161,7 +161,7 @@ review:
 EOF
 ```
 
-- [ ] **Step 4: Add High-Risk architecture evidence**
+- [x] **Step 4: Add High-Risk architecture evidence**
 
 Immediately after the review evidence, write:
 
@@ -184,7 +184,7 @@ architecture:
 EOF
 ```
 
-- [ ] **Step 5: Run verification commands through `agent-run.sh`**
+- [x] **Step 5: Run verification commands through `agent-run.sh`**
 
 After enabling sandbox and before invoking `agent-sandbox-run.sh`, run:
 
@@ -203,7 +203,7 @@ After enabling sandbox and before invoking `agent-sandbox-run.sh`, run:
 These commands create `.agent/command-runs/*` evidence for the existing
 `requires_command_ledger: true` task flag.
 
-- [ ] **Step 6: Commit the installed target High-Risk evidence before finish**
+- [x] **Step 6: Commit the installed target High-Risk evidence before finish**
 
 Before running `agent-finish.sh`, commit the installed target evidence in the
 temporary Git repository:
@@ -215,7 +215,7 @@ temporary Git repository:
 
 This keeps scope and git-diff evidence stable for the finish run.
 
-- [ ] **Step 7: Run the targeted adoption suite through full validation**
+- [x] **Step 7: Run the targeted adoption suite through full validation**
 
 ```bash
 bash validate-harness.sh
@@ -235,7 +235,7 @@ PASS: validation completed
 - Modify: `examples/rag-contract-system/adoption/scenarios.md`
 - Modify: `examples/rag-contract-system/README.md`
 
-- [ ] **Step 1: Update the High-Risk row in `adoption/report.md`**
+- [x] **Step 1: Update the High-Risk row in `adoption/report.md`**
 
 Replace the existing High-Risk table row with:
 
@@ -243,7 +243,7 @@ Replace the existing High-Risk table row with:
 | High-Risk | Copy fixture; install; copy `high-risk-task.yml`; configure repo commands; populate TDD, acceptance, review, architecture, command-ledger, and sandbox evidence; run installed finish | `.agent/task.yml`, `.agent/harness.yml`, `.agent/tdd-evidence.yml`, `.agent/acceptance.yml`, `.agent/review.yml`, `.agent/architecture.yml`, `.agent/command-runs/*`, `.agent/sandbox-runs/*`; temporary fake-runner scripts | Application tests, evals, task validation, command ledger, fake-runner sandbox evidence, and finish passed | Evidence setup is deliberate but verbose; `PYTHONPATH=src` must be present for configured and heuristic Python checks | Architecture, review, command ledger, sandbox evidence, TDD, acceptance, repo verification | Failure attribution and intervention records were not needed because no repaired failure or manual override occurred | Keep High-Risk selective; document `PYTHONPATH=src` as fixture setup, not a new harness feature |
 ```
 
-- [ ] **Step 2: Add a measured High-Risk finding**
+- [x] **Step 2: Add a measured High-Risk finding**
 
 Under `## Initial Findings`, add:
 
@@ -256,7 +256,7 @@ Under `## Initial Findings`, add:
   had no repaired failure or material manual override.
 ```
 
-- [ ] **Step 3: Update `adoption/scenarios.md` High-Risk instructions**
+- [x] **Step 3: Update `adoption/scenarios.md` High-Risk instructions**
 
 Replace the High-Risk section with:
 
@@ -276,7 +276,7 @@ Replace the High-Risk section with:
   intentionally left disabled, and how unavailable sandbox runners were handled.
 ```
 
-- [ ] **Step 4: Clarify the README verification environment**
+- [x] **Step 4: Clarify the README verification environment**
 
 In `examples/rag-contract-system/README.md`, make sure the verification section
 contains this paragraph:
@@ -290,7 +290,7 @@ and any host-provided Python test discovery must inherit the same source path.
 If the paragraph already exists with equivalent wording, keep the existing text
 and do not duplicate it.
 
-- [ ] **Step 5: Run docs and full validation**
+- [x] **Step 5: Run docs and full validation**
 
 ```bash
 bash templates/scripts/check-doc-links.sh .
@@ -304,7 +304,7 @@ DOC_LINKS_RESULT=pass
 PASS: validation completed
 ```
 
-- [ ] **Step 6: Commit the measured adoption update**
+- [x] **Step 6: Commit the measured adoption update**
 
 ```bash
 git add tests/harness/rag-adoption.sh examples/rag-contract-system/adoption/report.md examples/rag-contract-system/adoption/scenarios.md examples/rag-contract-system/README.md
@@ -318,7 +318,7 @@ git commit -m "test: measure RAG high-risk harness adoption"
 - Modify: `handoff.md`
 - Modify: `docs/superpowers/plans/2026-06-26-rag-fixture-harness-friction.md`
 
-- [ ] **Step 1: Update changelog**
+- [x] **Step 1: Update changelog**
 
 Under `## Unreleased`, add:
 
@@ -327,7 +327,7 @@ Under `## Unreleased`, add:
   evidence-backed harness friction.
 ```
 
-- [ ] **Step 2: Run full validation**
+- [x] **Step 2: Run full validation**
 
 ```bash
 bash validate-harness.sh
@@ -339,7 +339,7 @@ Expected:
 PASS: validation completed
 ```
 
-- [ ] **Step 3: Run doc links and source audit**
+- [x] **Step 3: Run doc links and source audit**
 
 ```bash
 bash templates/scripts/check-doc-links.sh .
@@ -353,7 +353,7 @@ DOC_LINKS_RESULT=pass
 AGENT_AUDIT_RESULT=pass
 ```
 
-- [ ] **Step 4: Verify source fixture purity**
+- [x] **Step 4: Verify source fixture purity**
 
 ```bash
 find examples/rag-contract-system -type d \( -name .venv -o -name __pycache__ -o -name .agent \) -prune -print
@@ -366,7 +366,7 @@ Expected:
 - git status shows only intended tracked changes and repository-level `.agent/`
   runtime evidence
 
-- [ ] **Step 5: Update handoff**
+- [x] **Step 5: Update handoff**
 
 Replace the current `## Current State` and following sections in `handoff.md`
 with:
@@ -409,12 +409,12 @@ docs or fixture configuration unless repeated validation evidence proves a
 harness behavior change is needed.
 ```
 
-- [ ] **Step 6: Mark this plan complete**
+- [x] **Step 6: Mark this plan complete**
 
 Mark every completed step in this plan with `[x]` only after validation,
 handoff, audit, and source-purity evidence are current.
 
-- [ ] **Step 7: Inspect final status**
+- [x] **Step 7: Inspect final status**
 
 ```bash
 git status --short --branch
@@ -424,7 +424,7 @@ git diff --stat
 Expected: only intended tracked changes remain, plus expected untracked
 repository-level `.agent/` evidence.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add CHANGELOG.md handoff.md docs/superpowers/plans/2026-06-26-rag-fixture-harness-friction.md
