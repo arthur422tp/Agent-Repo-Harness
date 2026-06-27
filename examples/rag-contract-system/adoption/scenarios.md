@@ -31,10 +31,14 @@ If a Python package or optional tool must be installed, create and activate
 ## High-Risk
 
 - Task: `adoption/high-risk-task.yml`
-- Additional evidence: TDD, acceptance, review, architecture, command ledger,
-  and sandbox evidence when a runner is available
-- Verify: `tests/test_security.py`, full evals, command ledger, and sandbox
-  evidence check
-- Finish: run only after all enabled evidence is populated
-- Record: whether each enabled gate answered a named risk and how unavailable
-  sandbox runners were handled.
+- Additional evidence: `.agent/tdd-evidence.yml`, `.agent/acceptance.yml`,
+  `.agent/review.yml`, `.agent/architecture.yml`, `.agent/command-runs/*`, and
+  `.agent/sandbox-runs/*`
+- Verify: `PYTHONPATH=src python -m unittest discover -s tests -v`,
+  `PYTHONPATH=src python -m contract_rag.cli eval`, command ledger evidence,
+  and sandbox evidence check
+- Finish: `PYTHONPATH=src bash scripts/agent-finish.sh --best-effort` after all
+  enabled evidence is populated. Best-effort repo verification may warn when an
+  optional host tool such as `ruff` is unavailable.
+- Record: whether each enabled gate answered a named risk, which gates were
+  intentionally left disabled, and how unavailable sandbox runners were handled.

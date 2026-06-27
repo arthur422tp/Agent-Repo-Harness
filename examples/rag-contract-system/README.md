@@ -46,6 +46,10 @@ PYTHONPATH=src python -m unittest discover -s tests -v
 PYTHONPATH=src python -m contract_rag.cli eval
 ```
 
+The `PYTHONPATH=src` prefix is part of the fixture contract. The project is not
+installed as a package during adoption tests, so configured harness commands
+and any host-provided Python test discovery must inherit the same source path.
+
 ## Corpus
 
 The synthetic corpus contains a Master Services Agreement, Data Processing
