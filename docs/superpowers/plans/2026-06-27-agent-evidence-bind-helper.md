@@ -45,7 +45,7 @@ Modify:
 - Modify: `tests/harness/static-install.sh`
 - Modify: `validate-harness.sh`
 
-- [ ] **Step 1: Add temporary roots**
+- [x] **Step 1: Add temporary roots**
 
 In `tests/harness/lib.sh`, add these variables near the other acceptance-related fixture roots:
 
@@ -58,7 +58,7 @@ evidence_bind_replace_root="$tmp_root/evidence-bind-replace"
 evidence_bind_strict_root="$tmp_root/evidence-bind-strict"
 ```
 
-- [ ] **Step 2: Add source and installed-path assertions**
+- [x] **Step 2: Add source and installed-path assertions**
 
 In `tests/harness/static-install.sh`, add `templates/scripts/agent-evidence-bind.sh` beside the other template script assertions:
 
@@ -72,7 +72,7 @@ Add the installed target assertion beside the installed script checks:
 assert_file_exists "$target_root/scripts/agent-evidence-bind.sh"
 ```
 
-- [ ] **Step 3: Add the validation suite entry**
+- [x] **Step 3: Add the validation suite entry**
 
 In `validate-harness.sh`, add the new suite after `tests/harness/acceptance-review.sh`:
 
@@ -80,7 +80,7 @@ In `validate-harness.sh`, add the new suite after `tests/harness/acceptance-revi
 run_test "evidence bind helper" bash tests/harness/evidence-bind.sh
 ```
 
-- [ ] **Step 4: Create the failing evidence-bind test suite**
+- [x] **Step 4: Create the failing evidence-bind test suite**
 
 Create `tests/harness/evidence-bind.sh`:
 
@@ -208,7 +208,7 @@ cp -R "$evidence_bind_success_root" "$evidence_bind_idempotent_root"
 pass "evidence bind idempotent append"
 ```
 
-- [ ] **Step 5: Run the new suite to verify it is red**
+- [x] **Step 5: Run the new suite to verify it is red**
 
 Run:
 
@@ -223,7 +223,7 @@ Expected: FAIL because `templates/scripts/agent-evidence-bind.sh` does not exist
 **Files:**
 - Create: `templates/scripts/agent-evidence-bind.sh`
 
-- [ ] **Step 1: Add the helper script**
+- [x] **Step 1: Add the helper script**
 
 Create `templates/scripts/agent-evidence-bind.sh`:
 
@@ -530,7 +530,7 @@ else
 fi
 ```
 
-- [ ] **Step 2: Make the helper executable**
+- [x] **Step 2: Make the helper executable**
 
 Run:
 
@@ -538,7 +538,7 @@ Run:
 chmod +x templates/scripts/agent-evidence-bind.sh
 ```
 
-- [ ] **Step 3: Run focused tests**
+- [x] **Step 3: Run focused tests**
 
 Run:
 
@@ -556,7 +556,7 @@ Expected: PASS.
 - Modify: `docs/agent/gate-guide.md`
 - Modify: `templates/docs/agent/gate-guide.md`
 
-- [ ] **Step 1: Add README guidance**
+- [x] **Step 1: Add README guidance**
 
 In `README.md`, add this paragraph near evidence refs guidance:
 
@@ -568,7 +568,7 @@ The helper updates an existing acceptance criterion and does not invent new
 criteria.
 ```
 
-- [ ] **Step 2: Add Traditional Chinese README guidance**
+- [x] **Step 2: Add Traditional Chinese README guidance**
 
 In `README.zh-TW.md`, add the equivalent guidance:
 
@@ -579,7 +579,7 @@ In `README.zh-TW.md`, add the equivalent guidance:
 acceptance criterion，不會自動發明新的 criterion。
 ```
 
-- [ ] **Step 3: Add Gate Guide usage**
+- [x] **Step 3: Add Gate Guide usage**
 
 In both gate guide files, add this command example in the acceptance evidence section:
 
@@ -591,7 +591,7 @@ bash scripts/agent-evidence-bind.sh \
   --gate agent-verify
 ```
 
-- [ ] **Step 4: Run doc link checks**
+- [x] **Step 4: Run doc link checks**
 
 Run:
 
@@ -607,7 +607,7 @@ Expected: PASS.
 - Modify: all files from Tasks 1-3.
 - Modify: `docs/superpowers/plans/2026-06-27-agent-evidence-bind-helper.md`
 
-- [ ] **Step 1: Run full validation**
+- [x] **Step 1: Run full validation**
 
 Run:
 
@@ -618,11 +618,11 @@ bash templates/scripts/check-doc-links.sh .
 
 Expected: both commands pass.
 
-- [ ] **Step 2: Mark completed plan steps**
+- [x] **Step 2: Mark completed plan steps**
 
 After verification passes, update completed checkboxes in this plan from `- [ ]` to `- [x]`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add templates/scripts/agent-evidence-bind.sh tests/harness/evidence-bind.sh tests/harness/lib.sh tests/harness/static-install.sh validate-harness.sh README.md README.zh-TW.md docs/agent/gate-guide.md templates/docs/agent/gate-guide.md docs/superpowers/plans/2026-06-27-agent-evidence-bind-helper.md

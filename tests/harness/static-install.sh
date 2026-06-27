@@ -59,6 +59,7 @@ for required_path in \
   templates/scripts/check-doc-links.sh \
   templates/scripts/check-tdd-evidence.sh \
   templates/scripts/validate-handoff.sh \
+  templates/scripts/agent-evidence-bind.sh \
   templates/scripts/check-acceptance.sh \
   templates/scripts/check-evidence-refs.py \
   templates/scripts/check-review-evidence.sh \
@@ -219,6 +220,7 @@ for required_path in \
   scripts/agent-preflight.sh \
   scripts/agent-finish.sh \
   scripts/agent-run.sh \
+  scripts/agent-evidence-bind.sh \
   scripts/agent-sandbox-run.sh \
   scripts/check-agent-md.sh \
   scripts/check-policy.sh \

@@ -310,6 +310,12 @@ expected result markers or finish-summary gate statuses. `evidence_refs`
 improves traceability; it does not prove semantic correctness beyond the
 configured checks.
 
+When strict acceptance evidence is enabled, agents should use
+`scripts/agent-evidence-bind.sh` to bind `.agent/runs/<timestamp>/`
+artifacts into `.agent/acceptance.yml` instead of hand-editing run paths.
+The helper updates an existing acceptance criterion and does not invent new
+criteria.
+
 ```yaml
 # .agent/harness.yml
 evidence:

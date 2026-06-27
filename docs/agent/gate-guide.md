@@ -104,6 +104,17 @@ to verifiable repo-local artifacts.
 content markers, and selected finish-summary fields. It does not prove semantic
 correctness beyond the configured checks.
 
+Use the bind helper after a finish run when an existing acceptance criterion
+should point at that run's gate evidence:
+
+```bash
+bash scripts/agent-evidence-bind.sh \
+  --run .agent/runs/20260627-091500 \
+  --acceptance .agent/acceptance.yml \
+  --criterion AC-1 \
+  --gate agent-verify
+```
+
 ## Selection Rules
 
 1. Start with Minimal.

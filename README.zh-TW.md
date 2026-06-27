@@ -289,6 +289,11 @@ Harness 會驗證引用的檔案存在，並在設定時檢查預期的結果 ma
 finish-summary gate 狀態。`evidence_refs` 強化可追溯性；它不保證超出
 設定檢查之外的語意正確性。
 
+啟用嚴格 acceptance evidence 時，agent 應使用
+`scripts/agent-evidence-bind.sh` 將 `.agent/runs/<timestamp>/` 成果綁定到
+`.agent/acceptance.yml`，不要手動填寫 run path。此 helper 只更新既有
+acceptance criterion，不會自動發明新的 criterion。
+
 ```yaml
 # .agent/harness.yml
 evidence:
