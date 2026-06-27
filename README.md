@@ -35,16 +35,24 @@ For public repository metadata and the `v0.1.1` release checklist, see
 ## Try It in Three Steps
 
 1. Preview and install the harness into a target repository.
-2. Enter that target repository.
-3. Run the completion gate once to see the workflow.
+2. Enter that target repository and review the installed scaffold.
+3. Commit a clean harness baseline before using it for feature work.
 
 ```bash
 bash install-agent-harness.sh --dry-run /path/to/target-repo
 bash install-agent-harness.sh /path/to/target-repo
 cd /path/to/target-repo
+git add AGENTS.md CLAUDE.md agent.md handoff.md .agent docs/agent scripts schemas
+git commit -m "Initialize project with Agent-Repo-Harness baseline"
+```
+
+For a real task, edit `.agent/task.yml`, set repository-owned verification
+commands in `.agent/harness.yml`, then run:
+
+```bash
+bash scripts/agent-preflight.sh
 bash scripts/agent-finish.sh --best-effort
 ```
-For real tasks, edit .agent/task.yml, then run scripts/agent-finish.sh again.
 
 ## What It Is Not
 
@@ -201,6 +209,77 @@ newly installed scaffold files from being reported as feature-task changes.
 Structured high-risk approval is preferred. Installed projects document its
 contract in `docs/agent/policy-approval.md`; agents must not record approval
 without explicit human instruction.
+
+## Choose An Adoption Path
+
+Agent-Repo-Harness supports both greenfield projects and projects that are
+already in progress. The workflow is similar, but the baseline discipline is
+different.
+
+### Greenfield Project
+
+Use this path when the repository is new or before substantial product work has
+started.
+
+1. Install the harness immediately after creating the repository.
+2. Fill `agent.md` with the intended repository shape, coding rules, and
+   operating assumptions.
+3. Set `.agent/harness.yml` to the first real verification commands, even if
+   they are simple smoke checks at the start.
+4. Configure `.agent/policy.yml` for paths that should require review or
+   explicit approval.
+5. Commit the harness files together with the initial project scaffold.
+6. For each new task, update `.agent/task.yml`, choose Minimal, Standard, or
+   selective High-Risk gates, then finish through `scripts/agent-finish.sh`.
+
+This gives every later AI-assisted change the same scope, policy,
+verification, and evidence contract from the beginning of the project.
+
+### Existing Or Mid-Development Project
+
+Use this path when product code, tests, or documentation already exist. The
+important part is to treat installation as its own baseline change, not as part
+of an unrelated feature.
+
+1. Install with `--dry-run` first, then use `--backup` or `--force` only after
+   reviewing conflicts with existing `AGENTS.md`, `CLAUDE.md`, `scripts/`,
+   `docs/agent/`, or `.agent/` files.
+2. Fill `agent.md` from concrete repository facts and keep `handoff.md` focused
+   on the current state.
+3. Set `.agent/harness.yml` to the project's real test, lint, build, or type
+   check commands instead of relying only on heuristic verification.
+4. Commit the harness scaffold as a clean baseline.
+5. Start new work with Minimal, use Standard for behavior changes, and add
+   High-Risk gates only for named risks.
+
+For a mid-development branch with unfinished product changes, install the
+harness in a separate branch or worktree when possible. If that is not
+practical, commit or stash unrelated work first, then install and baseline the
+harness before asking agents to use scope checks. Otherwise `check-scope.sh`
+will correctly see both scaffold files and unfinished product changes in the
+same diff.
+
+## Production Readiness
+
+This project is usable for real repositories when the adopting team accepts its
+runtime boundary: it is a repo-local completion harness, not a sandbox or agent
+runtime. The strongest current use case is making AI-assisted work auditable by
+requiring scoped changes, policy checks, repo-owned verification, and durable
+finish evidence before completion claims.
+
+Before depending on it in a production repository:
+
+- define project-specific verification in `.agent/harness.yml`
+- configure `.agent/policy.yml` for protected paths and approval rules
+- keep High-Risk optional gates selective and tied to named risks
+- run `bash scripts/agent-finish.sh` on real work and inspect
+  `.agent/runs/<timestamp>/finish-summary.json`
+- keep `handoff.md` concise enough that the next agent or maintainer can resume
+
+The recommended next product plan is adoption hardening rather than adding more
+gates: run the harness on two or three real repositories, record friction in
+`handoff.md` or `docs/agent/discoveries.md`, then improve installer conflict
+handling, upgrade guidance, and examples based on repeated adoption evidence.
 
 ## Evidence And Optional Gates
 

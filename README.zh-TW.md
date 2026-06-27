@@ -22,29 +22,35 @@ AI coding agent 避免在尚未完成下列事項前便宣告完成：
 
 ## 版本管理
 
-目前版本：`0.1.0`。
+目前版本：`0.1.1`。
 
 變更內容請見 [CHANGELOG.md](CHANGELOG.md)，版本管理與升級預期請見
 [docs/versioning.md](docs/versioning.md)。
 
-公開 repository metadata 與 `v0.1.0` 發行檢查清單請見
+公開 repository metadata 與 `v0.1.1` 發行檢查清單請見
 [docs/public-packaging.md](docs/public-packaging.md)。
 
 ## 三個步驟開始試用
 
 1. 預覽並將 harness 安裝至目標 repository。
-2. 進入該目標 repository。
-3. 執行一次完成閘門，查看工作流程。
+2. 進入該目標 repository，檢查安裝後的 scaffold。
+3. 先提交乾淨的 harness baseline，再用於功能開發。
 
 ```bash
 bash install-agent-harness.sh --dry-run /path/to/target-repo
 bash install-agent-harness.sh /path/to/target-repo
 cd /path/to/target-repo
-bash scripts/agent-finish.sh --best-effort
+git add AGENTS.md CLAUDE.md agent.md handoff.md .agent docs/agent scripts schemas
+git commit -m "Initialize project with Agent-Repo-Harness baseline"
 ```
 
-針對實際任務，請編輯 `.agent/task.yml`，再執行一次
-`scripts/agent-finish.sh`。
+針對實際任務，請編輯 `.agent/task.yml`，在 `.agent/harness.yml` 設定由
+repository 擁有的驗證命令，然後執行：
+
+```bash
+bash scripts/agent-preflight.sh
+bash scripts/agent-finish.sh --best-effort
+```
 
 ## 它不是什麼
 
@@ -193,6 +199,68 @@ git commit -m "Initialize project with Agent-Repo-Harness baseline"
 建議使用結構化的高風險核准。安裝後的專案會在
 `docs/agent/policy-approval.md` 記載其契約；若未取得明確的人工作業
 指示，agent 不得記錄核准。
+
+## 選擇導入路徑
+
+Agent-Repo-Harness 同時支援從零開始的新專案，以及已經開發到一半的既有
+專案。兩者的工作流程相近，但 baseline 的處理方式不同。
+
+### 從頭開發的新專案
+
+當 repository 是新的，或還沒有大量產品程式碼時，使用這條路徑。
+
+1. 建立 repository 後立即安裝 harness。
+2. 在 `agent.md` 填入預期的 repository 形態、coding rules 與操作假設。
+3. 在 `.agent/harness.yml` 設定第一組真實 verification 命令，即使一開始只是
+   簡單 smoke checks。
+4. 在 `.agent/policy.yml` 設定需要 review 或明確核准的路徑。
+5. 將 harness files 與初始 project scaffold 一起提交。
+6. 每個新任務先更新 `.agent/task.yml`，選擇 Minimal、Standard 或選擇性的
+   High-Risk gates，再透過 `scripts/agent-finish.sh` 完成。
+
+這樣之後每一次 AI-assisted change，從專案一開始就會使用同一套 scope、
+policy、verification 與 evidence contract。
+
+### 既有或開發中的專案
+
+當產品程式碼、測試或文件已經存在時，使用這條路徑。重點是把安裝視為
+獨立的 baseline 變更，不要把它混在無關的功能變更中。
+
+1. 先用 `--dry-run` 安裝預覽；只有在檢查與既有 `AGENTS.md`、`CLAUDE.md`、
+   `scripts/`、`docs/agent/` 或 `.agent/` 檔案的衝突後，才使用 `--backup`
+   或 `--force`。
+2. 根據具體 repository 事實填寫 `agent.md`，並讓 `handoff.md` 只描述目前狀態。
+3. 在 `.agent/harness.yml` 設定專案真正使用的 test、lint、build 或 type
+   check 命令，不要只依賴啟發式 verification。
+4. 將 harness scaffold 提交成乾淨 baseline。
+5. 新工作從 Minimal 開始；行為變更使用 Standard；只有在能回答具名風險時
+   才加上 High-Risk gates。
+
+若目前分支已經有未完成的產品變更，盡可能在獨立 branch 或 worktree 導入
+harness。若做不到，先 commit 或 stash 無關工作，再安裝並 baseline
+harness，之後才要求 agent 使用 scope checks。否則 `check-scope.sh` 會正確地
+把 scaffold 檔案和未完成產品變更看成同一份 diff。
+
+## 正式專案可用性
+
+只要採用團隊接受它的 runtime 邊界，這個專案已經可以用於真實 repository：
+它是 repo-local completion harness，不是 sandbox 或 agent runtime。目前最
+適合的用途，是讓 AI 協作工作在宣稱完成前必須具備範圍限制、政策檢查、
+repository-owned verification，以及持久 finish evidence。
+
+在正式 repository 依賴它之前：
+
+- 在 `.agent/harness.yml` 定義專案專屬 verification
+- 在 `.agent/policy.yml` 設定受保護路徑與核准規則
+- 讓 High-Risk optional gates 保持選擇性，並綁定具名風險
+- 在真實工作上執行 `bash scripts/agent-finish.sh`，並檢查
+  `.agent/runs/<timestamp>/finish-summary.json`
+- 讓 `handoff.md` 精簡到下一位 agent 或 maintainer 能接續
+
+我建議下一個產品計劃先做 adoption hardening，而不是再增加 gates：在兩到
+三個真實 repository 上使用 harness，把摩擦記錄到 `handoff.md` 或
+`docs/agent/discoveries.md`，再依重複出現的導入證據改善 installer 衝突處理、
+升級指引與範例。
 
 ## 證據與選用閘門
 
