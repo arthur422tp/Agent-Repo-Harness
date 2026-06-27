@@ -44,6 +44,7 @@ for required_path in \
   schemas/task.schema.json \
   schemas/handoff.schema.json \
   schemas/acceptance.schema.json \
+  schemas/evidence-ref.schema.json \
   schemas/review.schema.json \
   schemas/architecture.schema.json \
   schemas/episode.schema.json \
@@ -59,6 +60,7 @@ for required_path in \
   templates/scripts/check-tdd-evidence.sh \
   templates/scripts/validate-handoff.sh \
   templates/scripts/check-acceptance.sh \
+  templates/scripts/check-evidence-refs.py \
   templates/scripts/check-review-evidence.sh \
   templates/scripts/check-architecture-evidence.sh \
   templates/scripts/check-command-ledger.sh \
@@ -223,6 +225,7 @@ for required_path in \
   scripts/check-scope.sh \
   scripts/check-tdd-evidence.sh \
   scripts/check-acceptance.sh \
+  scripts/check-evidence-refs.py \
   scripts/check-review-evidence.sh \
   scripts/check-architecture-evidence.sh \
   scripts/check-command-ledger.sh \
@@ -242,6 +245,7 @@ for required_path in \
   scripts/validate-subagent-packet.sh \
   scripts/validate-subagent-run.sh \
   schemas/architecture.schema.json \
+  schemas/evidence-ref.schema.json \
   schemas/episode.schema.json \
   schemas/failure-attribution.schema.json \
   schemas/interventions.schema.json

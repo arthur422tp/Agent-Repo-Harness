@@ -66,7 +66,7 @@ Do not modify:
 - Modify: `templates/.agent/harness.yml`
 - Modify: `tests/harness/static-install.sh`
 
-- [ ] **Step 1: Add failing install coverage for the new schema and validator**
+- [x] **Step 1: Add failing install coverage for the new schema and validator**
 
 In `tests/harness/static-install.sh`, add `schemas/evidence-ref.schema.json` to the source required-path list near the other schema entries:
 
@@ -87,7 +87,7 @@ assert_file_exists "$target_root/schemas/evidence-ref.schema.json"
 assert_file_exists "$target_root/scripts/check-evidence-refs.py"
 ```
 
-- [ ] **Step 2: Run validation to verify the contract is red**
+- [x] **Step 2: Run validation to verify the contract is red**
 
 Run:
 
@@ -97,7 +97,7 @@ bash validate-harness.sh
 
 Expected: FAIL because `schemas/evidence-ref.schema.json` and `templates/scripts/check-evidence-refs.py` do not exist yet.
 
-- [ ] **Step 3: Add the evidence ref schema**
+- [x] **Step 3: Add the evidence ref schema**
 
 Create `schemas/evidence-ref.schema.json`:
 
@@ -141,7 +141,7 @@ Create `schemas/evidence-ref.schema.json`:
 }
 ```
 
-- [ ] **Step 4: Extend acceptance schema for `evidence_refs`**
+- [x] **Step 4: Extend acceptance schema for `evidence_refs`**
 
 In `schemas/acceptance.schema.json`, add this property inside each criterion's `properties` map:
 
@@ -171,7 +171,7 @@ Then extend the existing `anyOf` with a third branch:
 
 Keep `additionalProperties: true` for compatibility.
 
-- [ ] **Step 5: Extend harness schema for evidence config**
+- [x] **Step 5: Extend harness schema for evidence config**
 
 In `schemas/harness.schema.json`, add a top-level `evidence` property:
 
@@ -188,7 +188,7 @@ In `schemas/harness.schema.json`, add a top-level `evidence` property:
 
 Keep top-level `"additionalProperties": true`.
 
-- [ ] **Step 6: Add default evidence config to the template harness config**
+- [x] **Step 6: Add default evidence config to the template harness config**
 
 In `templates/.agent/harness.yml`, add this block after `verification:` and before `handoff:`:
 
@@ -203,7 +203,7 @@ evidence:
   allow_text_only_evidence: true
 ```
 
-- [ ] **Step 7: Run validation for schema/config contract**
+- [x] **Step 7: Run validation for schema/config contract**
 
 Run:
 
@@ -214,6 +214,8 @@ bash validate-harness.sh
 Expected: FAIL only because the validator and strict behavior are not implemented yet. No JSON syntax errors should appear.
 
 - [ ] **Step 8: Commit the schema/config contract**
+
+Status: Pending explicit commit authorization; schema/config contract implementation is complete and verified through the expected staged validation failure plus installed-target parity after adding the installer copy rule.
 
 ```bash
 git add schemas/evidence-ref.schema.json schemas/acceptance.schema.json schemas/harness.schema.json templates/.agent/harness.yml tests/harness/static-install.sh
@@ -227,7 +229,7 @@ git commit -m "feat: add evidence ref schema contract"
 - Modify: `tests/harness/lib.sh`
 - Modify: `tests/harness/acceptance-review.sh`
 
-- [ ] **Step 1: Add temporary fixture roots**
+- [x] **Step 1: Add temporary fixture roots**
 
 In `tests/harness/lib.sh`, near the existing acceptance roots, add:
 
@@ -241,7 +243,7 @@ acceptance_command_output_ref_root="$tmp_root/acceptance-command-output-ref"
 acceptance_command_output_missing_root="$tmp_root/acceptance-command-output-missing"
 ```
 
-- [ ] **Step 2: Add direct validator tests for path and content behavior**
+- [x] **Step 2: Add direct validator tests for path and content behavior**
 
 Append these cases before the review evidence section in `tests/harness/acceptance-review.sh`:
 
@@ -315,7 +317,7 @@ mkdir -p "$acceptance_command_output_missing_root/.agent/runs/20260627-091500" \
 pass "evidence refs command output missing content failure"
 ```
 
-- [ ] **Step 3: Run validator tests to verify they fail**
+- [x] **Step 3: Run validator tests to verify they fail**
 
 Run:
 
@@ -325,7 +327,7 @@ bash validate-harness.sh
 
 Expected: FAIL because `templates/scripts/check-evidence-refs.py` does not exist.
 
-- [ ] **Step 4: Implement the validator**
+- [x] **Step 4: Implement the validator**
 
 Create `templates/scripts/check-evidence-refs.py`:
 
@@ -536,7 +538,7 @@ if __name__ == "__main__":
     raise SystemExit(main())
 ```
 
-- [ ] **Step 5: Make the validator executable**
+- [x] **Step 5: Make the validator executable**
 
 Run:
 
@@ -544,7 +546,7 @@ Run:
 chmod +x templates/scripts/check-evidence-refs.py
 ```
 
-- [ ] **Step 6: Run focused validator tests**
+- [x] **Step 6: Run focused validator tests**
 
 Run:
 
@@ -555,6 +557,8 @@ bash validate-harness.sh
 Expected: FAIL because acceptance strict mode has not been integrated yet, but the direct `check-evidence-refs.py` tests should pass.
 
 - [ ] **Step 7: Commit validator implementation**
+
+Status: Pending explicit commit authorization; direct evidence-ref validator tests pass. Full `bash validate-harness.sh` is currently blocked before acceptance-review by unrelated doc-link failures in `docs/superpowers/specs/2026-06-27-agent-facing-productization.md` for future `scripts/agent-task-profile.sh` and `scripts/agent-evidence-bind.sh` references.
 
 ```bash
 git add templates/scripts/check-evidence-refs.py tests/harness/lib.sh tests/harness/acceptance-review.sh
@@ -567,7 +571,7 @@ git commit -m "feat: validate acceptance evidence refs"
 - Modify: `templates/scripts/check-acceptance.sh`
 - Modify: `tests/harness/acceptance-review.sh`
 
-- [ ] **Step 1: Add backward compatibility and strict-mode acceptance tests**
+- [x] **Step 1: Add backward compatibility and strict-mode acceptance tests**
 
 Append these cases after the existing "Acceptance gate required complete" case in `tests/harness/acceptance-review.sh`:
 
@@ -637,7 +641,7 @@ mkdir -p "$acceptance_strict_text_only_root/.agent" "$acceptance_strict_text_onl
 pass "acceptance strict refs reject text-only evidence"
 ```
 
-- [ ] **Step 2: Add strict finish-summary success and failure tests**
+- [x] **Step 2: Add strict finish-summary success and failure tests**
 
 Append:
 
@@ -749,7 +753,7 @@ JSON
 pass "acceptance strict refs wrong gate status failure"
 ```
 
-- [ ] **Step 3: Add invalid path tests**
+- [x] **Step 3: Add invalid path tests**
 
 Append:
 
@@ -832,7 +836,7 @@ mkdir -p "$acceptance_traversal_ref_root/.agent" "$acceptance_traversal_ref_root
 pass "acceptance strict refs path traversal failure"
 ```
 
-- [ ] **Step 4: Run acceptance integration tests to verify they fail**
+- [x] **Step 4: Run acceptance integration tests to verify they fail**
 
 Run:
 
@@ -842,7 +846,7 @@ bash validate-harness.sh
 
 Expected: FAIL because `check-acceptance.sh` does not yet read `.agent/harness.yml` or enforce strict refs.
 
-- [ ] **Step 5: Update `check-acceptance.sh` argument handling and config reads**
+- [x] **Step 5: Update `check-acceptance.sh` argument handling and config reads**
 
 Change usage to:
 
@@ -889,7 +893,7 @@ if [ "$strict_refs" = "true" ]; then
 fi
 ```
 
-- [ ] **Step 6: Update inline acceptance validation for strict refs**
+- [x] **Step 6: Update inline acceptance validation for strict refs**
 
 Pass `strict_refs` and `allow_text_only_evidence` to the inline Python:
 
@@ -932,7 +936,7 @@ if strict_refs and not allow_text_only_evidence and not has_evidence_refs:
 
 Update the `OK` condition so strict criteria are considered complete only when `has_evidence_refs` is true. Non-strict criteria are complete when either text evidence or refs exist.
 
-- [ ] **Step 7: Call evidence refs validator from acceptance gate**
+- [x] **Step 7: Call evidence refs validator from acceptance gate**
 
 After the inline Python succeeds, run the evidence refs validator when strict mode is enabled. Also run it in default mode when refs exist by asking a small inline Python check:
 
@@ -979,7 +983,7 @@ fi
 
 Remove the unused `refs_present="$(read_optional_value ...)"` line if it was added during editing.
 
-- [ ] **Step 8: Run acceptance integration validation**
+- [x] **Step 8: Run acceptance integration validation**
 
 Run:
 
@@ -989,7 +993,11 @@ bash validate-harness.sh
 
 Expected: PASS for all acceptance strict/default cases. If unrelated docs or template checks fail, fix only the files touched by this plan.
 
+Status: Focused `tests/harness/acceptance-review.sh` validation passes for strict/default acceptance cases. Full `bash validate-harness.sh` and `bash templates/scripts/check-doc-links.sh .` are still blocked by unrelated missing script references in `docs/superpowers/specs/2026-06-27-agent-facing-productization.md`.
+
 - [ ] **Step 9: Commit strict acceptance integration**
+
+Status: Pending explicit commit authorization.
 
 ```bash
 git add templates/scripts/check-acceptance.sh tests/harness/acceptance-review.sh

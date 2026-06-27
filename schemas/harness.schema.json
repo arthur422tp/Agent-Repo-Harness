@@ -44,6 +44,14 @@
       },
       "additionalProperties": true
     },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "strict_refs": { "type": "boolean", "default": false },
+        "allow_text_only_evidence": { "type": "boolean", "default": true }
+      },
+      "additionalProperties": true
+    },
     "runtime": {
       "type": "object",
       "properties": {

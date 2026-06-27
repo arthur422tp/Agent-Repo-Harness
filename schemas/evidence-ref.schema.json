@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-repo-harness.local/schemas/evidence-ref.schema.json",
+  "title": "Agent-Repo-Harness evidence reference",
+  "type": "object",
+  "required": ["type", "path"],
+  "properties": {
+    "type": {
+      "enum": [
+        "command_output",
+        "gate_result",
+        "finish_summary_json",
+        "changed_files",
+        "diff_stat"
+      ]
+    },
+    "path": { "type": "string", "pattern": "\\S" },
+    "command": { "type": "string" },
+    "gate": { "type": "string" },
+    "expected_exit_status": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "overall_result": {
+      "enum": ["pass", "fail", "warn"]
+    },
+    "must_contain": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "must_not_contain": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}

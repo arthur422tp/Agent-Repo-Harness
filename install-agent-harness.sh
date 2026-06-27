@@ -119,6 +119,12 @@ if [ -f "$schema_root/architecture.schema.json" ]; then
     "$target/schemas/architecture.schema.json"
 fi
 
+if [ -f "$schema_root/evidence-ref.schema.json" ]; then
+  copy_path \
+    "$schema_root/evidence-ref.schema.json" \
+    "$target/schemas/evidence-ref.schema.json"
+fi
+
 if [ -f "$schema_root/episode.schema.json" ]; then
   copy_path \
     "$schema_root/episode.schema.json" \

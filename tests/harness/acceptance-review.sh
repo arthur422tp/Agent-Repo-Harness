@@ -49,6 +49,253 @@ mkdir -p "$acceptance_pass_root/.agent" "$acceptance_pass_root/scripts/lib"
 pass "acceptance required complete"
 
 echo
+echo "== Acceptance gate default text evidence remains valid =="
+rm -rf "$acceptance_pass_root-default-text"
+mkdir -p "$acceptance_pass_root-default-text/.agent" "$acceptance_pass_root-default-text/scripts/lib"
+(
+  cd "$acceptance_pass_root-default-text"
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  printf '%s\n' \
+    'task:' \
+    '  completion:' \
+    '    requires_acceptance_check: true' \
+    > .agent/task.yml
+  printf '%s\n' \
+    'acceptance:' \
+    '  criteria:' \
+    '    - id: "AC-1"' \
+    '      description: "Manual evidence is still accepted by default."' \
+    '      met: true' \
+    '      evidence: "Ran the verification gate."' \
+    > .agent/acceptance.yml
+  acceptance_log="$acceptance_pass_root-default-text/acceptance-default-text.log"
+  bash "$repo_root/templates/scripts/check-acceptance.sh" >"$acceptance_log" 2>&1
+  assert_contains "$acceptance_log" "Acceptance check is required."
+  assert_contains "$acceptance_log" "ACCEPTANCE_RESULT=pass"
+)
+pass "acceptance default text evidence remains valid"
+
+echo
+echo "== Acceptance gate strict refs reject text-only evidence =="
+rm -rf "$acceptance_strict_text_only_root"
+mkdir -p "$acceptance_strict_text_only_root/.agent" "$acceptance_strict_text_only_root/scripts/lib"
+(
+  cd "$acceptance_strict_text_only_root"
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  cp "$repo_root/templates/scripts/check-evidence-refs.py" scripts/check-evidence-refs.py
+  printf '%s\n' \
+    'task:' \
+    '  completion:' \
+    '    requires_acceptance_check: true' \
+    > .agent/task.yml
+  printf '%s\n' \
+    'evidence:' \
+    '  strict_refs: true' \
+    '  allow_text_only_evidence: false' \
+    > .agent/harness.yml
+  printf '%s\n' \
+    'acceptance:' \
+    '  criteria:' \
+    '    - id: "AC-1"' \
+    '      description: "Text-only evidence is not enough."' \
+    '      met: true' \
+    '      evidence: "Manual check."' \
+    > .agent/acceptance.yml
+  acceptance_log="$acceptance_strict_text_only_root/acceptance-strict-text.log"
+  if bash "$repo_root/templates/scripts/check-acceptance.sh" >"$acceptance_log" 2>&1; then
+    echo "ERROR: expected strict acceptance failure for text-only evidence"
+    exit 1
+  fi
+  assert_contains "$acceptance_log" "Strict evidence refs are enabled."
+  assert_contains "$acceptance_log" "requires evidence_refs because evidence.strict_refs is true"
+  assert_contains "$acceptance_log" "ACCEPTANCE_RESULT=fail"
+)
+pass "acceptance strict refs reject text-only evidence"
+
+echo
+echo "== Acceptance gate strict refs pass with finish summary =="
+rm -rf "$acceptance_strict_finish_root"
+mkdir -p "$acceptance_strict_finish_root/.agent/runs/20260627-091500" \
+  "$acceptance_strict_finish_root/scripts/lib"
+(
+  cd "$acceptance_strict_finish_root"
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  cp "$repo_root/templates/scripts/check-evidence-refs.py" scripts/check-evidence-refs.py
+  printf '%s\n' \
+    'task:' \
+    '  completion:' \
+    '    requires_acceptance_check: true' \
+    > .agent/task.yml
+  printf '%s\n' \
+    'evidence:' \
+    '  strict_refs: true' \
+    '  allow_text_only_evidence: false' \
+    > .agent/harness.yml
+  cat > .agent/runs/20260627-091500/finish-summary.json <<'JSON'
+{
+  "overall_result": "pass",
+  "gates": [
+    {
+      "name": "agent-verify",
+      "exit_status": 0,
+      "evidence": ".agent/runs/20260627-091500/verify-result.txt"
+    }
+  ]
+}
+JSON
+  printf '%s\n' \
+    'acceptance:' \
+    '  criteria:' \
+    '    - id: "AC-1"' \
+    '      description: "Verification passed."' \
+    '      met: true' \
+    '      evidence_refs:' \
+    '        - type: finish_summary_json' \
+    '          path: ".agent/runs/20260627-091500/finish-summary.json"' \
+    '          overall_result: "pass"' \
+    '          gate: "agent-verify"' \
+    '          expected_exit_status: 0' \
+    > .agent/acceptance.yml
+  acceptance_log="$acceptance_strict_finish_root/acceptance-strict-finish.log"
+  bash "$repo_root/templates/scripts/check-acceptance.sh" >"$acceptance_log" 2>&1
+  assert_contains "$acceptance_log" "Strict evidence refs are enabled."
+  assert_contains "$acceptance_log" "OK: finish_summary_json overall_result is pass"
+  assert_contains "$acceptance_log" "OK: gate agent-verify exit_status is 0"
+  assert_contains "$acceptance_log" "ACCEPTANCE_RESULT=pass"
+)
+pass "acceptance strict refs pass with finish summary"
+
+echo
+echo "== Acceptance gate strict refs wrong gate status failure =="
+rm -rf "$acceptance_wrong_gate_root"
+mkdir -p "$acceptance_wrong_gate_root/.agent/runs/20260627-091500" \
+  "$acceptance_wrong_gate_root/scripts/lib"
+(
+  cd "$acceptance_wrong_gate_root"
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  cp "$repo_root/templates/scripts/check-evidence-refs.py" scripts/check-evidence-refs.py
+  printf '%s\n' \
+    'task:' \
+    '  completion:' \
+    '    requires_acceptance_check: true' \
+    > .agent/task.yml
+  printf '%s\n' \
+    'evidence:' \
+    '  strict_refs: true' \
+    '  allow_text_only_evidence: false' \
+    > .agent/harness.yml
+  cat > .agent/runs/20260627-091500/finish-summary.json <<'JSON'
+{
+  "overall_result": "pass",
+  "gates": [
+    {
+      "name": "agent-verify",
+      "exit_status": 1
+    }
+  ]
+}
+JSON
+  printf '%s\n' \
+    'acceptance:' \
+    '  criteria:' \
+    '    - id: "AC-1"' \
+    '      description: "Verification passed."' \
+    '      met: true' \
+    '      evidence_refs:' \
+    '        - type: finish_summary_json' \
+    '          path: ".agent/runs/20260627-091500/finish-summary.json"' \
+    '          overall_result: "pass"' \
+    '          gate: "agent-verify"' \
+    '          expected_exit_status: 0' \
+    > .agent/acceptance.yml
+  acceptance_log="$acceptance_wrong_gate_root/acceptance-wrong-gate.log"
+  if bash "$repo_root/templates/scripts/check-acceptance.sh" >"$acceptance_log" 2>&1; then
+    echo "ERROR: expected strict acceptance failure for wrong gate status"
+    exit 1
+  fi
+  assert_contains "$acceptance_log" "gate agent-verify exit_status expected 0 got 1"
+  assert_contains "$acceptance_log" "ACCEPTANCE_RESULT=fail"
+)
+pass "acceptance strict refs wrong gate status failure"
+
+echo
+echo "== Acceptance gate strict refs missing path failure =="
+rm -rf "$acceptance_invalid_ref_path_root"
+mkdir -p "$acceptance_invalid_ref_path_root/.agent" "$acceptance_invalid_ref_path_root/scripts/lib"
+(
+  cd "$acceptance_invalid_ref_path_root"
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  cp "$repo_root/templates/scripts/check-evidence-refs.py" scripts/check-evidence-refs.py
+  printf '%s\n' \
+    'task:' \
+    '  completion:' \
+    '    requires_acceptance_check: true' \
+    > .agent/task.yml
+  printf '%s\n' \
+    'evidence:' \
+    '  strict_refs: true' \
+    '  allow_text_only_evidence: false' \
+    > .agent/harness.yml
+  printf '%s\n' \
+    'acceptance:' \
+    '  criteria:' \
+    '    - id: "AC-1"' \
+    '      description: "Missing artifact fails."' \
+    '      met: true' \
+    '      evidence_refs:' \
+    '        - type: finish_summary_json' \
+    '          path: ".agent/runs/missing/finish-summary.json"' \
+    '          overall_result: "pass"' \
+    > .agent/acceptance.yml
+  acceptance_log="$acceptance_invalid_ref_path_root/acceptance-missing-path.log"
+  if bash "$repo_root/templates/scripts/check-acceptance.sh" >"$acceptance_log" 2>&1; then
+    echo "ERROR: expected strict acceptance failure for missing evidence ref path"
+    exit 1
+  fi
+  assert_contains "$acceptance_log" "path does not exist"
+  assert_contains "$acceptance_log" "ACCEPTANCE_RESULT=fail"
+)
+pass "acceptance strict refs missing path failure"
+
+echo
+echo "== Acceptance gate strict refs path traversal failure =="
+rm -rf "$acceptance_traversal_ref_root"
+mkdir -p "$acceptance_traversal_ref_root/.agent" "$acceptance_traversal_ref_root/scripts/lib"
+(
+  cd "$acceptance_traversal_ref_root"
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  cp "$repo_root/templates/scripts/check-evidence-refs.py" scripts/check-evidence-refs.py
+  printf '%s\n' \
+    'task:' \
+    '  completion:' \
+    '    requires_acceptance_check: true' \
+    > .agent/task.yml
+  printf '%s\n' \
+    'evidence:' \
+    '  strict_refs: true' \
+    '  allow_text_only_evidence: false' \
+    > .agent/harness.yml
+  printf '%s\n' \
+    'acceptance:' \
+    '  criteria:' \
+    '    - id: "AC-1"' \
+    '      description: "Traversal fails."' \
+    '      met: true' \
+    '      evidence_refs:' \
+    '        - type: command_output' \
+    '          path: "../secret.txt"' \
+    > .agent/acceptance.yml
+  acceptance_log="$acceptance_traversal_ref_root/acceptance-traversal.log"
+  if bash "$repo_root/templates/scripts/check-acceptance.sh" >"$acceptance_log" 2>&1; then
+    echo "ERROR: expected strict acceptance failure for path traversal"
+    exit 1
+  fi
+  assert_contains "$acceptance_log" "path must not contain path traversal"
+  assert_contains "$acceptance_log" "ACCEPTANCE_RESULT=fail"
+)
+pass "acceptance strict refs path traversal failure"
+
+echo
 echo "== Acceptance gate unmet criterion failure =="
 rm -rf "$acceptance_unmet_root"
 mkdir -p "$acceptance_unmet_root/.agent" "$acceptance_unmet_root/scripts/lib"
@@ -105,10 +352,78 @@ mkdir -p "$acceptance_missing_evidence_root/.agent" "$acceptance_missing_evidenc
     echo "ERROR: expected acceptance failure for missing evidence"
     exit 1
   fi
-  assert_contains "$acceptance_log" "criterion example-criterion evidence or verification must be non-empty"
+  assert_contains "$acceptance_log" "criterion example-criterion evidence, verification, or evidence_refs must be non-empty"
   assert_contains "$acceptance_log" "ACCEPTANCE_RESULT=fail"
 )
 pass "acceptance missing evidence failure"
+
+echo
+echo "== Evidence refs command output valid =="
+rm -rf "$acceptance_command_output_ref_root"
+mkdir -p "$acceptance_command_output_ref_root/.agent/runs/20260627-091500" \
+  "$acceptance_command_output_ref_root/scripts/lib"
+(
+  cd "$acceptance_command_output_ref_root"
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  printf '%s\n' \
+    'HARNESS_VERIFY_RESULT=pass' \
+    'HARNESS_FAILURES=0' \
+    > .agent/runs/20260627-091500/verify-result.txt
+  printf '%s\n' \
+    'acceptance:' \
+    '  criteria:' \
+    '    - id: "AC-1"' \
+    '      description: "Verification passed."' \
+    '      met: true' \
+    '      evidence_refs:' \
+    '        - type: command_output' \
+    '          path: ".agent/runs/20260627-091500/verify-result.txt"' \
+    '          must_contain:' \
+    '            - "HARNESS_VERIFY_RESULT=pass"' \
+    '          must_not_contain:' \
+    '            - "FAIL:"' \
+    > .agent/acceptance.yml
+  evidence_refs_log="$acceptance_command_output_ref_root/evidence-refs.log"
+  python3 "$repo_root/templates/scripts/check-evidence-refs.py" .agent/acceptance.yml >"$evidence_refs_log" 2>&1
+  assert_contains "$evidence_refs_log" "== Evidence Refs Gate =="
+  assert_contains "$evidence_refs_log" "OK: evidence ref acceptance.criteria[1].evidence_refs[1] path exists"
+  assert_contains "$evidence_refs_log" "OK: command_output contains HARNESS_VERIFY_RESULT=pass"
+  assert_contains "$evidence_refs_log" "EVIDENCE_REFS_RESULT=pass"
+)
+pass "evidence refs command output valid"
+
+echo
+echo "== Evidence refs command output missing content failure =="
+rm -rf "$acceptance_command_output_missing_root"
+mkdir -p "$acceptance_command_output_missing_root/.agent/runs/20260627-091500" \
+  "$acceptance_command_output_missing_root/scripts/lib"
+(
+  cd "$acceptance_command_output_missing_root"
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  printf '%s\n' \
+    'HARNESS_VERIFY_RESULT=fail' \
+    > .agent/runs/20260627-091500/verify-result.txt
+  printf '%s\n' \
+    'acceptance:' \
+    '  criteria:' \
+    '    - id: "AC-1"' \
+    '      description: "Verification passed."' \
+    '      met: true' \
+    '      evidence_refs:' \
+    '        - type: command_output' \
+    '          path: ".agent/runs/20260627-091500/verify-result.txt"' \
+    '          must_contain:' \
+    '            - "HARNESS_VERIFY_RESULT=pass"' \
+    > .agent/acceptance.yml
+  evidence_refs_log="$acceptance_command_output_missing_root/evidence-refs.log"
+  if python3 "$repo_root/templates/scripts/check-evidence-refs.py" .agent/acceptance.yml >"$evidence_refs_log" 2>&1; then
+    echo "ERROR: expected evidence refs failure for missing content"
+    exit 1
+  fi
+  assert_contains "$evidence_refs_log" "missing required content"
+  assert_contains "$evidence_refs_log" "EVIDENCE_REFS_RESULT=fail"
+)
+pass "evidence refs command output missing content failure"
 
 echo
 echo "== Review evidence gate skip semantics =="

@@ -21,7 +21,14 @@
               "description": { "type": "string", "pattern": "\\S" },
               "met": { "const": true },
               "evidence": { "type": "string" },
-              "verification": { "type": "string" }
+              "verification": { "type": "string" },
+              "evidence_refs": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "evidence-ref.schema.json"
+                }
+              }
             },
             "additionalProperties": true,
             "anyOf": [
@@ -35,6 +42,15 @@
                 "required": ["verification"],
                 "properties": {
                   "verification": { "type": "string", "pattern": "\\S" }
+                }
+              },
+              {
+                "required": ["evidence_refs"],
+                "properties": {
+                  "evidence_refs": {
+                    "type": "array",
+                    "minItems": 1
+                  }
                 }
               }
             ]

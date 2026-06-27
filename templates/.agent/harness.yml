@@ -92,6 +92,15 @@ verification:
   #     command: npm test
   allow_unverified_completion: false
 
+evidence:
+  # strict_refs: true requires structured evidence_refs for required
+  # acceptance evidence.
+  strict_refs: false
+  # allow_text_only_evidence: false rejects evidence/verification text as the
+  # acceptance proof when strict refs are required. Text fields can still
+  # explain the evidence for humans.
+  allow_text_only_evidence: true
+
 handoff:
   update_on:
     - changed_architecture

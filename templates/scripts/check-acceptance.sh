@@ -3,11 +3,12 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: check-acceptance.sh [TASK_FILE] [ACCEPTANCE_FILE]
+Usage: check-acceptance.sh [TASK_FILE] [ACCEPTANCE_FILE] [HARNESS_FILE]
 
 Defaults:
   TASK_FILE         .agent/task.yml
   ACCEPTANCE_FILE   .agent/acceptance.yml
+  HARNESS_FILE      .agent/harness.yml
 
 Requires structured acceptance evidence only when TASK_FILE contains:
   task.completion.requires_acceptance_check: true
@@ -16,6 +17,7 @@ EOF
 
 task_file=".agent/task.yml"
 acceptance_file=".agent/acceptance.yml"
+harness_file=".agent/harness.yml"
 
 case "${1:-}" in
   -h|--help)
@@ -27,6 +29,7 @@ case "${1:-}" in
   *)
     task_file="$1"
     acceptance_file="${2:-$acceptance_file}"
+    harness_file="${3:-$harness_file}"
     ;;
 esac
 
@@ -67,6 +70,7 @@ read_optional_value() {
 echo "== Acceptance Gate =="
 echo "Task file: $task_file"
 echo "Acceptance file: $acceptance_file"
+echo "Harness file: $harness_file"
 
 if [ ! -f "$reader" ]; then
   echo "FAIL: YAML reader not found: $reader"
@@ -91,6 +95,22 @@ fi
 
 echo "Acceptance check is required."
 
+strict_refs="false"
+allow_text_only_evidence="true"
+if [ -f "$harness_file" ]; then
+  strict_refs="$(read_optional_value "$harness_file" "evidence.strict_refs")"
+  allow_text_only_evidence="$(read_optional_value "$harness_file" "evidence.allow_text_only_evidence")"
+fi
+if [ "$strict_refs" != "true" ]; then
+  strict_refs="false"
+fi
+if [ "$allow_text_only_evidence" != "false" ]; then
+  allow_text_only_evidence="true"
+fi
+if [ "$strict_refs" = "true" ]; then
+  echo "Strict evidence refs are enabled."
+fi
+
 if [ ! -f "$acceptance_file" ]; then
   echo "FAIL: missing $acceptance_file"
   echo "ACCEPTANCE_RESULT=fail"
@@ -98,7 +118,7 @@ if [ ! -f "$acceptance_file" ]; then
 fi
 
 set +e
-"$python_bin" - "$reader" "$acceptance_file" <<'PY'
+"$python_bin" - "$reader" "$acceptance_file" "$strict_refs" "$allow_text_only_evidence" <<'PY'
 import importlib.util
 import sys
 from pathlib import Path
@@ -107,6 +127,8 @@ sys.dont_write_bytecode = True
 
 reader_path = Path(sys.argv[1])
 acceptance_path = Path(sys.argv[2])
+strict_refs = sys.argv[3] == "true"
+allow_text_only_evidence = sys.argv[4] != "false"
 
 spec = importlib.util.spec_from_file_location("harness_read_yaml", reader_path)
 module = importlib.util.module_from_spec(spec)
@@ -124,6 +146,10 @@ def fail(message):
 
 def nonempty(value):
     return isinstance(value, str) and value.strip() != ""
+
+
+def has_refs(value):
+    return isinstance(value, list) and len(value) > 0
 
 
 try:
@@ -159,20 +185,26 @@ else:
             fail(f"{label} description must be non-empty")
         if criterion.get("met") is not True:
             fail(f"{label} met must be true")
-        if not (
+        has_text_evidence = (
             nonempty(criterion.get("evidence"))
             or nonempty(criterion.get("verification"))
-        ):
-            fail(f"{label} evidence or verification must be non-empty")
+        )
+        has_evidence_refs = has_refs(criterion.get("evidence_refs"))
+
+        if strict_refs:
+            if not has_evidence_refs:
+                fail(f"{label} requires evidence_refs because evidence.strict_refs is true")
+        elif not has_text_evidence and not has_evidence_refs:
+            fail(f"{label} evidence, verification, or evidence_refs must be non-empty")
+
+        if strict_refs and not allow_text_only_evidence and not has_evidence_refs:
+            fail(f"{label} text-only evidence is disabled by evidence.allow_text_only_evidence")
 
         if failures == 0 or (
             nonempty(criterion_id)
             and nonempty(criterion.get("description"))
             and criterion.get("met") is True
-            and (
-                nonempty(criterion.get("evidence"))
-                or nonempty(criterion.get("verification"))
-            )
+            and ((strict_refs and has_evidence_refs) or ((not strict_refs) and (has_text_evidence or has_evidence_refs)))
         ):
             print(f"OK: {label}")
 
@@ -185,4 +217,47 @@ PY
 status=$?
 set -e
 
-exit "$status"
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
+
+refs_required="$strict_refs"
+refs_present="$("$python_bin" - "$reader" "$acceptance_file" <<'PY'
+import importlib.util
+import sys
+from pathlib import Path
+
+sys.dont_write_bytecode = True
+reader_path = Path(sys.argv[1])
+acceptance_path = Path(sys.argv[2])
+spec = importlib.util.spec_from_file_location("harness_read_yaml", reader_path)
+module = importlib.util.module_from_spec(spec)
+assert spec.loader is not None
+spec.loader.exec_module(module)
+data = module.load_yaml_subset(acceptance_path)
+acceptance = data.get("acceptance") if isinstance(data, dict) else None
+criteria = acceptance.get("criteria") if isinstance(acceptance, dict) else None
+present = False
+if isinstance(criteria, list):
+    for criterion in criteria:
+        if isinstance(criterion, dict) and isinstance(criterion.get("evidence_refs"), list):
+            present = True
+            break
+print("true" if present else "false")
+PY
+)"
+
+evidence_refs_script="$script_dir/check-evidence-refs.py"
+if [ "$refs_required" = "true" ] || [ "$refs_present" = "true" ]; then
+  if [ ! -f "$evidence_refs_script" ]; then
+    echo "FAIL: evidence refs validator not found: $evidence_refs_script"
+    echo "ACCEPTANCE_RESULT=fail"
+    exit 1
+  fi
+  if ! "$python_bin" "$evidence_refs_script" "$acceptance_file"; then
+    echo "ACCEPTANCE_RESULT=fail"
+    exit 1
+  fi
+fi
+
+exit 0
