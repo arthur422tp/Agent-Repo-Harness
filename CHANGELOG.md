@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.1.1 - RAG adoption benchmark
+
 - Measure complete High-Risk adoption for the contract RAG fixture and document
   evidence-backed harness friction.
 - Expand the contract RAG example into an offline deterministic application,

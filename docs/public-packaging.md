@@ -18,11 +18,11 @@ Repo-local completion gate for AI coding agents.
 - `repo-automation`
 - `shell`
 
-## v0.1.0 release checklist
+## v0.1.1 release checklist
 
 - [ ] CI is passing on the published default branch.
-- [x] `VERSION` is `0.1.0`.
-- [x] `CHANGELOG.md` has a `v0.1.0` entry.
+- [x] `VERSION` is `0.1.1`.
+- [x] `CHANGELOG.md` has a `v0.1.1` entry.
 - [x] `README.md` has a CI badge, Quick Start, What It Is Not, Platform Support, Verification Strategy, Evidence vs Handoff, and Guardrails section.
 - [x] `docs/handoff.md` explains `.agent/runs/<timestamp>/`, `handoff.md`, and optional `.agent/handoff.yml`.
 - [x] `install-agent-harness.sh` prints the short 3-step next path.
@@ -35,7 +35,7 @@ Repo-local completion gate for AI coding agents.
 
 - [ ] Set the GitHub description.
 - [ ] Set the GitHub topics.
-- [ ] Create the GitHub release tag `v0.1.0`.
+- [ ] Create the GitHub release tag `v0.1.1`.
 - [ ] Verify the README renders correctly on GitHub.
 - [ ] Verify the CI badge points to `.github/workflows/ci.yml`.
 
