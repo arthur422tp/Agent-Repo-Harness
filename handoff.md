@@ -7,6 +7,18 @@ adoption flow. The installed-target scenario records TDD, acceptance, review,
 architecture, command-ledger, sandbox, and repository verification evidence
 without adding new gates, schemas, profile engines, or runtime abstractions.
 
+## Evidence Refs Strict Acceptance
+
+- Added opt-in `evidence.strict_refs` and `evidence.allow_text_only_evidence`
+  config for acceptance evidence.
+- Added `templates/scripts/check-evidence-refs.py` to validate repo-local
+  `evidence_refs` artifacts.
+- Kept backward-compatible text evidence by default and did not add a new
+  `agent-finish.sh` gate.
+- Validation: `bash validate-harness.sh`; `bash templates/scripts/check-doc-links.sh .`;
+  `bash templates/scripts/check-acceptance.sh --help`;
+  `python3 templates/scripts/check-evidence-refs.py --help`.
+
 ## Verification
 
 - `bash validate-harness.sh`: PASS

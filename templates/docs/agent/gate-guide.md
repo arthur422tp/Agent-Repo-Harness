@@ -80,7 +80,7 @@ gate only when its evidence answers a real completion risk.
 | Verification | `requires_verification` | true | every task that claims completion | `.agent/harness.yml`; `agent-verify.sh` | configured checks failed |
 | Handoff expectation | `expects_handoff_update` | true | continuity state should be updated | `handoff.md` | advisory only; finish does not enforce freshness |
 | TDD evidence | `requires_tdd_evidence` | false | feature, bug-fix, refactor, or behavior change needs red/green proof | `.agent/tdd-evidence.yml`; `check-tdd-evidence.sh` | required TDD evidence is incomplete |
-| Acceptance | `requires_acceptance_check` | false | explicit user-visible criteria must be proven | `.agent/acceptance.yml`; `check-acceptance.sh` | criteria are unmet or lack evidence |
+| Acceptance | `requires_acceptance_check` | false | explicit user-visible criteria must be proven | `.agent/acceptance.yml`; optional `evidence_refs`; `check-acceptance.sh` | criteria are unmet, lack evidence, or strict refs are invalid |
 | Review | `requires_review_evidence` | false | independent approval is required | `.agent/review.yml`; `check-review-evidence.sh` | review is missing or blocking |
 | Architecture | `requires_architecture_evidence` | false | tests cannot prove design invariants | `.agent/architecture.yml`; `check-architecture-evidence.sh` | required invariants are not upheld |
 | Failure attribution | `requires_failure_attribution` | false | repaired or recurring failures need root-cause evidence | `.agent/failure-attribution.yml`; `check-failure-attribution.sh` | attribution evidence is incomplete |
@@ -90,6 +90,19 @@ gate only when its evidence answers a real completion risk.
 | Subagent evidence | `requires_subagent_evidence` | false | delegated execution must be proven | `.agent/subagent-runs/`; `check-subagent-evidence.sh` | delegated run evidence is missing or invalid |
 | Episode metadata | none | validated when available | episode-level metadata is useful | `.agent/episode.yml`; `validate-episode.sh` | episode metadata is invalid |
 | Resource envelope | harness config | disabled with zero limits | finish duration or changed-file count needs a local cap | `.agent/harness.yml`; `agent-finish.sh` | configured local limit was exceeded |
+
+## Evidence References
+
+Text evidence is acceptable in low-risk/default mode. For Standard profile
+tasks, prefer `evidence_refs` when the evidence already exists as a local
+artifact such as `.agent/runs/<timestamp>/finish-summary.json` or a gate output
+file. For High-Risk profile tasks, set `evidence.strict_refs: true` and
+`evidence.allow_text_only_evidence: false` when acceptance proof should be tied
+to verifiable repo-local artifacts.
+
+`evidence_refs` strengthens traceability by checking file existence, optional
+content markers, and selected finish-summary fields. It does not prove semantic
+correctness beyond the configured checks.
 
 ## Selection Rules
 

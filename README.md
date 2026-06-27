@@ -298,6 +298,38 @@ difference between run evidence and continuity notes, and
 [Runtime Boundaries](docs/runtime-boundaries.md) for containment and tracing
 limits.
 
+### Evidence References
+
+For stricter completion evidence, projects may enable `evidence.strict_refs`
+in `.agent/harness.yml`. When enabled, required acceptance criteria must
+reference repo-local artifacts through `evidence_refs`, such as
+`.agent/runs/<timestamp>/finish-summary.json` or gate output files.
+
+The harness validates that referenced files exist and, when configured, contain
+expected result markers or finish-summary gate statuses. `evidence_refs`
+improves traceability; it does not prove semantic correctness beyond the
+configured checks.
+
+```yaml
+# .agent/harness.yml
+evidence:
+  strict_refs: true
+  allow_text_only_evidence: false
+```
+
+```yaml
+# .agent/acceptance.yml
+acceptance:
+  criteria:
+    - id: AC-1
+      description: "The finish gate passed."
+      met: true
+      evidence_refs:
+        - type: finish_summary_json
+          path: ".agent/runs/20260627-091500/finish-summary.json"
+          overall_result: "pass"
+```
+
 ## Useful Commands
 
 Run individual checks when diagnosing a task or integrating the harness:

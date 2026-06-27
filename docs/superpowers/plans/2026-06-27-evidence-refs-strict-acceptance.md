@@ -213,9 +213,9 @@ bash validate-harness.sh
 
 Expected: FAIL only because the validator and strict behavior are not implemented yet. No JSON syntax errors should appear.
 
-- [ ] **Step 8: Commit the schema/config contract**
+- [x] **Step 8: Commit the schema/config contract**
 
-Status: Pending explicit commit authorization; schema/config contract implementation is complete and verified through the expected staged validation failure plus installed-target parity after adding the installer copy rule.
+Status: Committed in `0c7498f`.
 
 ```bash
 git add schemas/evidence-ref.schema.json schemas/acceptance.schema.json schemas/harness.schema.json templates/.agent/harness.yml tests/harness/static-install.sh
@@ -556,9 +556,9 @@ bash validate-harness.sh
 
 Expected: FAIL because acceptance strict mode has not been integrated yet, but the direct `check-evidence-refs.py` tests should pass.
 
-- [ ] **Step 7: Commit validator implementation**
+- [x] **Step 7: Commit validator implementation**
 
-Status: Pending explicit commit authorization; direct evidence-ref validator tests pass. Full `bash validate-harness.sh` is currently blocked before acceptance-review by unrelated doc-link failures in `docs/superpowers/specs/2026-06-27-agent-facing-productization.md` for future `scripts/agent-task-profile.sh` and `scripts/agent-evidence-bind.sh` references.
+Status: Committed in `0c7498f`.
 
 ```bash
 git add templates/scripts/check-evidence-refs.py tests/harness/lib.sh tests/harness/acceptance-review.sh
@@ -995,9 +995,9 @@ Expected: PASS for all acceptance strict/default cases. If unrelated docs or tem
 
 Status: Focused `tests/harness/acceptance-review.sh` validation passes for strict/default acceptance cases. Full `bash validate-harness.sh` and `bash templates/scripts/check-doc-links.sh .` are still blocked by unrelated missing script references in `docs/superpowers/specs/2026-06-27-agent-facing-productization.md`.
 
-- [ ] **Step 9: Commit strict acceptance integration**
+- [x] **Step 9: Commit strict acceptance integration**
 
-Status: Pending explicit commit authorization.
+Status: Committed in `0c7498f`.
 
 ```bash
 git add templates/scripts/check-acceptance.sh tests/harness/acceptance-review.sh
@@ -1013,7 +1013,7 @@ git commit -m "feat: enforce strict acceptance evidence refs"
 - Modify: `templates/docs/agent/gate-guide.md`
 - Modify: `docs/config-format.md`
 
-- [ ] **Step 1: Add README evidence reference guidance**
+- [x] **Step 1: Add README evidence reference guidance**
 
 In `README.md`, under the evidence or verification section, add:
 
@@ -1051,7 +1051,7 @@ acceptance:
 ```
 ````
 
-- [ ] **Step 2: Add Traditional Chinese README guidance**
+- [x] **Step 2: Add Traditional Chinese README guidance**
 
 In `README.zh-TW.md`, add the matching section:
 
@@ -1070,7 +1070,7 @@ finish-summary gate 狀態。`evidence_refs` 強化可追溯性；它不保證�
 
 Include the same YAML examples from the English README.
 
-- [ ] **Step 3: Update gate guide recommendations**
+- [x] **Step 3: Update gate guide recommendations**
 
 In `docs/agent/gate-guide.md`, update the Acceptance row failure/evidence text to mention `evidence_refs`:
 
@@ -1101,7 +1101,7 @@ Copy the updated file to `templates/docs/agent/gate-guide.md`:
 cp docs/agent/gate-guide.md templates/docs/agent/gate-guide.md
 ```
 
-- [ ] **Step 4: Update config format docs**
+- [x] **Step 4: Update config format docs**
 
 In `docs/config-format.md`, add:
 
@@ -1117,7 +1117,9 @@ Supported MVP reference types are `command_output`, `gate_result`,
 repo-relative files and must not point outside the repository or under `.git/`.
 ```
 
-- [ ] **Step 5: Run doc link and harness validation**
+- [x] **Step 5: Run doc link and harness validation**
+
+Status: Passed after clarifying future helper names in `docs/superpowers/specs/2026-06-27-agent-facing-productization.md` so draft-only helpers are not treated as existing script paths.
 
 Run:
 
@@ -1128,7 +1130,9 @@ bash validate-harness.sh
 
 Expected: both PASS.
 
-- [ ] **Step 6: Commit docs and template guidance**
+- [x] **Step 6: Commit docs and template guidance**
+
+Status: Included in the final completion commit.
 
 ```bash
 git add README.md README.zh-TW.md docs/agent/gate-guide.md templates/docs/agent/gate-guide.md docs/config-format.md
@@ -1141,7 +1145,7 @@ git commit -m "docs: document strict evidence refs"
 - Modify: `handoff.md`
 - Modify: this plan file
 
-- [ ] **Step 1: Run final validation commands**
+- [x] **Step 1: Run final validation commands**
 
 Run:
 
@@ -1159,7 +1163,7 @@ Expected:
 - `check-acceptance.sh --help` prints usage including `[HARNESS_FILE]`.
 - `check-evidence-refs.py --help` prints argparse help and exits 0.
 
-- [ ] **Step 2: Confirm no accidental finish gate expansion**
+- [x] **Step 2: Confirm no accidental finish gate expansion**
 
 Run:
 
@@ -1173,7 +1177,7 @@ Expected:
 - `templates/scripts/check-acceptance.sh` calls `check-evidence-refs.py`.
 - `templates/scripts/check-evidence-refs.py` prints `== Evidence Refs Gate ==`.
 
-- [ ] **Step 3: Update handoff**
+- [x] **Step 3: Update handoff**
 
 Add an entry to `handoff.md` with:
 
@@ -1191,11 +1195,11 @@ Add an entry to `handoff.md` with:
   `python3 templates/scripts/check-evidence-refs.py --help`.
 ```
 
-- [ ] **Step 4: Mark this plan complete**
+- [x] **Step 4: Mark this plan complete**
 
 After the validation commands pass, update this plan's checkboxes from `[ ]` to `[x]` only for completed steps.
 
-- [ ] **Step 5: Commit final handoff and plan status**
+- [x] **Step 5: Commit final handoff and plan status**
 
 ```bash
 git add handoff.md docs/superpowers/plans/2026-06-27-evidence-refs-strict-acceptance.md

@@ -278,6 +278,37 @@ run evidence 與 continuity notes 的差異請見
 [Handoff And Evidence](docs/handoff.md)，containment 與 tracing 限制請見
 [Runtime Boundaries](docs/runtime-boundaries.md)。
 
+### Evidence References
+
+如果任務需要更嚴格的完成證據，專案可以在 `.agent/harness.yml`
+啟用 `evidence.strict_refs`。啟用後，必要的 acceptance criteria
+必須透過 `evidence_refs` 指向 repo-local artifact，例如
+`.agent/runs/<timestamp>/finish-summary.json` 或 gate output files。
+
+Harness 會驗證引用的檔案存在，並在設定時檢查預期的結果 marker 或
+finish-summary gate 狀態。`evidence_refs` 強化可追溯性；它不保證超出
+設定檢查之外的語意正確性。
+
+```yaml
+# .agent/harness.yml
+evidence:
+  strict_refs: true
+  allow_text_only_evidence: false
+```
+
+```yaml
+# .agent/acceptance.yml
+acceptance:
+  criteria:
+    - id: AC-1
+      description: "The finish gate passed."
+      met: true
+      evidence_refs:
+        - type: finish_summary_json
+          path: ".agent/runs/20260627-091500/finish-summary.json"
+          overall_result: "pass"
+```
+
 ## 常用命令
 
 在診斷任務或整合 harness 時，可以個別執行檢查：

@@ -246,7 +246,7 @@ Agent manually writes profile flags and may omit required fields.
 
 Target behavior:
 
-bash scripts/agent-task-profile.sh standard \
+bash agent-task-profile.sh standard \
   --goal "Add evidence_refs validation" \
   --current-task "Implement evidence_refs MVP" \
   --allowed "templates/scripts/**" \
@@ -257,7 +257,7 @@ bash scripts/agent-task-profile.sh standard \
 The helper generates or updates .agent/task.yml.
 
 11. CLI
-scripts/agent-task-profile.sh PROFILE [options]
+agent-task-profile.sh PROFILE [options]
 
 Profiles:
 
@@ -330,7 +330,7 @@ Start with Standard. Enable only selected risk gates.
 
 Example:
 
-bash scripts/agent-task-profile.sh high-risk \
+bash agent-task-profile.sh high-risk \
   --architecture \
   --review \
   --command-ledger
@@ -376,7 +376,7 @@ Allow agents to bind run artifacts into acceptance criteria without manually edi
 
 Target command:
 
-bash scripts/agent-evidence-bind.sh \
+bash agent-evidence-bind.sh \
   --run .agent/runs/20260627-091500 \
   --acceptance .agent/acceptance.yml \
   --criterion AC-1 \
@@ -395,7 +395,7 @@ acceptance:
           gate: "agent-verify"
           expected_exit_status: 0
 16. CLI
-scripts/agent-evidence-bind.sh [options]
+agent-evidence-bind.sh [options]
 
 Options:
 
@@ -740,7 +740,7 @@ PR 2: Evidence binding helper
 
 Includes:
 
-scripts/agent-evidence-bind.sh
+agent-evidence-bind.sh
 tests
 docs
 strict acceptance example
@@ -748,7 +748,7 @@ PR 3: Task profile helper
 
 Includes:
 
-scripts/agent-task-profile.sh
+agent-task-profile.sh
 tests
 Gate Guide update
 adapter prompt update
