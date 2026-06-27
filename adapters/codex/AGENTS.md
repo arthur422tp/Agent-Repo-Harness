@@ -34,6 +34,10 @@ changes.
 
 ## Task Boundaries
 
+When starting a task in a repo that has `scripts/agent-task-profile.sh`, prefer
+that helper to generate `.agent/task.yml`. Do not manually widen allowed paths
+or enable high-risk gates to make unrelated edits pass.
+
 Follow `.agent/task.yml`:
 
 - only edit paths allowed by `allowed_paths`

@@ -43,7 +43,7 @@ Modify:
 - Modify: `tests/harness/static-install.sh`
 - Modify: `validate-harness.sh`
 
-- [ ] **Step 1: Add temporary roots**
+- [x] **Step 1: Add temporary roots**
 
 In `tests/harness/lib.sh`, add:
 
@@ -55,7 +55,7 @@ task_profile_dry_run_root="$tmp_root/task-profile-dry-run"
 task_profile_invalid_root="$tmp_root/task-profile-invalid"
 ```
 
-- [ ] **Step 2: Add static install assertions**
+- [x] **Step 2: Add static install assertions**
 
 In `tests/harness/static-install.sh`, add source and installed target assertions:
 
@@ -64,7 +64,7 @@ assert_file_exists "$repo_root/templates/scripts/agent-task-profile.sh"
 assert_file_exists "$target_root/scripts/agent-task-profile.sh"
 ```
 
-- [ ] **Step 3: Add validation suite entry**
+- [x] **Step 3: Add validation suite entry**
 
 In `validate-harness.sh`, add:
 
@@ -72,7 +72,7 @@ In `validate-harness.sh`, add:
 run_test "task profile helper" bash tests/harness/task-profile.sh
 ```
 
-- [ ] **Step 4: Create the focused test suite**
+- [x] **Step 4: Create the focused test suite**
 
 Create `tests/harness/task-profile.sh`:
 
@@ -178,7 +178,7 @@ setup_profile_root "$task_profile_invalid_root"
 pass "invalid profile fails"
 ```
 
-- [ ] **Step 5: Run the new suite to verify it is red**
+- [x] **Step 5: Run the new suite to verify it is red**
 
 Run:
 
@@ -193,7 +193,7 @@ Expected: FAIL because `templates/scripts/agent-task-profile.sh` does not exist 
 **Files:**
 - Create: `templates/scripts/agent-task-profile.sh`
 
-- [ ] **Step 1: Add the helper script**
+- [x] **Step 1: Add the helper script**
 
 Create `templates/scripts/agent-task-profile.sh`:
 
@@ -380,7 +380,7 @@ fi
 echo "AGENT_TASK_PROFILE_RESULT=pass"
 ```
 
-- [ ] **Step 2: Make the helper executable**
+- [x] **Step 2: Make the helper executable**
 
 Run:
 
@@ -388,7 +388,7 @@ Run:
 chmod +x templates/scripts/agent-task-profile.sh
 ```
 
-- [ ] **Step 3: Run focused tests**
+- [x] **Step 3: Run focused tests**
 
 Run:
 
@@ -408,7 +408,7 @@ Expected: PASS.
 - Modify: `adapters/codex/AGENTS.md`
 - Modify: `adapters/claude-code/CLAUDE.md`
 
-- [ ] **Step 1: Add README example**
+- [x] **Step 1: Add README example**
 
 Add this example near the current task setup instructions:
 
@@ -422,11 +422,11 @@ bash scripts/agent-task-profile.sh standard \
   --allowed "docs/**"
 ```
 
-- [ ] **Step 2: Mirror README guidance in Traditional Chinese**
+- [x] **Step 2: Mirror README guidance in Traditional Chinese**
 
 Add the same command to `README.zh-TW.md` with a short sentence explaining that agents should prefer the helper over hand-writing `.agent/task.yml`.
 
-- [ ] **Step 3: Update Gate Guide profile examples**
+- [x] **Step 3: Update Gate Guide profile examples**
 
 In both gate guide files, replace hand-written profile examples with helper-first examples:
 
@@ -436,7 +436,7 @@ bash scripts/agent-task-profile.sh standard --goal "Bugfix with tests" --allowed
 bash scripts/agent-task-profile.sh high-risk --goal "Policy change" --allowed ".agent/policy.yml" --review --command-ledger
 ```
 
-- [ ] **Step 4: Update adapters**
+- [x] **Step 4: Update adapters**
 
 In `adapters/codex/AGENTS.md` and `adapters/claude-code/CLAUDE.md`, add this instruction:
 
@@ -446,7 +446,7 @@ that helper to generate `.agent/task.yml`. Do not manually widen allowed paths
 or enable high-risk gates to make unrelated edits pass.
 ```
 
-- [ ] **Step 5: Run doc link checks**
+- [x] **Step 5: Run doc link checks**
 
 Run:
 
@@ -462,7 +462,7 @@ Expected: PASS.
 - Modify: all files from Tasks 1-3.
 - Modify: `docs/superpowers/plans/2026-06-27-agent-task-profile-helper.md`
 
-- [ ] **Step 1: Run full validation**
+- [x] **Step 1: Run full validation**
 
 Run:
 
@@ -473,11 +473,11 @@ bash templates/scripts/check-doc-links.sh .
 
 Expected: both commands pass.
 
-- [ ] **Step 2: Mark completed plan steps**
+- [x] **Step 2: Mark completed plan steps**
 
 After verification passes, update completed checkboxes in this plan from `- [ ]` to `- [x]`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add templates/scripts/agent-task-profile.sh tests/harness/task-profile.sh tests/harness/lib.sh tests/harness/static-install.sh validate-harness.sh README.md README.zh-TW.md docs/agent/gate-guide.md templates/docs/agent/gate-guide.md adapters/codex/AGENTS.md adapters/claude-code/CLAUDE.md docs/superpowers/plans/2026-06-27-agent-task-profile-helper.md

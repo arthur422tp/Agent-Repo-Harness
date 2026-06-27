@@ -51,7 +51,7 @@ assert_contains "$repo_root/README.md" "docs/agent/gate-guide.md"
 assert_contains "$repo_root/README.md" "Minimal"
 assert_contains "$repo_root/README.md" "Standard"
 assert_contains "$repo_root/README.md" "High-Risk"
-assert_contains "$repo_root/README.md" "Profiles are recommendations"
+assert_contains "$repo_root/README.md" "scripts/agent-task-profile.sh"
 assert_not_contains "$repo_root/README.md" "## Architecture Evidence"
 assert_not_contains "$repo_root/README.md" "## Episode And Audit Evidence"
 assert_contains "$repo_root/README.zh-TW.md" "## 選擇 Gate Profile"
@@ -79,7 +79,8 @@ assert_contains "$repo_root/docs/agent/gate-guide.md" "# Gate Guide"
 assert_contains "$repo_root/docs/agent/gate-guide.md" "## Minimal Profile"
 assert_contains "$repo_root/docs/agent/gate-guide.md" "## Standard Profile"
 assert_contains "$repo_root/docs/agent/gate-guide.md" "## High-Risk Profile"
-assert_contains "$repo_root/docs/agent/gate-guide.md" "Profiles are recommendations"
+assert_contains "$repo_root/docs/agent/gate-guide.md" "scripts/agent-task-profile.sh"
+assert_contains "$repo_root/docs/agent/gate-guide.md" "harness enforces the generated flags"
 
 completion_flags="$(
   awk '

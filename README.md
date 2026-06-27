@@ -46,10 +46,18 @@ git add AGENTS.md CLAUDE.md agent.md handoff.md .agent docs/agent scripts schema
 git commit -m "Initialize project with Agent-Repo-Harness baseline"
 ```
 
-For a real task, edit `.agent/task.yml`, set repository-owned verification
-commands in `.agent/harness.yml`, then run:
+For a real task, prefer the task profile helper over hand-writing
+`.agent/task.yml`, set repository-owned verification commands in
+`.agent/harness.yml`, then run:
 
 ```bash
+bash scripts/agent-task-profile.sh standard \
+  --goal "Add artifact-backed acceptance evidence" \
+  --current-task "Implement the evidence ref validator" \
+  --allowed "templates/scripts/**" \
+  --allowed "tests/harness/**" \
+  --allowed "schemas/**" \
+  --allowed "docs/**"
 bash scripts/agent-preflight.sh
 bash scripts/agent-finish.sh --best-effort
 ```
@@ -94,8 +102,9 @@ repo-defined verification commands are the source of truth.
 
 ## Choose A Gate Profile
 
-Profiles are recommendations expressed through existing `.agent/task.yml`
-flags; the harness does not read a profile name or enable gates automatically.
+Profiles are recommendations rendered into `.agent/task.yml` by
+`scripts/agent-task-profile.sh`; the harness still enforces the resulting flags
+rather than reading a profile name at finish time.
 
 - **Minimal:** scope, policy, verification, and handoff expectation for small,
   low-risk maintenance.
@@ -229,8 +238,9 @@ started.
 4. Configure `.agent/policy.yml` for paths that should require review or
    explicit approval.
 5. Commit the harness files together with the initial project scaffold.
-6. For each new task, update `.agent/task.yml`, choose Minimal, Standard, or
-   selective High-Risk gates, then finish through `scripts/agent-finish.sh`.
+6. For each new task, generate `.agent/task.yml` with
+   `scripts/agent-task-profile.sh`, choose Minimal, Standard, or selective
+   High-Risk gates, then finish through `scripts/agent-finish.sh`.
 
 This gives every later AI-assisted change the same scope, policy,
 verification, and evidence contract from the beginning of the project.

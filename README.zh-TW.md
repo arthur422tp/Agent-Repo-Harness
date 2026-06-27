@@ -44,10 +44,18 @@ git add AGENTS.md CLAUDE.md agent.md handoff.md .agent docs/agent scripts schema
 git commit -m "Initialize project with Agent-Repo-Harness baseline"
 ```
 
-針對實際任務，請編輯 `.agent/task.yml`，在 `.agent/harness.yml` 設定由
-repository 擁有的驗證命令，然後執行：
+針對實際任務，請優先使用 task profile helper 產生 `.agent/task.yml`，
+不要手寫複雜 flags；在 `.agent/harness.yml` 設定由 repository 擁有的
+驗證命令，然後執行：
 
 ```bash
+bash scripts/agent-task-profile.sh standard \
+  --goal "Add artifact-backed acceptance evidence" \
+  --current-task "Implement the evidence ref validator" \
+  --allowed "templates/scripts/**" \
+  --allowed "tests/harness/**" \
+  --allowed "schemas/**" \
+  --allowed "docs/**"
 bash scripts/agent-preflight.sh
 bash scripts/agent-finish.sh --best-effort
 ```
@@ -89,8 +97,8 @@ verification:
 
 ## 選擇 Gate Profile
 
-Profiles 是使用現有 `.agent/task.yml` flags 的建議組合；harness 不會讀取
-profile 名稱或自動啟用 gates。
+Profiles 會由 `scripts/agent-task-profile.sh` 轉成 `.agent/task.yml`
+flags；finish 時 harness 仍檢查這些 flags，而不是讀取 profile 名稱。
 
 - **Minimal：** 適合低風險維護，使用 scope、policy、verification 與 handoff
   expectation。
@@ -215,8 +223,9 @@ Agent-Repo-Harness 同時支援從零開始的新專案，以及已經開發到�
    簡單 smoke checks。
 4. 在 `.agent/policy.yml` 設定需要 review 或明確核准的路徑。
 5. 將 harness files 與初始 project scaffold 一起提交。
-6. 每個新任務先更新 `.agent/task.yml`，選擇 Minimal、Standard 或選擇性的
-   High-Risk gates，再透過 `scripts/agent-finish.sh` 完成。
+6. 每個新任務先用 `scripts/agent-task-profile.sh` 產生 `.agent/task.yml`，
+   選擇 Minimal、Standard 或選擇性的 High-Risk gates，再透過
+   `scripts/agent-finish.sh` 完成。
 
 這樣之後每一次 AI-assisted change，從專案一開始就會使用同一套 scope、
 policy、verification 與 evidence contract。

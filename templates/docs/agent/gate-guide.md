@@ -1,50 +1,24 @@
 # Gate Guide
 
-Use this guide to choose existing Agent-Repo-Harness completion gates. Profiles are recommendations expressed through existing `.agent/task.yml` flags. The
-harness does not read a profile name or enable flags automatically.
+Use this guide to choose existing Agent-Repo-Harness completion gates. Profiles
+are rendered into `.agent/task.yml` by `scripts/agent-task-profile.sh`. The
+harness enforces the generated flags rather than reading a profile name at
+finish time.
 
 ## Minimal Profile
 
 Use for small, low-risk maintenance work.
 
-```yaml
-completion:
-  requires_scope_check: true
-  requires_policy_check: true
-  requires_verification: true
-  expects_handoff_update: true
-  requires_tdd_evidence: false
-  requires_acceptance_check: false
-  requires_review_evidence: false
-  requires_architecture_evidence: false
-  requires_failure_attribution: false
-  requires_intervention_record: false
-  requires_command_ledger: false
-  requires_sandbox_verification: false
-  requires_subagent_evidence: false
+```bash
+bash scripts/agent-task-profile.sh minimal --goal "Docs cleanup" --allowed "docs/**"
 ```
 
 ## Standard Profile
 
-Use for normal feature, bug-fix, refactoring, and behavior-change work. Start
-with Minimal, set `requires_tdd_evidence: true` for behavior changes, and enable
-acceptance or review evidence when the task contract requires them.
+Use for normal feature, bug-fix, refactoring, and behavior-change work.
 
-```yaml
-completion:
-  requires_scope_check: true
-  requires_policy_check: true
-  requires_verification: true
-  expects_handoff_update: true
-  requires_tdd_evidence: true
-  requires_acceptance_check: true
-  requires_review_evidence: false
-  requires_architecture_evidence: false
-  requires_failure_attribution: false
-  requires_intervention_record: false
-  requires_command_ledger: false
-  requires_sandbox_verification: false
-  requires_subagent_evidence: false
+```bash
+bash scripts/agent-task-profile.sh standard --goal "Bugfix with tests" --allowed "src/**" --allowed "tests/**"
 ```
 
 ## High-Risk Profile
@@ -53,18 +27,11 @@ Use for security-sensitive, architectural, release-critical, delegated, or
 environment-sensitive work. Start with Standard and enable only the additional
 evidence that matches the actual risk.
 
-Start with the Standard completion block. Add only the applicable entries from
-this menu:
+Start with the Standard profile. Add only the applicable options from this
+menu:
 
-```yaml
-completion:
-  requires_review_evidence: true          # independent approval required
-  requires_architecture_evidence: true    # design invariants need evidence
-  requires_failure_attribution: true      # repaired failure needs root cause
-  requires_intervention_record: true      # material approval or override used
-  requires_command_ledger: true           # important commands need replay evidence
-  requires_sandbox_verification: true     # isolated final verification required
-  requires_subagent_evidence: true        # delegated execution must be proven
+```bash
+bash scripts/agent-task-profile.sh high-risk --goal "Policy change" --allowed ".agent/policy.yml" --review --command-ledger
 ```
 
 High-Risk is a menu, not a requirement to enable every optional gate. Enable a

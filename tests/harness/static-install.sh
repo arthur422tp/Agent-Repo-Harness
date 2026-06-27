@@ -54,6 +54,7 @@ for required_path in \
   templates/scripts/validate-task.sh \
   templates/scripts/validate-episode.sh \
   templates/scripts/agent-audit.sh \
+  templates/scripts/agent-task-profile.sh \
   templates/scripts/lib/read-yaml.py \
   templates/scripts/lib/policy-approval.sh \
   templates/scripts/check-doc-links.sh \
@@ -221,6 +222,7 @@ for required_path in \
   scripts/agent-finish.sh \
   scripts/agent-run.sh \
   scripts/agent-evidence-bind.sh \
+  scripts/agent-task-profile.sh \
   scripts/agent-sandbox-run.sh \
   scripts/check-agent-md.sh \
   scripts/check-policy.sh \
