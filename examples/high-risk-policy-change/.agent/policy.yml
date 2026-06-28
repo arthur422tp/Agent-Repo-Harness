@@ -1,0 +1,5 @@
+risk_files:
+  high:
+    - ".agent/policy.yml"
+approval:
+  require_explicit_for_high_risk: true

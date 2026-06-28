@@ -64,7 +64,7 @@ Modify:
 - Create: `tests/harness/productization-examples.sh`
 - Modify: `validate-harness.sh`
 
-- [ ] **Step 1: Add validation suite entry**
+- [x] **Step 1: Add validation suite entry**
 
 In `validate-harness.sh`, add:
 
@@ -72,7 +72,7 @@ In `validate-harness.sh`, add:
 run_test "productization examples" bash tests/harness/productization-examples.sh
 ```
 
-- [ ] **Step 2: Create the productization examples test suite**
+- [x] **Step 2: Create the productization examples test suite**
 
 Create `tests/harness/productization-examples.sh`:
 
@@ -125,7 +125,7 @@ assert_contains "$repo_root/docs/stability-contract.md" "Deprecation Policy"
 pass "productization examples and stability contract"
 ```
 
-- [ ] **Step 3: Run the new suite to verify it is red**
+- [x] **Step 3: Run the new suite to verify it is red**
 
 Run:
 
@@ -142,7 +142,7 @@ Expected: FAIL because the new example directories and stability contract do not
 - Create: all files under `examples/bugfix-with-evidence-refs/`
 - Create: all files under `examples/high-risk-policy-change/`
 
-- [ ] **Step 1: Add docs-only change example**
+- [x] **Step 1: Add docs-only change example**
 
 Create `examples/docs-only-change/README.md`:
 
@@ -246,7 +246,7 @@ Docs-only example completed with sample finish evidence in
 `sample-run/finish-summary.json`.
 ```
 
-- [ ] **Step 2: Add bugfix with evidence refs example**
+- [x] **Step 2: Add bugfix with evidence refs example**
 
 Create `examples/bugfix-with-evidence-refs/README.md` with the required sections and this command sequence:
 
@@ -374,7 +374,7 @@ Bugfix example completed with strict acceptance evidence in
 `.agent/acceptance.yml`.
 ```
 
-- [ ] **Step 3: Add high-risk policy behavior example**
+- [x] **Step 3: Add high-risk policy behavior example**
 
 Create `examples/high-risk-policy-change/README.md` with the required sections and this expected failure:
 
@@ -495,7 +495,7 @@ Create `examples/high-risk-policy-change/handoff.md`:
 High-risk policy example is blocked pending explicit human approval evidence.
 ```
 
-- [ ] **Step 4: Run focused example tests**
+- [x] **Step 4: Run focused example tests**
 
 Run:
 
@@ -513,7 +513,7 @@ Expected: FAIL only because `docs/stability-contract.md` is not created yet.
 - Modify: `README.zh-TW.md`
 - Modify: `docs/public-packaging.md`
 
-- [ ] **Step 1: Create stability contract**
+- [x] **Step 1: Create stability contract**
 
 Create `docs/stability-contract.md`:
 
@@ -577,7 +577,7 @@ This stability contract does not turn Agent-Repo-Harness into a sandbox, full
 runtime, provider-native tracing layer, or semantic correctness framework.
 ```
 
-- [ ] **Step 2: Link from README files**
+- [x] **Step 2: Link from README files**
 
 Add this sentence to `README.md` near versioning or public packaging:
 
@@ -588,7 +588,7 @@ For stable and experimental public interfaces, see
 
 Add the Traditional Chinese equivalent to `README.zh-TW.md`.
 
-- [ ] **Step 3: Update public packaging doc**
+- [x] **Step 3: Update public packaging doc**
 
 In `docs/public-packaging.md`, add this checklist item:
 
@@ -596,7 +596,7 @@ In `docs/public-packaging.md`, add this checklist item:
 - [x] `docs/stability-contract.md` defines stable, intended-stable, and experimental interfaces.
 ```
 
-- [ ] **Step 4: Run focused tests and doc links**
+- [x] **Step 4: Run focused tests and doc links**
 
 Run:
 
@@ -613,7 +613,7 @@ Expected: both commands pass.
 - Modify: all files from Tasks 1-3.
 - Modify: `docs/superpowers/plans/2026-06-27-dogfood-examples-stability-contract.md`
 
-- [ ] **Step 1: Run full validation**
+- [x] **Step 1: Run full validation**
 
 Run:
 
@@ -624,11 +624,11 @@ bash templates/scripts/check-doc-links.sh .
 
 Expected: both commands pass.
 
-- [ ] **Step 2: Mark completed plan steps**
+- [x] **Step 2: Mark completed plan steps**
 
 After verification passes, update completed checkboxes in this plan from `- [ ]` to `- [x]`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add docs/stability-contract.md examples/docs-only-change examples/bugfix-with-evidence-refs examples/high-risk-policy-change tests/harness/productization-examples.sh validate-harness.sh README.md README.zh-TW.md docs/public-packaging.md docs/superpowers/plans/2026-06-27-dogfood-examples-stability-contract.md

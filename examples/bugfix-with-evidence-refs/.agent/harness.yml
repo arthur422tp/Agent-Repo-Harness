@@ -1,0 +1,7 @@
+verification:
+  required:
+    - name: "unit tests"
+      command: "python3 -m pytest tests"
+evidence:
+  strict_refs: true
+  allow_text_only_evidence: false

@@ -1,0 +1,8 @@
+{
+  "overall_result": "fail",
+  "mode": "strict",
+  "gates": {
+    "check-policy": { "result": "fail", "exit_status": 1 },
+    "agent-verify": { "result": "pass", "exit_status": 0 }
+  }
+}

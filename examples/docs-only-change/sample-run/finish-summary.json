@@ -1,0 +1,9 @@
+{
+  "overall_result": "pass",
+  "mode": "best-effort",
+  "gates": {
+    "check-scope": { "result": "pass", "exit_status": 0 },
+    "check-policy": { "result": "pass", "exit_status": 0 },
+    "agent-verify": { "result": "pass", "exit_status": 0 }
+  }
+}

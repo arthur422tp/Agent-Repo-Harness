@@ -1,0 +1,4 @@
+verification:
+  required:
+    - name: "docs link check"
+      command: "bash templates/scripts/check-doc-links.sh ."

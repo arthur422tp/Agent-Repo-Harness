@@ -1,0 +1,14 @@
+task:
+  status: "complete"
+  goal: "Clarify README."
+  current_task: "Docs-only update."
+  allowed_paths:
+    - "README.md"
+  forbidden_paths: []
+  completion:
+    requires_scope_check: true
+    requires_policy_check: true
+    requires_verification: true
+    expects_handoff_update: true
+    requires_tdd_evidence: false
+    requires_acceptance_check: false

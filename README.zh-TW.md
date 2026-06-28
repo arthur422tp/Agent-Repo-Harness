@@ -30,6 +30,9 @@ AI coding agent 避免在尚未完成下列事項前便宣告完成：
 公開 repository metadata 與 `v0.1.1` 發行檢查清單請見
 [docs/public-packaging.md](docs/public-packaging.md)。
 
+穩定與實驗性公開介面的界線請見
+[docs/stability-contract.md](docs/stability-contract.md)。
+
 ## 三個步驟開始試用
 
 1. 預覽並將 harness 安裝至目標 repository。
@@ -110,6 +113,11 @@ flags；finish 時 harness 仍檢查這些 flags，而不是讀取 profile 名�
 
 完整決策矩陣、profile 範例與 evidence 要求請見
 [Gate Guide](docs/agent/gate-guide.md)。
+
+可參考的 workflow 範例包含
+[docs-only change](examples/docs-only-change/README.md)、
+[bugfix with strict evidence refs](examples/bugfix-with-evidence-refs/README.md)，以及
+[high-risk policy change](examples/high-risk-policy-change/README.md)。
 
 ## 防護措施，不是 Sandbox
 

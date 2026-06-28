@@ -1,0 +1,4 @@
+verification:
+  required:
+    - name: "policy docs check"
+      command: "bash scripts/check-policy.sh"

@@ -1,0 +1,12 @@
+acceptance:
+  criteria:
+    - id: AC-1
+      description: "Verification passed for the bugfix."
+      met: true
+      evidence: "See artifact-backed evidence refs."
+      evidence_refs:
+        - type: finish_summary_json
+          path: "sample-run/finish-summary.json"
+          gate: "agent-verify"
+          overall_result: "pass"
+          expected_exit_status: 0

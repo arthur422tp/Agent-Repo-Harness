@@ -1,0 +1,15 @@
+task:
+  status: "complete"
+  goal: "Fix edge case."
+  current_task: "Bugfix with strict acceptance evidence."
+  allowed_paths:
+    - "src/**"
+    - "tests/**"
+  forbidden_paths: []
+  completion:
+    requires_scope_check: true
+    requires_policy_check: true
+    requires_verification: true
+    expects_handoff_update: true
+    requires_tdd_evidence: true
+    requires_acceptance_check: true

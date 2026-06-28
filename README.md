@@ -32,6 +32,9 @@ expectations.
 For public repository metadata and the `v0.1.1` release checklist, see
 [docs/public-packaging.md](docs/public-packaging.md).
 
+For stable and experimental public interfaces, see
+[docs/stability-contract.md](docs/stability-contract.md).
+
 ## Try It in Three Steps
 
 1. Preview and install the harness into a target repository.
@@ -116,6 +119,11 @@ rather than reading a profile name at finish time.
 
 See [Gate Guide](docs/agent/gate-guide.md) for the decision matrix, profile
 examples, evidence files, and failure meanings.
+
+Example workflows are available for a
+[docs-only change](examples/docs-only-change/README.md),
+[bugfix with strict evidence refs](examples/bugfix-with-evidence-refs/README.md),
+and [high-risk policy change](examples/high-risk-policy-change/README.md).
 
 ## Guardrails, Not A Sandbox
 

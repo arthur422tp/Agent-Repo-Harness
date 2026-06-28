@@ -29,6 +29,7 @@ Repo-local completion gate for AI coding agents.
 - [x] The default TDD evidence is opt-in.
 - [x] `bash validate-harness.sh` passes locally.
 - [x] Sandbox smoke is wired into CI and reports `SANDBOX_CI_SMOKE_RESULT=pass|skip|fail`.
+- [x] `docs/stability-contract.md` defines stable, intended-stable, and experimental interfaces.
 - [x] GitHub release notes are copied or summarized from `CHANGELOG.md`.
 
 ## Before Publishing
