@@ -364,11 +364,15 @@ bash scripts/agent-finish.sh --best-effort
 
 1. 在 AI coding agent 中開啟目標 repository。
 2. 要求它讀取 `AGENTS.md` 或 `CLAUDE.md`。
-3. 在 `.agent/task.yml` 中定義有範圍限制的工作。
+3. 使用 `scripts/agent-task-profile.sh` 產生有範圍限制的 task state。
 4. 執行 `scripts/agent-preflight.sh`。
 5. 在任務邊界內進行變更。
 6. 執行 `scripts/agent-finish.sh`。
-7. 在 `handoff.md` 中更新變更檔案、驗證結果、阻擋事項，以及建議的
+7. 如果啟用 strict acceptance evidence，使用
+   `scripts/agent-evidence-bind.sh` 綁定 run artifacts，然後重新執行
+   acceptance 與 finish checks。
+8. 如果 finish 失敗，依照 `docs/agent/repair-failed-run.md` 修復。
+9. 在 `handoff.md` 中更新變更檔案、驗證結果、阻擋事項，以及建議的
    下一個動作。可選擇同步結構化狀態至 `.agent/handoff.yml`。
 
 ## Context 載入政策

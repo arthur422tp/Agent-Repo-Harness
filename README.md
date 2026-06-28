@@ -387,11 +387,14 @@ bash scripts/agent-finish.sh --best-effort
 
 1. Open the target repository in an AI coding agent.
 2. Ask it to read `AGENTS.md` or `CLAUDE.md`.
-3. Define scoped work in `.agent/task.yml`.
+3. Generate scoped task state with `scripts/agent-task-profile.sh`.
 4. Run `scripts/agent-preflight.sh`.
 5. Make changes within the task boundaries.
 6. Run `scripts/agent-finish.sh`.
-7. Update `handoff.md` with changed files, verification results, blockers, and
+7. If strict acceptance evidence is enabled, bind run artifacts with
+   `scripts/agent-evidence-bind.sh` and rerun the acceptance and finish checks.
+8. If finish fails, follow `docs/agent/repair-failed-run.md`.
+9. Update `handoff.md` with changed files, verification results, blockers, and
    the next recommended action. Optionally mirror structured state in
    `.agent/handoff.yml`.
 
