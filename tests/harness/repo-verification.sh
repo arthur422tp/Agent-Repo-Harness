@@ -101,6 +101,7 @@ git init -q "$verify_bad_config_root"
   assert_contains "$verify_log" "FAIL: repo-defined verification config"
   assert_contains "$verify_log" "could not read verification.required"
   assert_contains "$verify_log" "HARNESS_VERIFY_RESULT=fail"
+  assert_contains "$verify_log" "docs/agent/repair-failed-run.md"
 )
 pass "repo-defined malformed verification config"
 

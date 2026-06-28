@@ -20,6 +20,10 @@ Approval for strict mode:
 EOF
 }
 
+print_repair_hint() {
+  echo "Repair: inspect this result file in .agent/runs/<timestamp>/ and follow docs/agent/repair-failed-run.md"
+}
+
 mode="warn"
 policy_file=".agent/policy.yml"
 
@@ -278,6 +282,7 @@ if [ "$approval_detected" -eq 1 ]; then
 fi
 
 echo "Strict policy gate failed."
+print_repair_hint
 if [ "$structured_approval_detected" -eq 1 ]; then
   printf '%s%s\n' \
     "Action: fix .agent/approvals/high-risk-approved.yml or remove it and use " \

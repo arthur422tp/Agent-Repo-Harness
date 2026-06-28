@@ -28,6 +28,7 @@ git init -q "$policy_strict_root"
     exit 1
   fi
   assert_contains "$strict_log" "Strict policy gate failed."
+  assert_contains "$strict_log" "docs/agent/repair-failed-run.md"
 
   strict_approved_log="$policy_strict_root/policy-strict-approved.log"
   AGENT_APPROVED_HIGH_RISK=1 bash "$repo_root/templates/scripts/check-policy.sh" --strict .agent/policy.yml >"$strict_approved_log" 2>&1

@@ -11,6 +11,10 @@ Modes:
 EOF
 }
 
+print_repair_hint() {
+  echo "Repair: inspect this result file in .agent/runs/<timestamp>/ and follow docs/agent/repair-failed-run.md"
+}
+
 mode="strict"
 
 case "${1:-}" in
@@ -301,6 +305,7 @@ if [ "$failures" -gt 0 ]; then
   echo "HARNESS_CHECKS_RUN=$checks_run"
   echo "HARNESS_FAILURES=$failures"
   echo "HARNESS_WARNINGS=$warnings"
+  print_repair_hint
   echo "Verification failed."
   exit 1
 fi

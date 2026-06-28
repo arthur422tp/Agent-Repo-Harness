@@ -109,6 +109,7 @@ mkdir -p "$acceptance_strict_text_only_root/.agent" "$acceptance_strict_text_onl
   assert_contains "$acceptance_log" "Strict evidence refs are enabled."
   assert_contains "$acceptance_log" "requires evidence_refs because evidence.strict_refs is true"
   assert_contains "$acceptance_log" "ACCEPTANCE_RESULT=fail"
+  assert_contains "$acceptance_log" "docs/agent/repair-failed-run.md"
 )
 pass "acceptance strict refs reject text-only evidence"
 

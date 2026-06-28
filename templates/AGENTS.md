@@ -46,8 +46,13 @@ During the task:
 Before claiming completion:
 
 1. Run `scripts/agent-finish.sh`.
-2. If verification cannot run, explain exactly why.
-3. Update `handoff.md` with changed files, verification commands and results,
+2. If `scripts/agent-finish.sh` fails, do not claim completion. Read
+   `.agent/runs/<timestamp>/finish-summary.md`, inspect the failing
+   `*-result.txt` file, follow `docs/agent/repair-failed-run.md`, repair the
+   underlying cause, rerun the failed check when possible, and rerun
+   `scripts/agent-finish.sh`.
+3. If verification cannot run, explain exactly why.
+4. Update `handoff.md` with changed files, verification commands and results,
    remaining blockers, and the next recommended action.
 
 This harness is not an agent runtime, sandbox, MCP server, or semantic

@@ -14,6 +14,10 @@ Requires structured architecture evidence only when TASK_FILE contains:
 EOF
 }
 
+print_repair_hint() {
+  echo "Repair: inspect this result file in .agent/runs/<timestamp>/ and follow docs/agent/repair-failed-run.md"
+}
+
 task_file=".agent/task.yml"
 architecture_file=".agent/architecture.yml"
 
@@ -76,12 +80,14 @@ fi
 if [ ! -f "$reader" ]; then
   echo "FAIL: YAML reader not found: $reader"
   echo "ARCHITECTURE_EVIDENCE_RESULT=fail"
+  print_repair_hint
   exit 1
 fi
 
 if ! python_bin="$(find_python)"; then
   echo "FAIL: python is required for architecture evidence validation"
   echo "ARCHITECTURE_EVIDENCE_RESULT=fail"
+  print_repair_hint
   exit 1
 fi
 
@@ -97,6 +103,7 @@ echo "Architecture evidence is required."
 if [ ! -f "$architecture_file" ]; then
   echo "FAIL: missing $architecture_file"
   echo "ARCHITECTURE_EVIDENCE_RESULT=fail"
+  print_repair_hint
   exit 1
 fi
 
@@ -199,5 +206,9 @@ print("ARCHITECTURE_EVIDENCE_RESULT=pass")
 PY
 status=$?
 set -e
+
+if [ "$status" -ne 0 ]; then
+  print_repair_hint
+fi
 
 exit "$status"

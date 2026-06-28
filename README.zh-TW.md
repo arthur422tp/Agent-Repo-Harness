@@ -176,6 +176,10 @@ artifact。它應摘要變更內容、應檢查哪份 run evidence、哪些項�
 記錄 workflow 預期 finish 後更新 handoff。這是 advisory；`agent-finish.sh`
 不會強制檢查 handoff freshness。
 
+當 finish run 失敗時，agent 應先依照
+[Repair Failed Finish Runs](docs/agent/repair-failed-run.md) 修復，再宣稱
+工作完成。
+
 ## 設定細節
 
 必要條件：

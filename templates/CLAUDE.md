@@ -43,8 +43,14 @@ Lifecycle docs:
 - `docs/agent/interventions.md`
 - `docs/agent/entropy-audit.md`
 
-Before final response, run `scripts/agent-finish.sh`. If a gate cannot run,
-state the exact blocker and update `handoff.md`.
+Before final response, run `scripts/agent-finish.sh`. If
+`scripts/agent-finish.sh` fails, do not claim completion. Read
+`.agent/runs/<timestamp>/finish-summary.md`, inspect the failing
+`*-result.txt` file, follow `docs/agent/repair-failed-run.md`, repair the
+underlying cause, rerun the failed check when possible, and rerun
+`scripts/agent-finish.sh`.
+
+If a gate cannot run, state the exact blocker and update `handoff.md`.
 
 If `.agent/task.yml` requires sandbox verification, run the sandbox runner
 before final finish and preserve `.agent/sandbox-runs/<timestamp>/` evidence.

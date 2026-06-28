@@ -13,6 +13,10 @@ Modes:
 EOF
 }
 
+print_repair_hint() {
+  echo "Repair: inspect this result file in .agent/runs/<timestamp>/ and follow docs/agent/repair-failed-run.md"
+}
+
 mode="strict"
 task_file=".agent/task.yml"
 
@@ -276,4 +280,5 @@ if [ "$mode" = "warn" ]; then
 fi
 
 echo "Scope check failed."
+print_repair_hint
 exit 1

@@ -89,6 +89,7 @@ mkdir -p "$architecture_invalid_root/.agent" "$architecture_invalid_root/scripts
   assert_contains architecture.log "architecture.evidence must be non-empty"
   assert_contains architecture.log "architecture.invariants must contain at least one invariant"
   assert_contains architecture.log "ARCHITECTURE_EVIDENCE_RESULT=fail"
+  assert_contains architecture.log "docs/agent/repair-failed-run.md"
 )
 pass "architecture evidence required and invalid"
 

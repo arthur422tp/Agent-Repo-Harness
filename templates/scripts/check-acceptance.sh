@@ -15,6 +15,10 @@ Requires structured acceptance evidence only when TASK_FILE contains:
 EOF
 }
 
+print_repair_hint() {
+  echo "Repair: inspect this result file in .agent/runs/<timestamp>/ and follow docs/agent/repair-failed-run.md"
+}
+
 task_file=".agent/task.yml"
 acceptance_file=".agent/acceptance.yml"
 harness_file=".agent/harness.yml"
@@ -75,6 +79,7 @@ echo "Harness file: $harness_file"
 if [ ! -f "$reader" ]; then
   echo "FAIL: YAML reader not found: $reader"
   echo "ACCEPTANCE_RESULT=fail"
+  print_repair_hint
   exit 1
 fi
 
@@ -114,6 +119,7 @@ fi
 if [ ! -f "$acceptance_file" ]; then
   echo "FAIL: missing $acceptance_file"
   echo "ACCEPTANCE_RESULT=fail"
+  print_repair_hint
   exit 1
 fi
 
@@ -218,6 +224,7 @@ status=$?
 set -e
 
 if [ "$status" -ne 0 ]; then
+  print_repair_hint
   exit "$status"
 fi
 
@@ -252,10 +259,12 @@ if [ "$refs_required" = "true" ] || [ "$refs_present" = "true" ]; then
   if [ ! -f "$evidence_refs_script" ]; then
     echo "FAIL: evidence refs validator not found: $evidence_refs_script"
     echo "ACCEPTANCE_RESULT=fail"
+    print_repair_hint
     exit 1
   fi
   if ! "$python_bin" "$evidence_refs_script" "$acceptance_file"; then
     echo "ACCEPTANCE_RESULT=fail"
+    print_repair_hint
     exit 1
   fi
 fi

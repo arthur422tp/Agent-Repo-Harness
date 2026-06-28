@@ -48,7 +48,7 @@ Modify:
 - Modify: `tests/harness/doc-consistency.sh`
 - Modify: `tests/harness/adapter-sync.sh`
 
-- [ ] **Step 1: Add doc consistency assertion**
+- [x] **Step 1: Add doc consistency assertion**
 
 In `tests/harness/doc-consistency.sh`, add a source/template mirror check:
 
@@ -58,7 +58,7 @@ cmp docs/agent/repair-failed-run.md templates/docs/agent/repair-failed-run.md
 
 If this file uses helper functions for mirror checks, add `repair-failed-run.md` to that existing list instead of adding a standalone `cmp`.
 
-- [ ] **Step 2: Add adapter sync assertions**
+- [x] **Step 2: Add adapter sync assertions**
 
 In `tests/harness/adapter-sync.sh`, add assertions that the Codex and Claude adapters reference the repair protocol:
 
@@ -67,7 +67,7 @@ assert_contains "$repo_root/adapters/codex/AGENTS.md" "docs/agent/repair-failed-
 assert_contains "$repo_root/adapters/claude-code/CLAUDE.md" "docs/agent/repair-failed-run.md"
 ```
 
-- [ ] **Step 3: Create the repair protocol doc**
+- [x] **Step 3: Create the repair protocol doc**
 
 Create `docs/agent/repair-failed-run.md`:
 
@@ -125,7 +125,7 @@ Start with:
 7. Claim completion only after the final finish run passes.
 ```
 
-- [ ] **Step 4: Copy the installed mirror**
+- [x] **Step 4: Copy the installed mirror**
 
 Run:
 
@@ -133,7 +133,7 @@ Run:
 cp docs/agent/repair-failed-run.md templates/docs/agent/repair-failed-run.md
 ```
 
-- [ ] **Step 5: Run doc consistency to verify the new checks**
+- [x] **Step 5: Run doc consistency to verify the new checks**
 
 Run:
 
@@ -154,7 +154,7 @@ Expected: FAIL until adapter docs are updated.
 - Modify: `README.md`
 - Modify: `README.zh-TW.md`
 
-- [ ] **Step 1: Update adapter instructions**
+- [x] **Step 1: Update adapter instructions**
 
 Add this guidance to Codex and Claude adapter files:
 
@@ -166,11 +166,11 @@ underlying cause, rerun the failed check when possible, and rerun
 `scripts/agent-finish.sh`.
 ```
 
-- [ ] **Step 2: Update installed entrypoint docs**
+- [x] **Step 2: Update installed entrypoint docs**
 
 Add the same guidance to `templates/AGENTS.md` and `templates/CLAUDE.md`.
 
-- [ ] **Step 3: Link from README files**
+- [x] **Step 3: Link from README files**
 
 Add this sentence to `README.md`:
 
@@ -182,7 +182,7 @@ completion claim.
 
 Add the Traditional Chinese equivalent to `README.zh-TW.md`.
 
-- [ ] **Step 4: Run adapter and doc checks**
+- [x] **Step 4: Run adapter and doc checks**
 
 Run:
 
@@ -204,7 +204,7 @@ Expected: all commands pass.
 - Modify: `templates/scripts/agent-verify.sh`
 - Modify: relevant `tests/harness/*.sh` suites if assertions need to cover the new message.
 
-- [ ] **Step 1: Add a standard repair hint**
+- [x] **Step 1: Add a standard repair hint**
 
 For each selected script, add a failure hint near the existing result marker:
 
@@ -214,7 +214,7 @@ echo "Repair: inspect this result file in .agent/runs/<timestamp>/ and follow do
 
 Use the script's existing wording style and avoid claiming the script knows the actual timestamp when it is run outside `agent-finish.sh`.
 
-- [ ] **Step 2: Add focused assertions only where stable**
+- [x] **Step 2: Add focused assertions only where stable**
 
 If a test already asserts failure output for one of these scripts, add:
 
@@ -224,7 +224,7 @@ assert_contains "$log_file" "docs/agent/repair-failed-run.md"
 
 Do not broaden every gate test just to assert the same string.
 
-- [ ] **Step 3: Run affected suites**
+- [x] **Step 3: Run affected suites**
 
 Run:
 
@@ -244,7 +244,7 @@ Expected: all commands pass.
 - Modify: all files from Tasks 1-3.
 - Modify: `docs/superpowers/plans/2026-06-27-failed-run-repair-protocol.md`
 
-- [ ] **Step 1: Run full validation**
+- [x] **Step 1: Run full validation**
 
 Run:
 
@@ -255,11 +255,11 @@ bash templates/scripts/check-doc-links.sh .
 
 Expected: both commands pass.
 
-- [ ] **Step 2: Mark completed plan steps**
+- [x] **Step 2: Mark completed plan steps**
 
 After verification passes, update completed checkboxes in this plan from `- [ ]` to `- [x]`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add docs/agent/repair-failed-run.md templates/docs/agent/repair-failed-run.md adapters/codex/AGENTS.md adapters/codex/codex-repair-prompt.md adapters/claude-code/CLAUDE.md templates/AGENTS.md templates/CLAUDE.md README.md README.zh-TW.md tests/harness/doc-consistency.sh tests/harness/adapter-sync.sh templates/scripts/check-scope.sh templates/scripts/check-policy.sh templates/scripts/check-acceptance.sh templates/scripts/check-architecture-evidence.sh templates/scripts/agent-verify.sh tests/harness docs/superpowers/plans/2026-06-27-failed-run-repair-protocol.md

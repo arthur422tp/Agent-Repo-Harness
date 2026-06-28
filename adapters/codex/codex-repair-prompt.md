@@ -6,7 +6,8 @@ You are repairing a failed Agent-Repo-Harness completion run.
 Start with staged context loading:
 1. Read the latest `.agent/runs/<timestamp>/finish-summary.md` first.
 2. Identify the failing gates and the exact result filenames referenced there.
-3. Read only the result files for the failing gates:
+3. Follow `docs/agent/repair-failed-run.md` as the canonical repair protocol.
+4. Read only the result files for the failing gates:
    - `check-agent-md-result.txt` for `check-agent-md`
    - `scope-result.txt` for `check-scope`
    - `policy-result.txt` for `check-policy`
@@ -17,7 +18,7 @@ Start with staged context loading:
    - `failure-attribution-result.txt` for `check-failure-attribution`
    - `interventions-result.txt` for `check-interventions`
    - `verify-result.txt` for `agent-verify`
-4. Do not read unrelated files unless the failing gate requires it.
+5. Do not read unrelated files unless the failing gate requires it.
 
 Recovery playbook by gate:
 - `check-agent-md`: repair `agent.md` so it reflects the current task state and required handoff details without adding unrelated process changes.

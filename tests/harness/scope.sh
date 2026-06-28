@@ -63,6 +63,7 @@ git init -q "$scope_max_files_root"
   fi
   assert_contains "$scope_log" "exceeds max_changed_files"
   assert_contains "$scope_log" "Scope check failed."
+  assert_contains "$scope_log" "docs/agent/repair-failed-run.md"
 )
 pass "scope max_changed_files failure"
 

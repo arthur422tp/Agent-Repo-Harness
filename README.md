@@ -186,6 +186,10 @@ machine-readable handoff.
 that the workflow expects a handoff update after finishing. This is advisory:
 `agent-finish.sh` does not enforce handoff freshness.
 
+When a finish run fails, agents should follow
+[Repair Failed Finish Runs](docs/agent/repair-failed-run.md) before making any
+completion claim.
+
 ## Setup Details
 
 Prerequisites:
