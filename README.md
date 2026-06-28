@@ -350,6 +350,9 @@ acceptance:
           overall_result: "pass"
 ```
 
+For command-backed architecture evidence patterns, see
+[Architecture Sensors](docs/agent/architecture-sensors.md).
+
 ## Useful Commands
 
 Run individual checks when diagnosing a task or integrating the harness:

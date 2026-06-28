@@ -52,7 +52,7 @@ Modify:
 - Modify: `tests/harness/doc-consistency.sh`
 - Modify: `validate-harness.sh`
 
-- [ ] **Step 1: Add temporary roots**
+- [x] **Step 1: Add temporary roots**
 
 In `tests/harness/lib.sh`, add:
 
@@ -61,7 +61,7 @@ architecture_sensor_pass_root="$tmp_root/architecture-sensor-pass"
 architecture_sensor_fail_root="$tmp_root/architecture-sensor-fail"
 ```
 
-- [ ] **Step 2: Add static install assertions**
+- [x] **Step 2: Add static install assertions**
 
 In `tests/harness/static-install.sh`, add:
 
@@ -71,7 +71,7 @@ assert_file_exists "$target_root/scripts/check-import-boundaries.py"
 assert_file_exists "$target_root/docs/agent/architecture-sensors.md"
 ```
 
-- [ ] **Step 3: Add doc consistency assertion**
+- [x] **Step 3: Add doc consistency assertion**
 
 In `tests/harness/doc-consistency.sh`, add `architecture-sensors.md` to the source/template doc mirror checks, or add:
 
@@ -79,7 +79,7 @@ In `tests/harness/doc-consistency.sh`, add `architecture-sensors.md` to the sour
 cmp docs/agent/architecture-sensors.md templates/docs/agent/architecture-sensors.md
 ```
 
-- [ ] **Step 4: Add validation suite entry**
+- [x] **Step 4: Add validation suite entry**
 
 In `validate-harness.sh`, add:
 
@@ -87,7 +87,7 @@ In `validate-harness.sh`, add:
 run_test "architecture sensor patterns" bash tests/harness/architecture-sensors.sh
 ```
 
-- [ ] **Step 5: Create focused sensor tests**
+- [x] **Step 5: Create focused sensor tests**
 
 Create `tests/harness/architecture-sensors.sh`:
 
@@ -153,7 +153,7 @@ assert_contains "$repo_root/examples/architecture-sensors/import-boundary/.agent
 pass "architecture sensor example files"
 ```
 
-- [ ] **Step 6: Run the new suite to verify it is red**
+- [x] **Step 6: Run the new suite to verify it is red**
 
 Run:
 
@@ -168,7 +168,7 @@ Expected: FAIL because `templates/scripts/check-import-boundaries.py` and exampl
 **Files:**
 - Create: `templates/scripts/check-import-boundaries.py`
 
-- [ ] **Step 1: Add the sensor script**
+- [x] **Step 1: Add the sensor script**
 
 Create `templates/scripts/check-import-boundaries.py`:
 
@@ -239,7 +239,7 @@ if __name__ == "__main__":
     raise SystemExit(main())
 ```
 
-- [ ] **Step 2: Make it executable**
+- [x] **Step 2: Make it executable**
 
 Run:
 
@@ -247,7 +247,7 @@ Run:
 chmod +x templates/scripts/check-import-boundaries.py
 ```
 
-- [ ] **Step 3: Run focused sensor tests**
+- [x] **Step 3: Run focused sensor tests**
 
 Run:
 
@@ -271,7 +271,7 @@ Expected: FAIL only because docs and examples are not created yet.
 - Modify: `README.md`
 - Modify: `README.zh-TW.md`
 
-- [ ] **Step 1: Add architecture sensor docs**
+- [x] **Step 1: Add architecture sensor docs**
 
 Create `docs/agent/architecture-sensors.md`:
 
@@ -323,7 +323,7 @@ Sensors are opt-in local checks. They do not provide sandboxing, provider-native
 tracing, runtime enforcement, or semantic correctness guarantees.
 ````
 
-- [ ] **Step 2: Copy installed mirror**
+- [x] **Step 2: Copy installed mirror**
 
 Run:
 
@@ -331,7 +331,7 @@ Run:
 cp docs/agent/architecture-sensors.md templates/docs/agent/architecture-sensors.md
 ```
 
-- [ ] **Step 3: Add import-boundary example files**
+- [x] **Step 3: Add import-boundary example files**
 
 Create `examples/architecture-sensors/import-boundary/README.md`:
 
@@ -413,7 +413,7 @@ Create `examples/architecture-sensors/import-boundary/tests/fixtures/sample.py`:
 VALUE = "fixture"
 ```
 
-- [ ] **Step 4: Link from README files**
+- [x] **Step 4: Link from README files**
 
 Add this sentence to `README.md`:
 
@@ -424,7 +424,7 @@ For command-backed architecture evidence patterns, see
 
 Add the Traditional Chinese equivalent to `README.zh-TW.md`.
 
-- [ ] **Step 5: Run focused tests and docs checks**
+- [x] **Step 5: Run focused tests and docs checks**
 
 Run:
 
@@ -442,7 +442,7 @@ Expected: all commands pass.
 - Modify: all files from Tasks 1-3.
 - Modify: `docs/superpowers/plans/2026-06-27-architecture-sensor-patterns.md`
 
-- [ ] **Step 1: Run full validation**
+- [x] **Step 1: Run full validation**
 
 Run:
 
@@ -453,11 +453,11 @@ bash templates/scripts/check-doc-links.sh .
 
 Expected: both commands pass.
 
-- [ ] **Step 2: Mark completed plan steps**
+- [x] **Step 2: Mark completed plan steps**
 
 After verification passes, update completed checkboxes in this plan from `- [ ]` to `- [x]`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add docs/agent/architecture-sensors.md templates/docs/agent/architecture-sensors.md templates/scripts/check-import-boundaries.py examples/architecture-sensors tests/harness/architecture-sensors.sh tests/harness/lib.sh tests/harness/static-install.sh tests/harness/doc-consistency.sh validate-harness.sh README.md README.zh-TW.md docs/superpowers/plans/2026-06-27-architecture-sensor-patterns.md

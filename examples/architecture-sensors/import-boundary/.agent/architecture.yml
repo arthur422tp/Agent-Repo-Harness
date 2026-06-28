@@ -1,0 +1,12 @@
+architecture:
+  status: upheld
+  reviewer: "agent"
+  invariants:
+    - id: ARCH-IMPORT-1
+      description: "Application code must not import test fixtures."
+      status: upheld
+      evidence_refs:
+        - type: command_output
+          path: ".agent/runs/20260627-091500/import-boundary.txt"
+          must_contain:
+            - "IMPORT_BOUNDARY_RESULT=pass"

@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo_root="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
+repo_root="$(CDPATH= cd -- "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 fixture_root="$repo_root/tests/fixtures/validate-harness"
 tmp_root="$(mktemp -d "${TMPDIR:-/tmp}/agent-harness-validate.XXXXXX")"
 target_root="$tmp_root/target"
+architecture_sensor_pass_root="$tmp_root/architecture-sensor-pass"
+architecture_sensor_fail_root="$tmp_root/architecture-sensor-fail"
 warnings_root="$tmp_root/warnings"
 failure_root="$tmp_root/failure"
 scope_skip_root="$tmp_root/scope-skip"

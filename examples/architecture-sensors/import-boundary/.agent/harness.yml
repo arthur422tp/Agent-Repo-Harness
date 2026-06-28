@@ -1,0 +1,4 @@
+verification:
+  required:
+    - name: "import boundary"
+      command: "python3 scripts/check-import-boundaries.py --source src/app --forbidden-import tests.fixtures"

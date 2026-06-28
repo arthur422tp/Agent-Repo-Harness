@@ -37,6 +37,7 @@ for required_path in \
   docs/config-format.md \
   docs/codex-usage.md \
   docs/agent/gate-guide.md \
+  docs/agent/architecture-sensors.md \
   docs/handoff.md \
   docs/superpowers-integration.md \
   schemas/harness.schema.json \
@@ -91,6 +92,8 @@ for required_path in \
   templates/docs/agent/failure-attribution.md \
   templates/docs/agent/interventions.md \
   templates/docs/agent/entropy-audit.md \
+  templates/docs/agent/architecture-sensors.md \
+  templates/scripts/check-import-boundaries.py \
   templates/scripts/validate-subagent-run.sh \
   tests/fixtures/validate-harness/broken-doc-links.md \
   tests/fixtures/validate-harness/subagent-packet-valid.yml \
@@ -218,6 +221,7 @@ for required_path in \
   docs/agent/failure-attribution.md \
   docs/agent/interventions.md \
   docs/agent/entropy-audit.md \
+  docs/agent/architecture-sensors.md \
   scripts/agent-preflight.sh \
   scripts/agent-finish.sh \
   scripts/agent-run.sh \
@@ -237,6 +241,7 @@ for required_path in \
   scripts/check-interventions.sh \
   scripts/check-sandbox-evidence.sh \
   scripts/check-subagent-evidence.sh \
+  scripts/check-import-boundaries.py \
   scripts/validate-episode.sh \
   scripts/agent-audit.sh \
   scripts/agent-verify.sh \

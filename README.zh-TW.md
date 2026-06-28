@@ -327,6 +327,9 @@ acceptance:
           overall_result: "pass"
 ```
 
+如需 command-backed architecture evidence pattern，請見
+[Architecture Sensors](docs/agent/architecture-sensors.md)。
+
 ## 常用命令
 
 在診斷任務或整合 harness 時，可以個別執行檢查：
