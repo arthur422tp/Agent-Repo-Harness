@@ -860,7 +860,7 @@ git commit -m "docs: classify agent helper stability"
 - Modify: `docs/superpowers/plans/2026-06-28-productization-polish.md`
 - Modify: `handoff.md` if this plan is being executed to completion in this checkout.
 
-- [ ] **Step 1: Confirm validation wiring includes existing suites**
+- [x] **Step 1: Confirm validation wiring includes existing suites**
 
 Run:
 
@@ -870,13 +870,13 @@ grep -E 'tests/harness/(acceptance-review|evidence-bind|task-profile|architectur
 
 Expected: every listed suite appears in `validate-harness.sh`.
 
-- [ ] **Step 2: Add wiring only if a new test file was introduced**
+- [x] **Step 2: Add wiring only if a new test file was introduced**
 
 If implementation added a new harness test file instead of extending existing suites, add it to `validate-harness.sh` next to related `tests/harness/*.sh` entries.
 
 If no new test file was added, leave `validate-harness.sh` unchanged.
 
-- [ ] **Step 3: Run targeted final checks**
+- [x] **Step 3: Run targeted final checks**
 
 Run:
 
@@ -890,7 +890,7 @@ bash tests/harness/productization-examples.sh
 
 Expected: all targeted checks pass.
 
-- [ ] **Step 4: Run full final validation**
+- [x] **Step 4: Run full final validation**
 
 Run:
 
@@ -901,7 +901,7 @@ bash validate-harness.sh
 
 Expected: both commands pass.
 
-- [ ] **Step 5: Confirm completion criteria**
+- [x] **Step 5: Confirm completion criteria**
 
 Run:
 
@@ -914,11 +914,11 @@ test -s examples/failed-run-repair/sample-run-passed/finish-summary.json
 
 Expected: commands exit `0` and point to the implemented acceptance marker, rewrite docs, stability entries, and failed-run repair example.
 
-- [ ] **Step 6: Update this plan status after successful implementation**
+- [x] **Step 6: Update this plan status after successful implementation**
 
 If executing the plan, update completed task checkboxes from `- [ ]` to `- [x]` only after the corresponding commit exists and the required validation passed.
 
-- [ ] **Step 7: Commit closeout metadata if changed**
+- [x] **Step 7: Commit closeout metadata if changed**
 
 Run only if `validate-harness.sh`, this plan file, or `handoff.md` changed during closeout:
 
