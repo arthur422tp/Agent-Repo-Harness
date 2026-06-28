@@ -33,6 +33,11 @@ AI coding agent 避免在尚未完成下列事項前便宣告完成：
 穩定與實驗性公開介面的界線請見
 [docs/stability-contract.md](docs/stability-contract.md)。
 
+面向 agent 的 helper CLI，例如 `scripts/agent-task-profile.sh`、
+`scripts/agent-evidence-bind.sh` 與 `scripts/check-evidence-refs.py`，屬於
+v0.x intended-stable 介面；請見
+[docs/stability-contract.md](docs/stability-contract.md)。
+
 ## 三個步驟開始試用
 
 1. 預覽並將 harness 安裝至目標 repository。

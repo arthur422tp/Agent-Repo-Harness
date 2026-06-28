@@ -30,6 +30,7 @@ Repo-local completion gate for AI coding agents.
 - [x] `bash validate-harness.sh` passes locally.
 - [x] Sandbox smoke is wired into CI and reports `SANDBOX_CI_SMOKE_RESULT=pass|skip|fail`.
 - [x] `docs/stability-contract.md` defines stable, intended-stable, and experimental interfaces.
+- [x] Agent-facing helper CLIs (`scripts/agent-task-profile.sh`, `scripts/agent-evidence-bind.sh`, and `scripts/check-evidence-refs.py`) are classified as intended-stable v0.x interfaces.
 - [x] GitHub release notes are copied or summarized from `CHANGELOG.md`.
 
 ## Before Publishing

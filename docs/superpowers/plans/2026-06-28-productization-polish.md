@@ -773,7 +773,7 @@ git commit -m "docs: add failed run repair example"
 - Modify: `docs/public-packaging.md`
 - Modify: `tests/harness/productization-examples.sh`
 
-- [ ] **Step 1: Add failing stability assertions**
+- [x] **Step 1: Add failing stability assertions**
 
 In `tests/harness/productization-examples.sh`, extend the stability contract assertions:
 
@@ -784,7 +784,7 @@ assert_contains "$repo_root/docs/stability-contract.md" "scripts/check-evidence-
 assert_contains "$repo_root/docs/stability-contract.md" "Agent-facing helper scripts are intended-stable in v0.x."
 ```
 
-- [ ] **Step 2: Run the focused test and verify it is red**
+- [x] **Step 2: Run the focused test and verify it is red**
 
 Run:
 
@@ -794,7 +794,7 @@ bash tests/harness/productization-examples.sh
 
 Expected: FAIL until `docs/stability-contract.md` names the helper scripts and compatibility note.
 
-- [ ] **Step 3: Update stability contract**
+- [x] **Step 3: Update stability contract**
 
 In `docs/stability-contract.md`, under `## Intended-Stable Interfaces`, add:
 
@@ -810,7 +810,7 @@ Add this compatibility paragraph near the deprecation policy:
 Agent-facing helper scripts are intended-stable in v0.x. Patch versions should not intentionally break their basic invocation forms. Minor versions may add options. Breaking changes require deprecation warnings before removal when feasible.
 ```
 
-- [ ] **Step 4: Update public docs**
+- [x] **Step 4: Update public docs**
 
 In `docs/public-packaging.md`, add a release-readiness bullet:
 
@@ -830,7 +830,7 @@ In `README.zh-TW.md`, add:
 面向 agent 的 helper CLI，例如 `scripts/agent-task-profile.sh`、`scripts/agent-evidence-bind.sh` 與 `scripts/check-evidence-refs.py`，屬於 v0.x intended-stable 介面；請見 [docs/stability-contract.md](docs/stability-contract.md)。
 ```
 
-- [ ] **Step 5: Run focused and doc validation**
+- [x] **Step 5: Run focused and doc validation**
 
 Run:
 
@@ -842,7 +842,7 @@ bash validate-harness.sh
 
 Expected: all commands pass.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 Run:
 

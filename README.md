@@ -35,6 +35,11 @@ For public repository metadata and the `v0.1.1` release checklist, see
 For stable and experimental public interfaces, see
 [docs/stability-contract.md](docs/stability-contract.md).
 
+Agent-facing helper CLIs such as `scripts/agent-task-profile.sh`,
+`scripts/agent-evidence-bind.sh`, and `scripts/check-evidence-refs.py` are
+intended-stable v0.x interfaces; see
+[docs/stability-contract.md](docs/stability-contract.md).
+
 ## Try It in Three Steps
 
 1. Preview and install the harness into a target repository.

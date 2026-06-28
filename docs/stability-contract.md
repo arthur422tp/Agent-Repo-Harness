@@ -18,6 +18,9 @@ agents may rely on.
 
 ## Intended-Stable Interfaces
 
+- `scripts/agent-task-profile.sh` CLI
+- `scripts/agent-evidence-bind.sh` CLI
+- `scripts/check-evidence-refs.py` CLI
 - `finish-summary.json` core fields: `overall_result`, `mode`, `run_dir`,
   `gates`, `changed_files`, `diff_stat`, and `elapsed_seconds`
 - `evidence_refs` MVP fields: `type`, `path`, `command`, `gate`,
@@ -40,6 +43,11 @@ Patch versions do not intentionally break stable scripts or core JSON fields.
 
 Minor versions may add optional fields, optional gates, helper scripts, and new
 `evidence_refs` types.
+
+Agent-facing helper scripts are intended-stable in v0.x. Patch versions should
+not intentionally break their basic invocation forms. Minor versions may add
+options. Breaking changes require deprecation warnings before removal when
+feasible.
 
 Major versions may remove deprecated fields, change default strictness, or
 remove legacy approval behavior.
