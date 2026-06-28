@@ -1,6 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+assert_single_acceptance_result() {
+  local file="$1"
+  local expected="$2"
+  local count
+  count="$(grep -c '^ACCEPTANCE_RESULT=' "$file" || true)"
+  if [ "$count" != "1" ]; then
+    echo "ERROR: expected exactly one ACCEPTANCE_RESULT marker in $file, found $count"
+    cat "$file"
+    exit 1
+  fi
+  assert_contains "$file" "ACCEPTANCE_RESULT=$expected"
+  if [ "$expected" = "pass" ]; then
+    assert_not_contains "$file" "ACCEPTANCE_RESULT=fail"
+  else
+    assert_not_contains "$file" "ACCEPTANCE_RESULT=pass"
+  fi
+}
+
 echo "== Acceptance gate skip semantics =="
 rm -rf "$acceptance_skip_root"
 mkdir -p "$acceptance_skip_root/.agent" "$acceptance_skip_root/scripts/lib"
@@ -72,6 +90,7 @@ mkdir -p "$acceptance_pass_root-default-text/.agent" "$acceptance_pass_root-defa
   bash "$repo_root/templates/scripts/check-acceptance.sh" >"$acceptance_log" 2>&1
   assert_contains "$acceptance_log" "Acceptance check is required."
   assert_contains "$acceptance_log" "ACCEPTANCE_RESULT=pass"
+  assert_single_acceptance_result "$acceptance_log" pass
 )
 pass "acceptance default text evidence remains valid"
 
@@ -163,6 +182,7 @@ JSON
   assert_contains "$acceptance_log" "OK: finish_summary_json overall_result is pass"
   assert_contains "$acceptance_log" "OK: gate agent-verify exit_status is 0"
   assert_contains "$acceptance_log" "ACCEPTANCE_RESULT=pass"
+  assert_single_acceptance_result "$acceptance_log" pass
 )
 pass "acceptance strict refs pass with finish summary"
 
@@ -216,6 +236,7 @@ JSON
   fi
   assert_contains "$acceptance_log" "gate agent-verify exit_status expected 0 got 1"
   assert_contains "$acceptance_log" "ACCEPTANCE_RESULT=fail"
+  assert_single_acceptance_result "$acceptance_log" fail
 )
 pass "acceptance strict refs wrong gate status failure"
 
@@ -255,6 +276,7 @@ mkdir -p "$acceptance_invalid_ref_path_root/.agent" "$acceptance_invalid_ref_pat
   fi
   assert_contains "$acceptance_log" "path does not exist"
   assert_contains "$acceptance_log" "ACCEPTANCE_RESULT=fail"
+  assert_single_acceptance_result "$acceptance_log" fail
 )
 pass "acceptance strict refs missing path failure"
 

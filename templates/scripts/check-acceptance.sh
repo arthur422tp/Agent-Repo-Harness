@@ -218,7 +218,7 @@ if failures:
     print("ACCEPTANCE_RESULT=fail")
     sys.exit(1)
 
-print("ACCEPTANCE_RESULT=pass")
+print("ACCEPTANCE_STRUCTURE_RESULT=pass")
 PY
 status=$?
 set -e
@@ -269,4 +269,5 @@ if [ "$refs_required" = "true" ] || [ "$refs_present" = "true" ]; then
   fi
 fi
 
+echo "ACCEPTANCE_RESULT=pass"
 exit 0
