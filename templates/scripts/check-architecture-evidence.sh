@@ -202,13 +202,58 @@ if failures:
     print("ARCHITECTURE_EVIDENCE_RESULT=fail")
     sys.exit(1)
 
-print("ARCHITECTURE_EVIDENCE_RESULT=pass")
+print("ARCHITECTURE_STRUCTURE_RESULT=pass")
 PY
 status=$?
 set -e
 
 if [ "$status" -ne 0 ]; then
   print_repair_hint
+  exit "$status"
 fi
 
-exit "$status"
+refs_present="$("$python_bin" - "$reader" "$architecture_file" <<'PY'
+import importlib.util
+import sys
+from pathlib import Path
+
+sys.dont_write_bytecode = True
+reader_path = Path(sys.argv[1])
+architecture_path = Path(sys.argv[2])
+spec = importlib.util.spec_from_file_location("harness_read_yaml", reader_path)
+module = importlib.util.module_from_spec(spec)
+assert spec.loader is not None
+spec.loader.exec_module(module)
+data = module.load_yaml_subset(architecture_path)
+architecture = data.get("architecture") if isinstance(data, dict) else None
+present = False
+if isinstance(architecture, dict):
+    if isinstance(architecture.get("evidence_refs"), list):
+        present = True
+    invariants = architecture.get("invariants")
+    if isinstance(invariants, list):
+        for invariant in invariants:
+            if isinstance(invariant, dict) and isinstance(invariant.get("evidence_refs"), list):
+                present = True
+                break
+print("true" if present else "false")
+PY
+)"
+
+evidence_refs_script="$script_dir/check-evidence-refs.py"
+if [ "$refs_present" = "true" ]; then
+  if [ ! -f "$evidence_refs_script" ]; then
+    echo "FAIL: evidence refs validator not found: $evidence_refs_script"
+    echo "ARCHITECTURE_EVIDENCE_RESULT=fail"
+    print_repair_hint
+    exit 1
+  fi
+  if ! "$python_bin" "$evidence_refs_script" "$architecture_file" --kind architecture; then
+    echo "ARCHITECTURE_EVIDENCE_RESULT=fail"
+    print_repair_hint
+    exit 1
+  fi
+fi
+
+echo "ARCHITECTURE_EVIDENCE_RESULT=pass"
+exit 0

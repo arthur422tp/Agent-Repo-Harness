@@ -295,7 +295,7 @@ git commit -m "docs: clarify task profile rewrite behavior"
 - Modify: `templates/scripts/check-architecture-evidence.sh`
 - Modify: `tests/harness/architecture-evidence.sh`
 
-- [ ] **Step 1: Add failing architecture refs tests**
+- [x] **Step 1: Add failing architecture refs tests**
 
 In `tests/harness/architecture-evidence.sh`, add cases after the valid architecture evidence case:
 
@@ -343,7 +343,7 @@ Add two matching failure cases:
 
 Keep the existing no-ref valid case unchanged so backward compatibility remains covered.
 
-- [ ] **Step 2: Run the focused test and verify it is red**
+- [x] **Step 2: Run the focused test and verify it is red**
 
 Run:
 
@@ -353,7 +353,7 @@ bash tests/harness/architecture-evidence.sh
 
 Expected: FAIL because architecture refs are not validated yet and `check-evidence-refs.py` has no `--kind architecture` mode.
 
-- [ ] **Step 3: Add `--kind` support to the evidence refs validator**
+- [x] **Step 3: Add `--kind` support to the evidence refs validator**
 
 In `templates/scripts/check-evidence-refs.py`, change the parser to:
 
@@ -375,7 +375,7 @@ print(f"File: {evidence_path}")
 print(f"Kind: {args.kind}")
 ```
 
-- [ ] **Step 4: Split ref iteration by kind**
+- [x] **Step 4: Split ref iteration by kind**
 
 Replace `iter_refs(data)` with:
 
@@ -426,7 +426,7 @@ for label, ref in ref_iter:
 
 Default behavior remains acceptance-compatible because `--kind` defaults to `acceptance`.
 
-- [ ] **Step 5: Detect architecture refs in the architecture gate**
+- [x] **Step 5: Detect architecture refs in the architecture gate**
 
 In `templates/scripts/check-architecture-evidence.sh`, after structure validation succeeds and before final exit, compute whether refs exist:
 
@@ -479,7 +479,7 @@ if [ "$refs_present" = "true" ]; then
 fi
 ```
 
-- [ ] **Step 6: Run focused and full validation**
+- [x] **Step 6: Run focused and full validation**
 
 Run:
 
@@ -491,7 +491,7 @@ bash validate-harness.sh
 
 Expected: all commands pass. Acceptance refs still work with the default validator invocation.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 Run:
 

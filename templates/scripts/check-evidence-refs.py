@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Agent-Repo-Harness acceptance evidence references."""
+"""Validate Agent-Repo-Harness evidence references."""
 
 from __future__ import annotations
 
@@ -135,7 +135,7 @@ def validate_finish_summary(ref: dict[str, Any], path: Path, failures: list[str]
     fail(failures, f"finish_summary_json gate {gate} is missing")
 
 
-def iter_refs(data: Any):
+def iter_acceptance_refs(data: Any):
     acceptance = data.get("acceptance") if isinstance(data, dict) else None
     criteria = acceptance.get("criteria") if isinstance(acceptance, dict) else None
     if not isinstance(criteria, list):
@@ -150,30 +150,61 @@ def iter_refs(data: Any):
             yield f"acceptance.criteria[{criterion_index}].evidence_refs[{ref_index}]", ref
 
 
+def iter_architecture_refs(data: Any):
+    architecture = data.get("architecture") if isinstance(data, dict) else None
+    if not isinstance(architecture, dict):
+        return
+
+    refs = architecture.get("evidence_refs")
+    if isinstance(refs, list):
+        for ref_index, ref in enumerate(refs, 1):
+            yield f"architecture.evidence_refs[{ref_index}]", ref
+
+    invariants = architecture.get("invariants")
+    if not isinstance(invariants, list):
+        return
+    for invariant_index, invariant in enumerate(invariants, 1):
+        if not isinstance(invariant, dict):
+            continue
+        refs = invariant.get("evidence_refs")
+        if not isinstance(refs, list):
+            continue
+        for ref_index, ref in enumerate(refs, 1):
+            yield f"architecture.invariants[{invariant_index}].evidence_refs[{ref_index}]", ref
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate acceptance evidence_refs.")
-    parser.add_argument("acceptance_file", nargs="?", default=".agent/acceptance.yml")
+    parser = argparse.ArgumentParser(description="Validate Agent-Repo-Harness evidence_refs.")
+    parser.add_argument("evidence_file", nargs="?", default=".agent/acceptance.yml")
+    parser.add_argument(
+        "--kind",
+        choices=("acceptance", "architecture"),
+        default="acceptance",
+        help="YAML shape to scan for evidence_refs.",
+    )
     args = parser.parse_args()
 
     sys.dont_write_bytecode = True
     script_path = Path(__file__).resolve()
-    acceptance_path = Path(args.acceptance_file)
+    evidence_path = Path(args.evidence_file)
     repo_root = Path.cwd().resolve()
     failures: list[str] = []
 
     print("== Evidence Refs Gate ==")
-    print(f"File: {acceptance_path}")
+    print(f"File: {evidence_path}")
+    print(f"Kind: {args.kind}")
 
     try:
         reader = load_yaml_reader(script_path)
-        data = reader.load_yaml_subset(acceptance_path)
+        data = reader.load_yaml_subset(evidence_path)
     except Exception as exc:
-        print(f"FAIL: could not parse {acceptance_path}: {exc}")
+        print(f"FAIL: could not parse {evidence_path}: {exc}")
         print("EVIDENCE_REFS_RESULT=fail")
         return 1
 
     found = False
-    for label, ref in iter_refs(data):
+    ref_iter = iter_architecture_refs(data) if args.kind == "architecture" else iter_acceptance_refs(data)
+    for label, ref in ref_iter:
         found = True
         if not isinstance(ref, dict):
             fail(failures, f"evidence ref {label} must be a map")
