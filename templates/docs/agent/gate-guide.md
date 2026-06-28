@@ -5,6 +5,9 @@ are rendered into `.agent/task.yml` by `scripts/agent-task-profile.sh`. The
 harness enforces the generated flags rather than reading a profile name at
 finish time.
 
+`scripts/agent-task-profile.sh` rewrites the output task file. Use `--dry-run`
+before applying when preserving custom task fields matters.
+
 ## Minimal Profile
 
 Use for small, low-risk maintenance work.

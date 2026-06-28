@@ -51,6 +51,9 @@ git commit -m "Initialize project with Agent-Repo-Harness baseline"
 不要手寫複雜 flags；在 `.agent/harness.yml` 設定由 repository 擁有的
 驗證命令，然後執行：
 
+`scripts/agent-task-profile.sh` 會重寫輸出的 task 檔案；如果需要保留
+自訂欄位，套用前請先使用 `--dry-run` 檢查輸出。
+
 ```bash
 bash scripts/agent-task-profile.sh standard \
   --goal "Add artifact-backed acceptance evidence" \

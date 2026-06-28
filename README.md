@@ -53,6 +53,9 @@ For a real task, prefer the task profile helper over hand-writing
 `.agent/task.yml`, set repository-owned verification commands in
 `.agent/harness.yml`, then run:
 
+`scripts/agent-task-profile.sh` rewrites the output task file. Use `--dry-run`
+before applying when preserving custom task fields matters.
+
 ```bash
 bash scripts/agent-task-profile.sh standard \
   --goal "Add artifact-backed acceptance evidence" \

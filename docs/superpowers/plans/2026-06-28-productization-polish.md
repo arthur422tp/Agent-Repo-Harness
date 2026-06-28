@@ -196,7 +196,7 @@ git commit -m "fix: emit one acceptance result marker"
 - Modify: `docs/agent/gate-guide.md`
 - Modify: `templates/docs/agent/gate-guide.md`
 
-- [ ] **Step 1: Add failing overwrite-warning coverage**
+- [x] **Step 1: Add failing overwrite-warning coverage**
 
 In `tests/harness/task-profile.sh`, add:
 
@@ -219,7 +219,7 @@ setup_profile_root "$task_profile_rewrite_root"
 pass "existing task profile rewrite warns"
 ```
 
-- [ ] **Step 2: Run the focused test and verify it is red**
+- [x] **Step 2: Run the focused test and verify it is red**
 
 Run:
 
@@ -229,7 +229,7 @@ bash tests/harness/task-profile.sh
 
 Expected: FAIL because the overwrite warning is not emitted yet.
 
-- [ ] **Step 3: Update help text**
+- [x] **Step 3: Update help text**
 
 In `templates/scripts/agent-task-profile.sh`, add this note to `usage()` after the options list:
 
@@ -239,7 +239,7 @@ Note:
   when preserving custom task fields matters.
 ```
 
-- [ ] **Step 4: Warn before overwriting an existing output file**
+- [x] **Step 4: Warn before overwriting an existing output file**
 
 In `templates/scripts/agent-task-profile.sh`, before the non-dry-run write creates or overwrites `$output`, add:
 
@@ -251,7 +251,7 @@ fi
 
 Keep existing generator behavior and `--dry-run` behavior unchanged.
 
-- [ ] **Step 5: Update docs in both languages and installed gate guide**
+- [x] **Step 5: Update docs in both languages and installed gate guide**
 
 Add this exact English sentence to `README.md`, `docs/agent/gate-guide.md`, and `templates/docs/agent/gate-guide.md` near the first `agent-task-profile.sh` usage:
 
@@ -265,7 +265,7 @@ Add the Traditional Chinese equivalent to `README.zh-TW.md` near the first `agen
 `scripts/agent-task-profile.sh` 會重寫輸出的 task 檔案；如果需要保留自訂欄位，套用前請先使用 `--dry-run` 檢查輸出。
 ```
 
-- [ ] **Step 6: Run focused and doc validation**
+- [x] **Step 6: Run focused and doc validation**
 
 Run:
 
@@ -277,7 +277,7 @@ bash validate-harness.sh
 
 Expected: all commands pass.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 Run:
 

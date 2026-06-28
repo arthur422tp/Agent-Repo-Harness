@@ -29,6 +29,10 @@ Options:
   --output PATH
   --dry-run
   -h, --help
+
+Note:
+  This command rewrites the output task file. Use --dry-run before applying
+  when preserving custom task fields matters.
 EOF
 }
 
@@ -273,6 +277,9 @@ echo "- intervention_record: $requires_intervention_record" >&2
 if [ "$dry_run" = "true" ]; then
   render_task
 else
+  if [ -f "$output" ]; then
+    echo "WARN: rewriting existing task file: $output" >&2
+  fi
   mkdir -p "$(dirname "$output")"
   render_task > "$output"
 fi

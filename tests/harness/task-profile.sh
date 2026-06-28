@@ -95,6 +95,24 @@ setup_profile_root "$task_profile_dry_run_root"
 pass "dry-run does not write"
 
 echo
+echo "== Existing task profile rewrite warns =="
+task_profile_rewrite_root="$tmp_root/task-profile-rewrite"
+setup_profile_root "$task_profile_rewrite_root"
+(
+  cd "$task_profile_rewrite_root"
+  printf '%s\n' 'task:' '  custom_field: "preserve manually if needed"' > .agent/task.yml
+  bash scripts/agent-task-profile.sh standard \
+    --goal "Regenerate task." \
+    --current-task "Use generated profile." \
+    --allowed "templates/scripts/**" > rewrite.log 2>&1
+  assert_contains rewrite.log "WARN: rewriting existing task file: .agent/task.yml"
+  assert_contains rewrite.log "AGENT_TASK_PROFILE_RESULT=pass"
+  bash scripts/validate-task.sh > validate.log 2>&1
+  assert_contains validate.log "TASK_VALIDATION_RESULT=pass"
+)
+pass "existing task profile rewrite warns"
+
+echo
 echo "== Invalid profile fails =="
 setup_profile_root "$task_profile_invalid_root"
 (
