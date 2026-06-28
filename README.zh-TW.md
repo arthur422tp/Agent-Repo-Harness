@@ -22,12 +22,12 @@ AI coding agent 避免在尚未完成下列事項前便宣告完成：
 
 ## 版本管理
 
-目前版本：`0.1.1`。
+目前版本：`0.2.0`。
 
 變更內容請見 [CHANGELOG.md](CHANGELOG.md)，版本管理與升級預期請見
 [docs/versioning.md](docs/versioning.md)。
 
-公開 repository metadata 與 `v0.1.1` 發行檢查清單請見
+公開 repository metadata 與 `v0.2.0` 發行檢查清單請見
 [docs/public-packaging.md](docs/public-packaging.md)。
 
 穩定與實驗性公開介面的界線請見

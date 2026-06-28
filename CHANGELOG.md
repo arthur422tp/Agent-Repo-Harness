@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## v0.2.0 - Agent-facing productization polish
+
+- Ensure `check-acceptance.sh` emits exactly one final
+  `ACCEPTANCE_RESULT=pass|fail` marker per required run.
+- Clarify that `scripts/agent-task-profile.sh` rewrites the output task file
+  and add a warning before overwriting existing task state.
+- Extend `scripts/check-evidence-refs.py` so architecture evidence can validate
+  `architecture.evidence_refs` and invariant-level `evidence_refs`.
+- Add a concrete failed-run repair example with failed and passed finish
+  evidence.
+- Classify `agent-task-profile.sh`, `agent-evidence-bind.sh`, and
+  `check-evidence-refs.py` as intended-stable v0.x agent-facing helper CLIs.
+
 ## v0.1.1 - RAG adoption benchmark
 
 - Measure complete High-Risk adoption for the contract RAG fixture and document

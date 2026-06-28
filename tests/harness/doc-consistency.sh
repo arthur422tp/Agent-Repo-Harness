@@ -13,28 +13,28 @@ assert_exists "$repo_root/VERSION"
 assert_exists "$repo_root/CHANGELOG.md"
 assert_exists "$repo_root/docs/versioning.md"
 assert_exists "$repo_root/docs/public-packaging.md"
-assert_contains "$repo_root/VERSION" "0.1.1"
+assert_contains "$repo_root/VERSION" "0.2.0"
 assert_contains "$repo_root/README.md" "CHANGELOG.md"
 assert_contains "$repo_root/README.md" "docs/versioning.md"
 assert_contains "$repo_root/README.md" "docs/public-packaging.md"
-assert_contains "$repo_root/CHANGELOG.md" "v0.1.1"
+assert_contains "$repo_root/CHANGELOG.md" "v0.2.0"
 assert_contains "$repo_root/docs/versioning.md" "Backward compatibility is best-effort before v1.0."
 assert_contains "$repo_root/docs/public-packaging.md" "Repo-local completion gate for AI coding agents."
 assert_contains "$repo_root/docs/public-packaging.md" "ai-agents"
-assert_contains "$repo_root/docs/public-packaging.md" "v0.1.1 release checklist"
+assert_contains "$repo_root/docs/public-packaging.md" "v0.2.0 release checklist"
 assert_contains "$repo_root/docs/public-packaging.md" "CI is passing"
 assert_contains "$repo_root/docs/public-packaging.md" "default TDD evidence is opt-in"
 assert_exists "$repo_root/ci/sandbox-smoke.sh"
 assert_contains "$repo_root/.github/workflows/ci.yml" "bash ci/sandbox-smoke.sh"
 assert_contains "$repo_root/.github/workflows/ci.yml" "Sandbox smoke"
 assert_contains "$repo_root/docs/public-packaging.md" "Sandbox smoke"
-assert_contains "$repo_root/docs/public-packaging.md" '- [x] `VERSION` is `0.1.1`.'
-assert_contains "$repo_root/docs/public-packaging.md" '- [x] `CHANGELOG.md` has a `v0.1.1` entry.'
+assert_contains "$repo_root/docs/public-packaging.md" '- [x] `VERSION` is `0.2.0`.'
+assert_contains "$repo_root/docs/public-packaging.md" '- [x] `CHANGELOG.md` has a `v0.2.0` entry.'
 assert_contains "$repo_root/docs/public-packaging.md" '- [x] `README.md` has a CI badge'
 assert_contains "$repo_root/docs/public-packaging.md" '- [x] `install-agent-harness.sh` prints the short 3-step next path.'
 assert_contains "$repo_root/docs/public-packaging.md" "- [x] Sandbox smoke is wired into CI"
 assert_contains "$repo_root/docs/public-packaging.md" "- [ ] Set the GitHub description."
-assert_contains "$repo_root/docs/public-packaging.md" '- [ ] Create the GitHub release tag `v0.1.1`.'
+assert_contains "$repo_root/docs/public-packaging.md" '- [ ] Create the GitHub release tag `v0.2.0`.'
 assert_contains "$repo_root/CHANGELOG.md" "Sandbox smoke readiness"
 pass "release version documentation is present and referenced"
 

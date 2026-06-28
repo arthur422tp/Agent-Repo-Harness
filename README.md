@@ -23,13 +23,13 @@ gate.
 
 ## Versioning
 
-Current version: `0.1.1`.
+Current version: `0.2.0`.
 
 See [CHANGELOG.md](CHANGELOG.md) for changes and
 [docs/versioning.md](docs/versioning.md) for versioning and upgrade
 expectations.
 
-For public repository metadata and the `v0.1.1` release checklist, see
+For public repository metadata and the `v0.2.0` release checklist, see
 [docs/public-packaging.md](docs/public-packaging.md).
 
 For stable and experimental public interfaces, see

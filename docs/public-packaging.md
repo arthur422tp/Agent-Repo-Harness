@@ -18,16 +18,17 @@ Repo-local completion gate for AI coding agents.
 - `repo-automation`
 - `shell`
 
-## v0.1.1 release checklist
+## v0.2.0 release checklist
 
 - [ ] CI is passing on the published default branch.
-- [x] `VERSION` is `0.1.1`.
-- [x] `CHANGELOG.md` has a `v0.1.1` entry.
+- [x] `VERSION` is `0.2.0`.
+- [x] `CHANGELOG.md` has a `v0.2.0` entry.
 - [x] `README.md` has a CI badge, Quick Start, What It Is Not, Platform Support, Verification Strategy, Evidence vs Handoff, and Guardrails section.
 - [x] `docs/handoff.md` explains `.agent/runs/<timestamp>/`, `handoff.md`, and optional `.agent/handoff.yml`.
 - [x] `install-agent-harness.sh` prints the short 3-step next path.
 - [x] The default TDD evidence is opt-in.
 - [x] `bash validate-harness.sh` passes locally.
+- [x] Acceptance, task-profile, architecture evidence refs, failed-run repair examples, and helper CLI stability are covered by `bash validate-harness.sh`.
 - [x] Sandbox smoke is wired into CI and reports `SANDBOX_CI_SMOKE_RESULT=pass|skip|fail`.
 - [x] `docs/stability-contract.md` defines stable, intended-stable, and experimental interfaces.
 - [x] Agent-facing helper CLIs (`scripts/agent-task-profile.sh`, `scripts/agent-evidence-bind.sh`, and `scripts/check-evidence-refs.py`) are classified as intended-stable v0.x interfaces.
@@ -37,7 +38,7 @@ Repo-local completion gate for AI coding agents.
 
 - [ ] Set the GitHub description.
 - [ ] Set the GitHub topics.
-- [ ] Create the GitHub release tag `v0.1.1`.
+- [ ] Create the GitHub release tag `v0.2.0`.
 - [ ] Verify the README renders correctly on GitHub.
 - [ ] Verify the CI badge points to `.github/workflows/ci.yml`.
 
