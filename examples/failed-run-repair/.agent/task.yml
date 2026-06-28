@@ -1,0 +1,19 @@
+task:
+  status: "complete"
+  goal: "Repair strict acceptance evidence after a failed finish run."
+  current_task: "Bind command-backed acceptance evidence and rerun finish."
+  source_plan: "examples/failed-run-repair/README.md"
+  scope:
+    allowed_paths:
+      - "examples/failed-run-repair/**"
+    forbidden_paths: []
+  completion:
+    requires_tdd_evidence: false
+    requires_acceptance_check: true
+    requires_review_evidence: false
+    requires_architecture_evidence: false
+    requires_failure_attribution: false
+    requires_intervention_record: false
+    requires_command_ledger: false
+    requires_sandbox_verification: false
+    requires_subagent_evidence: false

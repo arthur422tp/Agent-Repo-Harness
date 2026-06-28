@@ -1,0 +1,6 @@
+== Acceptance Gate ==
+Acceptance check is required.
+Strict evidence refs are enabled.
+ACCEPTANCE_STRUCTURE_RESULT=pass
+EVIDENCE_REFS_RESULT=pass
+ACCEPTANCE_RESULT=pass

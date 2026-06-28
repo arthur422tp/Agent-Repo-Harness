@@ -518,7 +518,7 @@ git commit -m "feat: validate architecture evidence refs"
 - Create: `examples/failed-run-repair/handoff.md`
 - Modify: `tests/harness/productization-examples.sh`
 
-- [ ] **Step 1: Add failing productization example assertions**
+- [x] **Step 1: Add failing productization example assertions**
 
 In `tests/harness/productization-examples.sh`, add `examples/failed-run-repair` to `required_examples`.
 
@@ -541,7 +541,7 @@ assert_contains "$repo_root/examples/failed-run-repair/sample-run-failed/accepta
 assert_contains "$repo_root/examples/failed-run-repair/sample-run-passed/acceptance-result.txt" "ACCEPTANCE_RESULT=pass"
 ```
 
-- [ ] **Step 2: Run the focused test and verify it is red**
+- [x] **Step 2: Run the focused test and verify it is red**
 
 Run:
 
@@ -551,7 +551,7 @@ bash tests/harness/productization-examples.sh
 
 Expected: FAIL because `examples/failed-run-repair/` does not exist yet.
 
-- [ ] **Step 3: Create the example task and harness config**
+- [x] **Step 3: Create the example task and harness config**
 
 Create `examples/failed-run-repair/.agent/task.yml`:
 
@@ -590,7 +590,7 @@ handoff:
   require_summary: true
 ```
 
-- [ ] **Step 4: Create final acceptance evidence with bound refs**
+- [x] **Step 4: Create final acceptance evidence with bound refs**
 
 Create `examples/failed-run-repair/.agent/acceptance.yml`:
 
@@ -610,7 +610,7 @@ acceptance:
           overall_result: pass
 ```
 
-- [ ] **Step 5: Create failed and passed sample artifacts**
+- [x] **Step 5: Create failed and passed sample artifacts**
 
 Create `examples/failed-run-repair/sample-run-failed/acceptance-result.txt`:
 
@@ -671,7 +671,7 @@ Create `examples/failed-run-repair/sample-run-passed/finish-summary.json`:
 }
 ```
 
-- [ ] **Step 6: Write the repair walkthrough**
+- [x] **Step 6: Write the repair walkthrough**
 
 Create `examples/failed-run-repair/README.md` with exactly these headings:
 
@@ -729,7 +729,7 @@ The agent may claim the strict acceptance evidence was repaired after the passed
 The agent must not claim the original failed finish run completed the task, and must not claim semantic correctness beyond the recorded harness checks.
 ````
 
-- [ ] **Step 7: Write the example handoff**
+- [x] **Step 7: Write the example handoff**
 
 Create `examples/failed-run-repair/handoff.md`:
 
@@ -741,7 +741,7 @@ Final passed run: `examples/failed-run-repair/sample-run-passed/finish-summary.j
 The strict acceptance failure was repaired by binding command-backed evidence and rerunning acceptance plus finish. The earlier failed run remains in `examples/failed-run-repair/sample-run-failed/` as audit evidence.
 ```
 
-- [ ] **Step 8: Run focused and full validation**
+- [x] **Step 8: Run focused and full validation**
 
 Run:
 
@@ -753,7 +753,7 @@ bash validate-harness.sh
 
 Expected: all commands pass.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 Run:
 

@@ -1,0 +1,5 @@
+== Acceptance Gate ==
+Acceptance check is required.
+Strict evidence refs are enabled.
+FAIL: criterion strict-acceptance-repaired requires evidence_refs because evidence.strict_refs is true
+ACCEPTANCE_RESULT=fail

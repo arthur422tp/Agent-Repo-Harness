@@ -1,0 +1,8 @@
+verification:
+  commands:
+    - "bash scripts/agent-verify.sh"
+evidence:
+  strict_refs: true
+  allow_text_only_evidence: false
+handoff:
+  require_summary: true

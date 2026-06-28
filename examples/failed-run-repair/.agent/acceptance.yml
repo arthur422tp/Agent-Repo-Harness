@@ -1,0 +1,13 @@
+acceptance:
+  criteria:
+    - id: "strict-acceptance-repaired"
+      description: "Strict acceptance evidence is backed by a passing command artifact."
+      met: true
+      evidence_refs:
+        - type: command_output
+          path: "examples/failed-run-repair/sample-run-passed/acceptance-result.txt"
+          must_contain:
+            - "ACCEPTANCE_RESULT=pass"
+        - type: finish_summary_json
+          path: "examples/failed-run-repair/sample-run-passed/finish-summary.json"
+          overall_result: pass

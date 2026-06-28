@@ -1,0 +1,7 @@
+{
+  "overall_result": "fail",
+  "gates": [
+    { "name": "verify", "exit_status": 0, "result": "pass" },
+    { "name": "acceptance", "exit_status": 1, "result": "fail" }
+  ]
+}

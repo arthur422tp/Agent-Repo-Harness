@@ -1,0 +1,2 @@
+== Verify Gate ==
+VERIFY_RESULT=pass
