@@ -1440,7 +1440,8 @@ Dogfood bootstrap and release profiles in a second non-Python repository before
 expanding profile semantics.
 ```
 
-- [ ] **Step 6: Commit final status and handoff**
+- [x] **Step 6: Commit final status and handoff**
+Observed finalization commit: `f9e2896` (`chore: finalize verification lifecycle rollout`).
 
 ```bash
 git add docs/superpowers/specs/2026-07-10-verification-lifecycle-hygiene-design.md \
@@ -1449,7 +1450,7 @@ git add docs/superpowers/specs/2026-07-10-verification-lifecycle-hygiene-design.
 git commit -m "chore: finalize verification lifecycle rollout"
 ```
 
-- [ ] **Step 7: Re-run final validation after the status commit**
+- [x] **Step 7: Re-run final validation after the status commit**
 
 ```bash
 bash templates/scripts/check-doc-links.sh .
