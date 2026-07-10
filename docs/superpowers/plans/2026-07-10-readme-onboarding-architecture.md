@@ -113,7 +113,7 @@ git commit -m "test: define onboarding README contract"
 
 Do not stage `.agent/`.
 
-Observed commit: pending until this task commit is created.
+Observed commit: `f624c50` (`test: define onboarding README contract`).
 
 ---
 
@@ -247,7 +247,7 @@ git commit -m "docs: streamline README onboarding flow"
 
 Do not stage `.agent/`.
 
-Observed commit: pending until this task commit is created.
+Observed commit: `9be2fb9` (`docs: streamline README onboarding flow`).
 
 ---
 
@@ -263,7 +263,7 @@ Observed commit: pending until this task commit is created.
 - Consumes: the completed contract and synchronized README pair.
 - Produces: fresh scope, link, whitespace, and full-suite evidence for the completion claim.
 
-- [ ] **Step 1: Check final scope**
+- [x] **Step 1: Check final scope**
 
 ```bash
 git status --short
@@ -281,23 +281,31 @@ tests/harness/doc-consistency.sh
 
 The plan file may also appear. No `templates/scripts/`, `schemas/`, or `.agent/` file may appear.
 
-- [ ] **Step 2: Run document link verification**
+Observed: `git status --short` showed only the pre-existing untracked `.agent/`; the two implementation commits changed only the planned README, consistency-test, and plan files. `git diff --check HEAD~2..HEAD` exited 0.
+
+- [x] **Step 2: Run document link verification**
 
 Run: `bash templates/scripts/check-doc-links.sh .`
 
 Expected: exit 0 and `DOC_LINKS_RESULT=pass`.
 
-- [ ] **Step 3: Run full verification**
+Observed: `bash templates/scripts/check-doc-links.sh .` exited 0 with `DOC_LINKS_RESULT=pass`.
+
+- [x] **Step 3: Run full verification**
 
 Run: `bash validate-harness.sh`
 
 Expected: exit 0 with every sourced harness suite passing.
 
-- [ ] **Step 4: Record observed evidence and complete checkboxes**
+Observed: the final `bash validate-harness.sh` exited 0 with `PASS: validation completed` and all sourced suites passing.
+
+- [x] **Step 4: Record observed evidence and complete checkboxes**
 
 Change completed steps to `[x]` and record observed commit SHAs and command results below their steps. Do not mark a step complete before its command succeeds.
 
-- [ ] **Step 5: Commit the completion record**
+Observed: all Task 1, Task 2, and Task 3 checkboxes are now complete with command and commit evidence.
+
+- [x] **Step 5: Commit the completion record**
 
 ```bash
 git add docs/superpowers/plans/2026-07-10-readme-onboarding-architecture.md
@@ -305,3 +313,5 @@ git commit -m "chore: mark README onboarding plan complete"
 ```
 
 Expected: only the plan completion record is committed. Do not stage `.agent/` and do not push.
+
+Observed commit: pending until this completion-record commit is created.
