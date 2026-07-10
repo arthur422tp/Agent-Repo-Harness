@@ -1,50 +1,23 @@
 # Agent-Repo-Harness
 
-[English](README.md) | [繁體中文](README.zh-TW.md)
+[繁體中文](README.zh-TW.md)
 
 [![CI](https://github.com/arthur422tp/Agent-Repo-Harness/actions/workflows/ci.yml/badge.svg)](https://github.com/arthur422tp/Agent-Repo-Harness/actions/workflows/ci.yml)
 
 **Agent-Repo-Harness is a repo-local completion gate for AI coding agents.**
 
-It gives Codex, Claude Code, and generic AI coding agents a small set of
-repo-owned contracts and scripts to check work before claiming it is complete.
-It helps AI coding agents avoid claiming completion without:
+It makes task scope, policy, repository-owned verification, and durable finish
+evidence explicit before an agent claims completion. It is not a sandbox, a
+full agent runtime, or a semantic correctness guarantee.
 
-- staying inside task scope
-- passing policy checks
-- running verification
-- leaving durable run evidence and concise continuity notes
+Current version: `0.2.0`. See [CHANGELOG.md](CHANGELOG.md),
+[versioning](docs/versioning.md), and the [stability contract](docs/stability-contract.md)
+for release and interface details.
 
-`scripts/agent-finish.sh` is the canonical completion gate. It checks local
-scope and policy rules, applies any enabled evidence gates, runs verification,
-and records durable evidence for the run. Updating `handoff.md` with that
-outcome is a documented workflow step, not a check enforced by the finish
-gate.
+## Quick Start
 
-## Versioning
-
-Current version: `0.2.0`.
-
-See [CHANGELOG.md](CHANGELOG.md) for changes and
-[docs/versioning.md](docs/versioning.md) for versioning and upgrade
-expectations.
-
-For public repository metadata and the `v0.2.0` release checklist, see
-[docs/public-packaging.md](docs/public-packaging.md).
-
-For stable and experimental public interfaces, see
-[docs/stability-contract.md](docs/stability-contract.md).
-
-Agent-facing helper CLIs such as `scripts/agent-task-profile.sh`,
-`scripts/agent-evidence-bind.sh`, and `scripts/check-evidence-refs.py` are
-intended-stable v0.x interfaces; see
-[docs/stability-contract.md](docs/stability-contract.md).
-
-## Try It in Three Steps
-
-1. Preview and install the harness into a target repository.
-2. Enter that target repository and review the installed scaffold.
-3. Commit a clean harness baseline before using it for feature work.
+Preview the installer, install the harness into a target repository, then
+commit a clean baseline before asking an agent to change product files:
 
 ```bash
 bash install-agent-harness.sh --dry-run /path/to/target-repo
@@ -54,453 +27,202 @@ git add AGENTS.md CLAUDE.md agent.md handoff.md .agent docs/agent scripts schema
 git commit -m "Initialize project with Agent-Repo-Harness baseline"
 ```
 
-For a real task, prefer the task profile helper over hand-writing
-`.agent/task.yml`, set repository-owned verification commands in
-`.agent/harness.yml`, then run:
+Platform Support: the primary supported environments are Linux, macOS, WSL, and Git Bash. The
+harness targets Unix-like shell environments; native PowerShell support is not
+currently a goal.
 
-`scripts/agent-task-profile.sh` rewrites the output task file. Use `--dry-run`
-before applying when preserving custom task fields matters.
+## Configure The Repository
 
-```bash
-bash scripts/agent-task-profile.sh standard \
-  --goal "Add artifact-backed acceptance evidence" \
-  --current-task "Implement the evidence ref validator" \
-  --allowed "templates/scripts/**" \
-  --allowed "tests/harness/**" \
-  --allowed "schemas/**" \
-  --allowed "docs/**"
-bash scripts/agent-preflight.sh
-bash scripts/agent-finish.sh --best-effort
-```
+After installation, fill in the repository-owned context and controls:
 
-## What It Is Not
+- `agent.md` describes stable repository facts and operating rules.
+- `.agent/harness.yml` defines authoritative verification commands.
+- `.agent/policy.yml` defines protected paths and approval rules.
+- `handoff.md` records the current human-readable continuity state.
 
-Agent-Repo-Harness is not:
-
-- a full agent runtime
-- an MCP server
-- a sandbox
-- a semantic correctness guarantee
-
-It makes completion expectations explicit; it does not decide whether a
-feature is correct beyond the checks configured by the repository. See
-[Guardrails, Not A Sandbox](#guardrails-not-a-sandbox) for the operational
-boundary.
-
-## Platform Support
-
-Agent-Repo-Harness targets Unix-like shell environments. Its primary supported
-environments are Linux, macOS, WSL, and Git Bash. Native PowerShell support is
-not currently a goal.
-
-## Verification Strategy
-
-`scripts/agent-verify.sh` includes convenience heuristics for common Node, Go,
-Python, and Docker Compose repositories. Real projects should prefer
-repo-owned verification commands in `.agent/harness.yml`, for example:
-
-```yaml
-verification:
-  required:
-    - name: "unit tests"
-      command: "uv run pytest tests/unit"
-    - name: "lint"
-      command: "uv run ruff check ."
-```
-
-In this model, repo-defined commands are authoritative. When `verification.required` or a
-selected named profile contains commands, `scripts/agent-verify.sh` runs that
-command set and skips Node, Go, Python, and Docker Compose heuristics. Projects
-without repo-defined commands keep heuristic fallback behavior.
-
-Use `task.verification_profile` when a task must verify only artifacts that
-exist at its current delivery stage:
+Prefer repo-defined commands over language heuristics. repo-defined commands are authoritative, and projects without them retain heuristic fallback behavior.
 
 ```yaml
 # .agent/harness.yml
+verification:
+  required:
+    - name: unit-tests
+      command: uv run pytest
+    - name: lint
+      command: uv run ruff check .
+```
+
+Use a verification profile when a staged task needs only the commands that
+exist at its current delivery stage:
+
+```yaml
 verification:
   profiles:
     bootstrap:
       required:
         - name: package-import
           command: uv run python -c "import package_name"
+```
 
+```yaml
 # .agent/task.yml
 task:
   verification_profile: bootstrap
 ```
 
-The selected profile replaces `verification.required`; it does not merge with
-the default commands. Use a final or release profile only after its tests,
-CLI, build, and lint targets exist.
+`task.verification_profile` replaces `verification.required`; it does not
+merge with the default command set. Use final or release profiles only after
+their tests, CLI, build, and lint targets exist.
 
-## Choose A Gate Profile
+## Run The First Task
 
-Profiles are recommendations rendered into `.agent/task.yml` by
-`scripts/agent-task-profile.sh`; the harness still enforces the resulting flags
-rather than reading a profile name at finish time.
+Use the installed agent entrypoint and durable context first: `AGENTS.md` or
+`CLAUDE.md`, `agent.md`, `handoff.md`, `.agent/task.yml`, and applicable
+`.agent/policy.yml` entries. The applicable `.agent/policy.yml` entries are
+loaded for the active task. Then follow this lifecycle:
 
-- **Minimal:** scope, policy, verification, and handoff expectation for small,
-  low-risk maintenance.
-- **Standard:** Minimal plus TDD for behavior changes, with acceptance or review
-  evidence when the task requires it.
-- **High-Risk:** Standard plus only the architecture, command ledger, sandbox,
-  subagent, failure-attribution, or intervention evidence that answers a named
-  risk.
+1. Generate scoped task state with `scripts/agent-task-profile.sh`.
+2. Run `scripts/agent-preflight.sh`.
+3. Implement only within the generated task boundaries.
+4. Run the canonical `scripts/agent-finish.sh` gate.
+5. Inspect `.agent/runs/<timestamp>/finish-summary.json` and its related result files.
+6. If strict acceptance is enabled, bind the run artifacts with
+   `scripts/agent-evidence-bind.sh` and rerun the acceptance and finish checks.
+7. Update `handoff.md` with changed files, verification results, blockers, and
+   the next recommended action before claiming completion.
 
-See [Gate Guide](docs/agent/gate-guide.md) for the decision matrix, profile
-examples, evidence files, and failure meanings.
-
-Example workflows are available for a
-[docs-only change](examples/docs-only-change/README.md),
-[bugfix with strict evidence refs](examples/bugfix-with-evidence-refs/README.md),
-and [high-risk policy change](examples/high-risk-policy-change/README.md).
-
-## Guardrails, Not A Sandbox
-
-Scope and policy gates are process guardrails, not security boundaries. They
-inspect Git changes and repo-local policy patterns; they do not isolate the
-filesystem, network, secrets, or command side effects, and they do not
-guarantee semantic correctness.
-
-## Resource Envelope
-
-Agent-Repo-Harness can enforce local finish-run limits for maximum finish
-duration and maximum changed-file count:
-
-```yaml
-runtime:
-  resource_limits:
-    max_finish_seconds: 300
-    max_changed_files: 20
-```
-
-A value of `0` disables that limit. These limits are local shell-run controls
-and do not measure provider tokens or hosted model cost.
-
-For the full runtime boundary, see [docs/runtime-boundaries.md](docs/runtime-boundaries.md).
-
-## How It Works
-
-The harness keeps stable repository facts separate from current task state:
-
-- `agent.md`: stable repository map and operating rules
-- `handoff.md`: human-readable current task handoff and next action
-- `.agent/handoff.yml`: optional machine-readable handoff state
-- `.agent/task.yml`: machine-readable current task scope and enabled gates
-- `.agent/policy.yml`: repo-local policy checks and protected paths
-- `.agent/tdd-evidence.yml`: optional structured TDD evidence
-- `.agent/acceptance.yml`: optional acceptance criteria evidence
-- `.agent/review.yml`: optional review evidence
-- `.agent/episode.yml`: optional episode package metadata
-- `.agent/failure-attribution.yml`: optional failure attribution evidence
-- `.agent/interventions.yml`: optional intervention record
-- `.agent/subagent-packet.yml`: optional controller-to-subagent handoff packet
-- `.agent/subagent-runs/`: optional durable evidence from delegated runs
-
-Installed entrypoints are `AGENTS.md` and `CLAUDE.md`. Agents use these files
-with the durable context above, then finish work through
-`scripts/agent-finish.sh`.
-
-## Evidence Vs Handoff
-
-`.agent/runs/<timestamp>/` is the authoritative completion evidence produced
-by `scripts/agent-finish.sh`. It records the command, mode, gate results,
-verification output, changed files, and diff summary for a specific finish run.
-
-Each finish run also writes `finish-summary.json`, a machine-readable summary
-with the run directory, mode, overall result, gate statuses, changed-file
-evidence, diff-stat evidence, elapsed seconds, and the reserved
-resource-envelope result.
-Use the JSON file for tools and CI; use the Markdown and text files for human
-debugging.
-
-`handoff.md` is a model-authored continuity artifact for humans and future
-agents. It should summarize what changed, which run evidence to inspect, what
-passed, what remains open, and the next recommended action. `.agent/handoff.yml`
-is an optional structured mirror of that continuity state for tools that want a
-machine-readable handoff.
-
-`.agent/task.yml` may set `completion.expects_handoff_update: true` to document
-that the workflow expects a handoff update after finishing. This is advisory:
-`agent-finish.sh` does not enforce handoff freshness.
-
-When a finish run fails, agents should follow
-[Repair Failed Finish Runs](docs/agent/repair-failed-run.md) before making any
-completion claim.
-
-## Setup Details
-
-Prerequisites:
-
-- Bash
-- Python (`python3` preferred; `python` accepted)
-- Git for scope, diff, and finish evidence in normal repository workflows
-
-After installation, fill in the repository-specific content in:
-
-- `agent.md`
-- `handoff.md`
-- `.agent/policy.yml`
-- `.agent/task.yml`
-
-Harness config files use a small shared-reader YAML subset documented in
-[docs/config-format.md](docs/config-format.md).
-
-Before starting feature work, review the installed files and commit a clean
-harness baseline:
+For a typical task, the helper-first command path is:
 
 ```bash
-git add .
-git commit -m "Initialize project with Agent-Repo-Harness baseline"
+bash scripts/agent-task-profile.sh standard \
+  --goal "Implement the current task" \
+  --current-task "Complete the scoped change" \
+  --allowed "src/**" \
+  --allowed "tests/**" \
+  --verification-profile feature
+bash scripts/agent-preflight.sh
+bash scripts/agent-finish.sh
 ```
 
-Scope gates compare task changes against Git state. A committed baseline keeps
-newly installed scaffold files from being reported as feature-task changes.
+The finish gate checks local scope and policy rules, applies enabled evidence
+gates, runs verification, and records durable evidence. `finish-summary.json`
+is the machine-readable summary; the surrounding Markdown and text files are
+for human debugging.
 
-Structured high-risk approval is preferred. Installed projects document its
-contract in `docs/agent/policy-approval.md`; agents must not record approval
-without explicit human instruction.
+### Evidence Vs Handoff
+
+`.agent/runs/<timestamp>/` is authoritative evidence for a specific finish
+run. `handoff.md` is a model-authored continuity artifact for humans and future
+agents; `.agent/handoff.yml` is an optional structured mirror. A task may set
+`completion.expects_handoff_update: true` to document the expectation, but
+`agent-finish.sh` does not enforce handoff freshness.
+
+## When Finish Fails
+
+Do not claim completion after a failed finish run. Read the failed result and
+follow [Repair Failed Finish Runs](docs/agent/repair-failed-run.md):
+
+1. Identify the failed gate and inspect its evidence file.
+2. Repair the task, configuration, or evidence that caused the failure.
+3. Rerun `scripts/agent-finish.sh` and inspect the newest run directory.
+4. Bind strict acceptance evidence only after the referenced run passes.
+5. Update `handoff.md` with the repair outcome and remaining blockers.
+
+Evidence references improve traceability but do not prove semantic correctness
+beyond the configured checks. See [Handoff And Evidence](docs/handoff.md) for
+the evidence/continuity distinction.
 
 ## Choose An Adoption Path
 
-Agent-Repo-Harness supports both greenfield projects and projects that are
-already in progress. The workflow is similar, but the baseline discipline is
-different.
+Agent-Repo-Harness supports both greenfield projects and repositories already
+in progress. Choose the path that matches the repository baseline.
 
 ### Greenfield Project
 
-Use this path when the repository is new or before substantial product work has
-started.
-
 1. Install the harness immediately after creating the repository.
-2. Fill `agent.md` with the intended repository shape, coding rules, and
-   operating assumptions.
-3. Set `.agent/harness.yml` to the first real verification commands, even if
-   they are simple smoke checks at the start.
-4. Configure `.agent/policy.yml` for paths that should require review or
-   explicit approval.
-5. Commit the harness files together with the initial project scaffold.
-6. For each new task, generate `.agent/task.yml` with
-   `scripts/agent-task-profile.sh`, choose Minimal, Standard, or selective
-   High-Risk gates, then finish through `scripts/agent-finish.sh`.
-
-This gives every later AI-assisted change the same scope, policy,
-verification, and evidence contract from the beginning of the project.
+2. Fill `agent.md` with the intended repository shape and coding rules.
+3. Set `.agent/harness.yml` to the first real verification commands.
+4. Configure `.agent/policy.yml` for protected paths.
+5. Commit the harness files with the initial project scaffold.
+6. Generate a Minimal, Standard, or selective High-Risk task profile for each
+   change, then finish through `scripts/agent-finish.sh`.
 
 ### Existing Or Mid-Development Project
 
-Use this path when product code, tests, or documentation already exist. The
-important part is to treat installation as its own baseline change, not as part
-of an unrelated feature.
-
-1. Install with `--dry-run` first, then use `--backup` or `--force` only after
-   reviewing conflicts with existing `AGENTS.md`, `CLAUDE.md`, `scripts/`,
-   `docs/agent/`, or `.agent/` files.
-2. Fill `agent.md` from concrete repository facts and keep `handoff.md` focused
+1. Run `--dry-run` first and review conflicts with existing entrypoints,
+   scripts, docs, and `.agent/` files.
+2. Use `--backup` or `--force` only after reviewing those conflicts.
+3. Fill `agent.md` from concrete repository facts and keep `handoff.md` focused
    on the current state.
-3. Set `.agent/harness.yml` to the project's real test, lint, build, or type
-   check commands instead of relying only on heuristic verification.
-4. Commit the harness scaffold as a clean baseline.
-5. Start new work with Minimal, use Standard for behavior changes, and add
-   High-Risk gates only for named risks.
+4. Define the project's real test, lint, build, or type-check commands.
+5. Commit the harness scaffold as a clean baseline before feature work.
 
-For a mid-development branch with unfinished product changes, install the
-harness in a separate branch or worktree when possible. If that is not
-practical, commit or stash unrelated work first, then install and baseline the
-harness before asking agents to use scope checks. Otherwise `check-scope.sh`
-will correctly see both scaffold files and unfinished product changes in the
-same diff.
+For unfinished product changes, use a separate branch or worktree when
+possible. Otherwise commit or stash unrelated work before installing the
+harness so `check-scope.sh` can distinguish the scaffold from feature changes.
 
-## Production Readiness
+## Choose Verification And Gates
 
-This project is usable for real repositories when the adopting team accepts its
-runtime boundary: it is a repo-local completion harness, not a sandbox or agent
-runtime. The strongest current use case is making AI-assisted work auditable by
-requiring scoped changes, policy checks, repo-owned verification, and durable
-finish evidence before completion claims.
+Task profiles are recommendations rendered into `.agent/task.yml`; the harness
+enforces the resulting flags rather than reading a profile name at finish time.
 
-Before depending on it in a production repository:
+- **Minimal** covers scope, policy, verification, and handoff expectation for
+  small, low-risk maintenance.
+- **Standard** adds TDD for behavior changes and evidence when the task needs it.
+- **High-Risk** adds only the architecture, command ledger, sandbox, subagent,
+  failure-attribution, or intervention evidence that answers a named risk.
 
-- define project-specific verification in `.agent/harness.yml`
-- configure `.agent/policy.yml` for protected paths and approval rules
-- keep High-Risk optional gates selective and tied to named risks
-- run `bash scripts/agent-finish.sh` on real work and inspect
-  `.agent/runs/<timestamp>/finish-summary.json`
-- keep `handoff.md` concise enough that the next agent or maintainer can resume
+Use [Gate Guide](docs/agent/gate-guide.md) for the decision matrix, profile
+examples, evidence requirements, and failure meanings. Optional evidence gates
+remain disabled by default; enable one only when it answers a concrete
+completion risk.
 
-The recommended next product plan is adoption hardening rather than adding more
-gates: run the harness on two or three real repositories, record friction in
-`handoff.md` or `docs/agent/discoveries.md`, then improve installer conflict
-handling, upgrade guidance, and examples based on repeated adoption evidence.
+## Architecture And Boundaries
 
-## Evidence And Optional Gates
+The harness keeps stable repository facts separate from current task state:
 
-`agent-finish.sh` writes authoritative evidence under
-`.agent/runs/<timestamp>/`, including `finish-summary.md`,
-`finish-summary.json`, per-check result files, changed files, and diff stat.
+- repository facts and operating rules live in `agent.md`;
+- current task scope and enabled gates live in `.agent/task.yml`;
+- policy and protected paths live in `.agent/policy.yml`;
+- finish orchestration produces immutable per-run evidence under
+  `.agent/runs/<timestamp>/`;
+- `handoff.md` records mutable continuity notes for the next person or agent.
 
-Optional evidence gates remain disabled by default. Enable one only when it
-answers a concrete completion risk. The available categories cover TDD,
-acceptance, review, architecture, failure attribution, interventions, command
-ledger, sandbox verification, and delegated subagent runs.
+The finish gate is a process boundary. Guardrails, Not A Sandbox: scope and
+policy are process guardrails, not security boundaries. The harness does not isolate the filesystem, network,
+secrets, provider tokens, or model cost. See [Runtime Boundaries](docs/runtime-boundaries.md)
+for implemented and not implemented capabilities.
 
-Use [Gate Guide](docs/agent/gate-guide.md) for detailed flag selection and
-evidence requirements. See [Handoff And Evidence](docs/handoff.md) for the
-difference between run evidence and continuity notes, and
-[Runtime Boundaries](docs/runtime-boundaries.md) for containment and tracing
-limits.
+The local Resource Envelope can cap finish duration and changed-file count; it
+does not measure provider tokens or hosted model cost. Command-ledger,
+sandbox-verification, architecture-sensor, episode, failure-attribution, and
+intervention evidence are selective local contracts rather than provider-native
+runtime tracing.
 
-### Evidence References
+## Examples And References
 
-For stricter completion evidence, projects may enable `evidence.strict_refs`
-in `.agent/harness.yml`. When enabled, required acceptance criteria must
-reference repo-local artifacts through `evidence_refs`, such as
-`.agent/runs/<timestamp>/finish-summary.json` or gate output files.
+Start with the examples that match the task:
 
-The harness validates that referenced files exist and, when configured, contain
-expected result markers or finish-summary gate statuses. `evidence_refs`
-improves traceability; it does not prove semantic correctness beyond the
-configured checks.
+- [Docs-only change](examples/docs-only-change/README.md)
+- [Bugfix with strict evidence refs](examples/bugfix-with-evidence-refs/README.md)
+- [High-risk policy change](examples/high-risk-policy-change/README.md)
+- [RAG contract adoption fixture](examples/rag-contract-system/README.md)
 
-When strict acceptance evidence is enabled, agents should use
-`scripts/agent-evidence-bind.sh` to bind `.agent/runs/<timestamp>/`
-artifacts into `.agent/acceptance.yml` instead of hand-editing run paths.
-The helper updates an existing acceptance criterion and does not invent new
-criteria.
+For deeper usage, see:
 
-```yaml
-# .agent/harness.yml
-evidence:
-  strict_refs: true
-  allow_text_only_evidence: false
-```
+- [Usage With Agents](docs/USAGE_WITH_AGENTS.md)
+- [Gate Guide](docs/agent/gate-guide.md)
+- [Architecture Sensors](docs/agent/architecture-sensors.md)
+- [Codex usage](docs/codex-usage.md)
+- [Agent support matrix](docs/agent-support-matrix.md)
+- [Public packaging](docs/public-packaging.md)
 
-```yaml
-# .agent/acceptance.yml
-acceptance:
-  criteria:
-    - id: AC-1
-      description: "The finish gate passed."
-      met: true
-      evidence_refs:
-        - type: finish_summary_json
-          path: ".agent/runs/20260627-091500/finish-summary.json"
-          overall_result: "pass"
-```
-
-For command-backed architecture evidence patterns, see
-[Architecture Sensors](docs/agent/architecture-sensors.md).
-
-## Useful Commands
-
-Run individual checks when diagnosing a task or integrating the harness:
-
-```bash
-bash scripts/agent-preflight.sh
-bash scripts/validate-config.sh
-bash scripts/validate-task.sh
-bash scripts/validate-handoff.sh
-bash scripts/validate-subagent-packet.sh
-bash scripts/check-doc-links.sh
-bash scripts/check-policy.sh
-bash scripts/check-scope.sh
-bash scripts/check-tdd-evidence.sh
-bash scripts/check-acceptance.sh
-bash scripts/check-review-evidence.sh
-bash scripts/check-architecture-evidence.sh
-bash scripts/check-subagent-evidence.sh
-bash scripts/agent-verify.sh --best-effort
-bash scripts/agent-finish.sh --best-effort
-```
-
-## Typical Workflow
-
-1. Open the target repository in an AI coding agent.
-2. Ask it to read `AGENTS.md` or `CLAUDE.md`.
-3. Generate scoped task state with `scripts/agent-task-profile.sh`.
-4. Run `scripts/agent-preflight.sh`.
-5. Make changes within the task boundaries.
-6. Run `scripts/agent-finish.sh`.
-7. If strict acceptance evidence is enabled, bind run artifacts with
-   `scripts/agent-evidence-bind.sh` and rerun the acceptance and finish checks.
-8. If finish fails, follow `docs/agent/repair-failed-run.md`.
-9. Update `handoff.md` with changed files, verification results, blockers, and
-   the next recommended action. Optionally mirror structured state in
-   `.agent/handoff.yml`.
-
-## Context Loading Policy
-
-Agent-Repo-Harness is designed for staged context loading. Agents should read
-compact, durable context first:
-
-1. `AGENTS.md` or the installed adapter entrypoint
-2. `agent.md`
-3. `handoff.md`
-4. `.agent/task.yml`
-5. applicable `.agent/policy.yml` entries
-
-They can then expand with `rg`, file lists, and targeted file ranges for the
-active task. `scripts/collect-context.sh` prints compact startup context by
-default; `scripts/collect-context.sh --full` includes optional known issues
-and discoveries for deeper debugging.
-
-## Agent Compatibility
-
-Codex:
-
-- install or copy `templates/AGENTS.md` to the target repository root
-- see [docs/codex-usage.md](docs/codex-usage.md)
-- reusable prompt: `adapters/codex/codex-start-prompt.md`
-- optional lifecycle prompts, not auto-installed into target repositories:
-  `adapters/codex/codex-repair-prompt.md`,
-  `adapters/codex/codex-verify-prompt.md`, and
-  `adapters/codex/codex-handoff-prompt.md`
-
-Claude Code:
-
-- install or copy `templates/CLAUDE.md` to the target repository root
-- optional project skills live under
-  `adapters/claude-code/.claude/skills/`
-
-Generic AI coding agents:
-
-- read `AGENTS.md`
-- inspect `agent.md`, `handoff.md`, `.agent/task.yml`, and applicable
-  `.agent/policy.yml` entries
-- run the scripts directly
-
-Superpowers-compatible agents remain supported. The existing skills in
-`skills/` provide workflow discipline such as planning, TDD, delegation,
-review, and branch finishing; this harness supplies repo-local contracts,
-gates, and evidence. See
-[docs/superpowers-integration.md](docs/superpowers-integration.md).
-
-See [docs/USAGE_WITH_AGENTS.md](docs/USAGE_WITH_AGENTS.md) and
-[docs/agent-support-matrix.md](docs/agent-support-matrix.md) for detailed
-agent workflows and support boundaries.
-
-## Repository Contents
-
-- `templates/`: files copied into target repositories
-- `templates/scripts/`: dependency-light gates and validators
-- `skills/`: Superpowers-compatible skills
-- `adapters/`: agent-specific entrypoints and skill layouts
-- `schemas/`: JSON Schemas for harness, policy, task, and handoff structures
-- `examples/`: example installed shapes and task flows
-- `install-agent-harness.sh`: template installer
-- `validate-harness.sh`: repository validation and smoke tests
-
-## Validation
-
-Validation runs in CI on every push and pull request. Run the same repository
-validation locally with:
+Run the same repository validation used by CI with:
 
 ```bash
 bash validate-harness.sh
 ```
 
-Validation checks script syntax, YAML and JSON syntax, required harness files,
-install smoke tests, local document links, scope and policy behavior,
-configured verification, subagent packet/run validation, TDD evidence
-behavior, acceptance/review gate behavior, and finish evidence creation.
+Validation covers script syntax, config and task schemas, install smoke tests,
+document links, scope and policy behavior, configured verification, evidence
+gates, finish evidence creation, examples, and stability-contract checks.

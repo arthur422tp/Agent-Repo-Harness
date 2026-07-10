@@ -129,7 +129,7 @@ Observed commit: pending until this task commit is created.
 - Consumes: Task 1's contract; runtime facts from `docs/runtime-boundaries.md`; public interface classifications from `docs/stability-contract.md`; gate rules from `docs/agent/gate-guide.md`.
 - Produces: matching English and Traditional Chinese onboarding entrypoints, each no longer than 320 lines.
 
-- [ ] **Step 1: Rewrite the English README in the approved sequence**
+- [x] **Step 1: Rewrite the English README in the approved sequence**
 
 Use these level-two headings in this order after the title, language links, badge, product statement, and concise version information:
 
@@ -194,7 +194,9 @@ The surrounding numbered flow must cover, in order: read installed context; gene
 
 Remove the exhaustive individual-check list, full evidence schema example, complete gate matrix, and platform-by-platform walkthroughs from the README.
 
-- [ ] **Step 2: Rewrite the Traditional Chinese README with structural parity**
+Observed: the English README now follows the approved sequence and is 228 lines.
+
+- [x] **Step 2: Rewrite the Traditional Chinese README with structural parity**
 
 Use the same command and YAML blocks with these headings:
 
@@ -213,7 +215,9 @@ Use the same command and YAML blocks with these headings:
 
 Translate the prose naturally while preserving: authoritative repo-owned verification; selected profiles replace default commands; task profiles generate enforced flags; `.agent/runs/<timestamp>/` is authoritative evidence; `handoff.md` is continuity state not freshness-enforced by finish; scope and policy are process guardrails rather than security boundaries.
 
-- [ ] **Step 3: Verify structural parity and formatting**
+Observed: the Traditional Chinese README uses the matching section order and is 214 lines.
+
+- [x] **Step 3: Verify structural parity and formatting**
 
 ```bash
 rg -n '^## ' README.md
@@ -224,13 +228,17 @@ git diff --check -- README.md README.zh-TW.md
 
 Expected: matching approved section order, each README at most 320 lines, and `git diff --check` exit 0.
 
-- [ ] **Step 4: Run the green phase**
+Observed: headings match the approved order, line counts are 228 and 214, and `git diff --check` exited 0.
+
+- [x] **Step 4: Run the green phase**
 
 Run: `bash validate-harness.sh`
 
 Expected: exit 0, including `DOC_LINKS_RESULT=pass` and `README onboarding entrypoints stay concise`.
 
-- [ ] **Step 5: Commit the synchronized rewrite**
+Observed: `bash validate-harness.sh` exited 0 with both markers and all sourced suites passing.
+
+- [x] **Step 5: Commit the synchronized rewrite**
 
 ```bash
 git add README.md README.zh-TW.md docs/superpowers/plans/2026-07-10-readme-onboarding-architecture.md
@@ -238,6 +246,8 @@ git commit -m "docs: streamline README onboarding flow"
 ```
 
 Do not stage `.agent/`.
+
+Observed commit: pending until this task commit is created.
 
 ---
 
