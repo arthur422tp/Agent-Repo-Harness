@@ -410,6 +410,39 @@ PY
   assert_episode_summary_json_contract "$root" "$expected_result"
 }
 
+assert_finish_gate_order() {
+  local root="$1"
+  local summary_json
+
+  summary_json="$(find "$root/.agent/runs" -type f -name "finish-summary.json" | sort | tail -n 1)"
+  "$(find_python)" - "$summary_json" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+expected = [
+    "check-agent-md",
+    "check-scope",
+    "check-policy",
+    "check-tdd-evidence",
+    "check-acceptance",
+    "check-review-evidence",
+    "check-architecture-evidence",
+    "check-failure-attribution",
+    "check-interventions",
+    "check-command-ledger",
+    "check-sandbox-evidence",
+    "check-subagent-evidence",
+    "validate-episode",
+    "agent-verify",
+    "resource-envelope",
+]
+actual = [gate["name"] for gate in json.loads(Path(sys.argv[1]).read_text())["gates"]]
+if actual != expected:
+    raise SystemExit(f"expected gate order {expected}, got {actual}")
+PY
+}
+
 assert_episode_summary_json_contract() {
   local root="$1"
   local expected_result="$2"
