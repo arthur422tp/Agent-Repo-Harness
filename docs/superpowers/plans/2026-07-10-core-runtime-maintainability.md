@@ -168,7 +168,7 @@ Verification: `bash validate-harness.sh` passed (exit 0).
 - Produces: `harness_have_cmd(name)`, `harness_find_python()`, `harness_make_temp_file(run_dir, stem)`, and `harness_atomic_replace(source, destination)`.
 - Consumes: no gate policy and no caller-specific global state.
 
-- [ ] **Step 1: Write failing common-helper and install assertions**
+- [x] **Step 1: Write failing common-helper and install assertions**
 
 Add to `tests/harness/finish-runtime-modules.sh`:
 
@@ -212,13 +212,13 @@ After the module exists, exercise atomic replacement in
 )
 ```
 
-- [ ] **Step 2: Run the red phase**
+- [x] **Step 2: Run the red phase**
 
 Run: `bash validate-harness.sh`
 
 Expected: FAIL because `templates/scripts/lib/harness-common.sh` does not exist.
 
-- [ ] **Step 3: Implement the common helper module**
+- [x] **Step 3: Implement the common helper module**
 
 Create `templates/scripts/lib/harness-common.sh`:
 
@@ -254,7 +254,7 @@ harness_atomic_replace() {
 }
 ```
 
-- [ ] **Step 4: Source the module from both public entrypoints**
+- [x] **Step 4: Source the module from both public entrypoints**
 
 In each entrypoint, calculate `script_dir` immediately after `set -euo pipefail`,
 require the module, and source it:
@@ -273,7 +273,7 @@ Replace `have_cmd` with `harness_have_cmd` and `find_python` with
 `harness_find_python`; remove the local definitions. Do not move verification
 selection or resource policy.
 
-- [ ] **Step 5: Update manual installed-shape fixtures**
+- [x] **Step 5: Update manual installed-shape fixtures**
 
 In every fixture that copies `agent-finish.sh` or `agent-verify.sh` into a local
 `scripts/` directory, also copy:
@@ -286,7 +286,7 @@ At minimum update `tests/harness/finish-examples.sh` and
 `tests/harness/resource-envelope.sh`. Use `rg -n 'cp .*agent-(finish|verify)\.sh' tests/harness`
 to find additional local-copy fixtures and update all matches.
 
-- [ ] **Step 6: Run the green phase and commit**
+- [x] **Step 6: Run the green phase and commit**
 
 Run: `bash validate-harness.sh`
 
@@ -299,6 +299,14 @@ git add templates/scripts/lib/harness-common.sh templates/scripts/agent-finish.s
   tests/harness/static-install.sh docs/superpowers/plans/2026-07-10-core-runtime-maintainability.md
 git commit -m "refactor: share finish runtime shell helpers"
 ```
+
+Verification observed:
+- Red: `bash validate-harness.sh` exited 1 because the new installed target did
+  not contain `scripts/lib/harness-common.sh`.
+- Green: `bash validate-harness.sh` exited 0, including the common-helper
+  atomic replacement contract.
+- Commit SHA: recorded in `.superpowers/sdd/task-2-report.md` after this atomic
+  task commit.
 
 ---
 

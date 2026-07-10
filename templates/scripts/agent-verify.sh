@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+script_dir="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
+common_lib="$script_dir/lib/harness-common.sh"
+if [ ! -f "$common_lib" ]; then
+  echo "ERROR: required internal library not found: $common_lib" >&2
+  exit 1
+fi
+source "$script_dir/lib/harness-common.sh"
+
 usage() {
   cat <<'EOF'
 Usage: agent-verify.sh [--strict|--best-effort]
@@ -39,22 +47,6 @@ esac
 
 echo "== Agent Repo Harness Verification =="
 echo "Mode: $mode"
-
-have_cmd() {
-  command -v "$1" >/dev/null 2>&1
-}
-
-find_python() {
-  if have_cmd python3; then
-    printf '%s\n' "python3"
-    return 0
-  fi
-  if have_cmd python; then
-    printf '%s\n' "python"
-    return 0
-  fi
-  return 1
-}
 
 repo_defined_checks_found=0
 
@@ -109,7 +101,7 @@ resolve_verification_path() {
 
   script_dir="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
   reader="$script_dir/lib/read-yaml.py"
-  if ! python_bin="$(find_python)"; then
+  if ! python_bin="$(harness_find_python)"; then
     echo "ERROR: python is required to read verification configuration" >&2
     return 1
   fi
@@ -139,7 +131,7 @@ extract_required_verification_entries() {
     return 1
   fi
 
-  if ! python_bin="$(find_python)"; then
+  if ! python_bin="$(harness_find_python)"; then
     echo "ERROR: python is required to read .agent/harness.yml" >&2
     return 1
   fi
@@ -199,7 +191,7 @@ run_configured_verification_checks() {
       ;;
   esac
 
-  if ! python_bin="$(find_python)"; then
+  if ! python_bin="$(harness_find_python)"; then
     echo "FAIL: repo-defined verification config"
     echo "Reason: python is required to decode verification commands"
     failures=$((failures + 1))
@@ -292,7 +284,7 @@ if [ "$repo_defined_checks_found" -eq 1 ]; then
 else
   if [ -f package.json ]; then
     echo "Detected Node project"
-    if have_cmd npm; then
+    if harness_have_cmd npm; then
       run_check "npm run lint --if-present" npm run lint --if-present
       run_check "npm run build --if-present" npm run build --if-present
       run_check "npm test --if-present" npm test --if-present
@@ -303,7 +295,7 @@ else
 
   if [ -f go.mod ]; then
     echo "Detected Go project"
-    if have_cmd go; then
+    if harness_have_cmd go; then
       run_check "gofmt -l ." run_gofmt_check
       run_check "go test ./..." go test ./...
     else
@@ -313,21 +305,21 @@ else
 
   if [ -f pyproject.toml ] || [ -f requirements.txt ]; then
     echo "Detected Python project"
-    if have_cmd python3; then
+    if harness_have_cmd python3; then
       run_check "python3 -m compileall ." python3 -m compileall .
-    elif have_cmd python; then
+    elif harness_have_cmd python; then
       run_check "python -m compileall ." python -m compileall .
     else
       handle_missing_tool "python compile check"
     fi
 
-    if have_cmd pytest; then
+    if harness_have_cmd pytest; then
       run_check "pytest" pytest
     else
       handle_missing_tool "pytest"
     fi
 
-    if have_cmd ruff; then
+    if harness_have_cmd ruff; then
       run_check "ruff check ." ruff check .
     else
       handle_missing_tool "ruff"
@@ -336,7 +328,7 @@ else
 
   if [ -f docker-compose.yml ] || [ -f compose.yml ]; then
     echo "Detected Docker Compose config"
-    if have_cmd docker; then
+    if harness_have_cmd docker; then
       run_check "docker compose config" docker compose config
     else
       handle_missing_tool "docker compose config"

@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+script_dir="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
+common_lib="$script_dir/lib/harness-common.sh"
+if [ ! -f "$common_lib" ]; then
+  echo "ERROR: required internal library not found: $common_lib" >&2
+  exit 1
+fi
+source "$script_dir/lib/harness-common.sh"
+
 usage() {
   cat <<'EOF'
 Usage: agent-finish.sh [--strict|--best-effort]
@@ -83,24 +91,8 @@ verify_status=""
 
 mkdir -p "$run_dir"
 
-have_cmd() {
-  command -v "$1" >/dev/null 2>&1
-}
-
-find_python() {
-  if have_cmd python3; then
-    printf '%s\n' "python3"
-    return 0
-  fi
-  if have_cmd python; then
-    printf '%s\n' "python"
-    return 0
-  fi
-  return 1
-}
-
 python_bin=""
-if ! python_bin="$(find_python)"; then
+if ! python_bin="$(harness_find_python)"; then
   echo "ERROR: python is required for finish evidence writes"
   exit 1
 fi

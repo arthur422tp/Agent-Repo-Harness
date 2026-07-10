@@ -213,6 +213,7 @@ done
 
 echo
 echo "== Installed target checks =="
+assert_exists "$target_root/scripts/lib/harness-common.sh"
 for required_path in \
   AGENTS.md \
   CLAUDE.md \
@@ -265,6 +266,7 @@ for required_path in \
   scripts/validate-episode.sh \
   scripts/agent-audit.sh \
   scripts/agent-verify.sh \
+  scripts/lib/harness-common.sh \
   scripts/lib/read-yaml.py \
   scripts/lib/policy-approval.sh \
   scripts/check-doc-links.sh \

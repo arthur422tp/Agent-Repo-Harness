@@ -24,6 +24,7 @@ git init -q "$finish_acceptance_review_root"
   cp "$repo_root/templates/scripts/validate-episode.sh" scripts/validate-episode.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
+  cp "$repo_root/templates/scripts/lib/harness-common.sh" scripts/lib/harness-common.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
   cp "$repo_root/templates/scripts/lib/policy-approval.sh" scripts/lib/policy-approval.sh
   chmod +x scripts/*.sh
@@ -99,6 +100,7 @@ git init -q "$finish_strict_root"
   cp "$repo_root/templates/scripts/validate-episode.sh" scripts/validate-episode.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
+  cp "$repo_root/templates/scripts/lib/harness-common.sh" scripts/lib/harness-common.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
   cp "$repo_root/templates/scripts/lib/policy-approval.sh" scripts/lib/policy-approval.sh
   chmod +x scripts/*.sh
@@ -182,6 +184,7 @@ git init -q "$tdd_required_failure_root"
   cp "$repo_root/templates/scripts/validate-episode.sh" scripts/validate-episode.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
+  cp "$repo_root/templates/scripts/lib/harness-common.sh" scripts/lib/harness-common.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
   cp "$repo_root/templates/scripts/lib/policy-approval.sh" scripts/lib/policy-approval.sh
   chmod +x scripts/*.sh
@@ -245,6 +248,7 @@ git init -q "$subagent_required_failure_root"
   cp "$repo_root/templates/scripts/validate-subagent-run.sh" scripts/validate-subagent-run.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
+  cp "$repo_root/templates/scripts/lib/harness-common.sh" scripts/lib/harness-common.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
   cp "$repo_root/templates/scripts/lib/policy-approval.sh" scripts/lib/policy-approval.sh
   chmod +x scripts/*.sh
@@ -298,6 +302,7 @@ mkdir -p "$finish_nongit_root/.agent" "$finish_nongit_root/scripts/lib"
   cp "$repo_root/templates/scripts/validate-episode.sh" scripts/validate-episode.sh
   cp "$repo_root/templates/scripts/agent-verify.sh" scripts/agent-verify.sh
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
+  cp "$repo_root/templates/scripts/lib/harness-common.sh" scripts/lib/harness-common.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
   cp "$repo_root/templates/scripts/lib/policy-approval.sh" scripts/lib/policy-approval.sh
   chmod +x scripts/*.sh
