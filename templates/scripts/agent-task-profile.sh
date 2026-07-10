@@ -14,6 +14,7 @@ Options:
   --goal TEXT
   --current-task TEXT
   --source-plan PATH_OR_TEXT
+  --verification-profile NAME
   --allowed GLOB
   --forbidden GLOB
   --max-changed-files N
@@ -76,6 +77,7 @@ esac
 goal=""
 current_task=""
 source_plan=""
+verification_profile=""
 status="in_progress"
 output=".agent/task.yml"
 max_changed_files=""
@@ -106,6 +108,11 @@ while [ "$#" -gt 0 ]; do
     --source-plan)
       require_option_value "$1" "${2:-}"
       source_plan="$2"
+      shift 2
+      ;;
+    --verification-profile)
+      require_option_value "$1" "${2:-}"
+      verification_profile="$2"
       shift 2
       ;;
     --allowed)
@@ -190,6 +197,23 @@ case "$status" in
     ;;
 esac
 
+if [ -n "$verification_profile" ]; then
+  case "$verification_profile" in
+    [A-Za-z0-9]*)
+      case "$verification_profile" in
+        *[!A-Za-z0-9_-]*)
+          echo "ERROR: --verification-profile must match [A-Za-z0-9][A-Za-z0-9_-]*"
+          exit 2
+          ;;
+      esac
+      ;;
+    *)
+      echo "ERROR: --verification-profile must match [A-Za-z0-9][A-Za-z0-9_-]*"
+      exit 2
+      ;;
+  esac
+fi
+
 case "$profile" in
   minimal)
     requires_tdd_evidence="false"
@@ -229,6 +253,9 @@ render_task() {
   if [ -n "$current_task" ]; then
     printf '  current_task: %s\n' "$(quote_yaml "$current_task")"
   fi
+  if [ -n "$verification_profile" ]; then
+    printf '  verification_profile: %s\n' "$(quote_yaml "$verification_profile")"
+  fi
   printf '  allowed_paths:'
   if [ "${#allowed_paths[@]}" -eq 0 ]; then
     render_yaml_list
@@ -264,6 +291,7 @@ render_task() {
 }
 
 echo "Profile: $profile" >&2
+echo "Verification profile: ${verification_profile:-default}" >&2
 echo "Output: $output" >&2
 echo "Enabled high-risk gates:" >&2
 echo "- review: $requires_review_evidence" >&2

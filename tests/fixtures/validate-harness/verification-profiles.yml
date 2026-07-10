@@ -1,0 +1,27 @@
+name: Verification Profiles Fixture
+version: 1
+mode: lightweight
+paths:
+  agent_map: agent.md
+  handoff: handoff.md
+  task_state: .agent/task.yml
+scripts:
+  preflight: scripts/agent-preflight.sh
+  finish: scripts/agent-finish.sh
+  verify: scripts/agent-verify.sh
+  check_policy: scripts/check-policy.sh
+  check_scope: scripts/check-scope.sh
+verification:
+  final_gate_command: scripts/agent-finish.sh
+  required:
+    - name: full-suite
+      command: printf 'DEFAULT_SUITE_RAN\n'
+  profiles:
+    bootstrap:
+      required:
+        - name: package-import
+          command: printf 'BOOTSTRAP_PROFILE_RAN\n'
+    feature:
+      required:
+        - name: unit-tests
+          command: printf 'FEATURE_PROFILE_RAN\n'

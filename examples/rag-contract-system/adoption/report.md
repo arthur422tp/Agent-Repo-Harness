@@ -3,8 +3,8 @@
 | Scenario | Setup commands | Harness files edited | Verification | Friction | Valuable gates | Low-value gates | Action |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Minimal | Copy fixture; install with `--force`; copy `minimal-task.yml`; run `validate-task.sh` | `.agent/task.yml` | Task validation passed | No optional evidence setup was required | Scope, policy, verification | None observed | Keep |
-| Standard | Copy fixture; install; configure repo commands; copy `standard-task.yml`; run `agent-finish.sh --best-effort` with `PYTHONPATH=src` | `.agent/harness.yml`, `.agent/task.yml`, `.agent/tdd-evidence.yml`, `.agent/acceptance.yml` | Application tests, evals, task validation, and finish passed | A globally available `pytest` heuristic also ran and required `PYTHONPATH=src` | TDD, acceptance, repo verification | Duplicate heuristic test discovery | Document the environment requirement |
-| High-Risk | Copy fixture; install; copy `high-risk-task.yml`; configure repo commands; populate TDD, acceptance, review, architecture, command-ledger, and sandbox evidence; run installed finish | `.agent/task.yml`, `.agent/harness.yml`, `.agent/tdd-evidence.yml`, `.agent/acceptance.yml`, `.agent/review.yml`, `.agent/architecture.yml`, `.agent/command-runs/*`, `.agent/sandbox-runs/*`; temporary fake-runner scripts | Application tests, evals, task validation, command ledger, fake-runner sandbox evidence, and finish passed; best-effort repo verification can warn when optional host tools such as `ruff` are unavailable | Evidence setup is deliberate but verbose; `PYTHONPATH=src` must be present for configured and heuristic Python checks | Architecture, review, command ledger, sandbox evidence, TDD, acceptance, repo verification | Failure attribution and intervention records were not needed because no repaired failure or manual override occurred | Keep High-Risk selective; document `PYTHONPATH=src` as fixture setup, not a new harness feature |
+| Standard | Copy fixture; install; configure repo commands; copy `standard-task.yml`; run `agent-finish.sh --best-effort` with `PYTHONPATH=src` | `.agent/harness.yml`, `.agent/task.yml`, `.agent/tdd-evidence.yml`, `.agent/acceptance.yml` | Application tests, evals, task validation, and finish passed | Configured commands are authoritative; `PYTHONPATH=src` is required by the fixture commands. | TDD, acceptance, repo verification | None observed | Document the environment requirement |
+| High-Risk | Copy fixture; install; copy `high-risk-task.yml`; configure repo commands; populate TDD, acceptance, review, architecture, command-ledger, and sandbox evidence; run installed finish | `.agent/task.yml`, `.agent/harness.yml`, `.agent/tdd-evidence.yml`, `.agent/acceptance.yml`, `.agent/review.yml`, `.agent/architecture.yml`, `.agent/command-runs/*`, `.agent/sandbox-runs/*`; temporary fake-runner scripts | Application tests, evals, task validation, command ledger, fake-runner sandbox evidence, and finish passed; best-effort repo verification can warn when optional host tools such as `ruff` are unavailable | Evidence setup is deliberate but verbose; `PYTHONPATH=src` must be present for configured Python checks | Architecture, review, command ledger, sandbox evidence, TDD, acceptance, repo verification | Failure attribution and intervention records were not needed because no repaired failure or manual override occurred | Keep High-Risk selective; document `PYTHONPATH=src` as fixture setup, not a new harness feature |
 
 ## Initial Findings
 
@@ -18,9 +18,10 @@
   commands replayable, and sandbox evidence checked the external boundary.
   Failure attribution and intervention records stayed disabled because the run
   had no repaired failure or material manual override.
-- The Standard finish exposed host-tool sensitivity: when `pytest` is already
-  available, heuristic discovery runs in addition to configured commands and
-  must inherit `PYTHONPATH=src` for this src-layout fixture.
+- Configured verification commands are authoritative. The fixture keeps
+  `PYTHONPATH=src` because its explicit commands import the uninstalled
+  src-layout package; host `pytest` and `ruff` availability no longer adds
+  implicit checks.
 - Best-effort verification stayed honest about host-tool sensitivity: optional
   checks can report `HARNESS_VERIFY_RESULT=warn` when tools such as `ruff` are
   unavailable.

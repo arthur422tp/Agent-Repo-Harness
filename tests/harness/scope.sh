@@ -145,3 +145,50 @@ git init -q "$scope_malformed_root"
 pass "scope malformed task YAML failure"
 
 echo
+echo "== Scope ignores untracked harness runtime outputs =="
+scope_runtime_root="$tmp_root/scope-runtime"
+rm -rf "$scope_runtime_root"
+mkdir -p "$scope_runtime_root/.agent" "$scope_runtime_root/src"
+git init -q "$scope_runtime_root"
+(
+  cd "$scope_runtime_root"
+  git config user.email "test@example.com"
+  git config user.name "Test User"
+  printf '%s\n' 'task:' '  allowed_paths:' '    - "src/**"' > .agent/task.yml
+  git add .agent/task.yml
+  git commit -q -m "Add task config"
+  printf '%s\n' 'work' > src/work.txt
+  mkdir -p .agent/runs/one .agent/audits/two \
+    .agent/command-runs/three .agent/sandbox-runs/four
+  printf '%s\n' 'evidence' > .agent/runs/one/finish-summary.json
+  printf '%s\n' 'evidence' > .agent/audits/two/audit-summary.md
+  printf '%s\n' 'evidence' > .agent/command-runs/three/command-summary.json
+  printf '%s\n' 'evidence' > .agent/sandbox-runs/four/sandbox-summary.json
+  scope_runtime_log="$tmp_root/scope-runtime.log"
+  bash "$repo_root/templates/scripts/check-scope.sh" >"$scope_runtime_log" 2>&1
+  assert_contains "$scope_runtime_log" "Ignored untracked harness runtime files:"
+  assert_contains "$scope_runtime_log" ".agent/runs/one/finish-summary.json"
+  assert_contains "$scope_runtime_log" ".agent/audits/two/audit-summary.md"
+  assert_contains "$scope_runtime_log" ".agent/command-runs/three/command-summary.json"
+  assert_contains "$scope_runtime_log" ".agent/sandbox-runs/four/sandbox-summary.json"
+  assert_contains "$scope_runtime_log" "Changed file count: 1"
+  assert_contains "$scope_runtime_log" "Scope check passed."
+)
+pass "scope ignores untracked harness runtime outputs"
+
+echo
+echo "== Scope still enforces tracked runtime evidence =="
+(
+  cd "$scope_runtime_root"
+  git add .agent/runs/one/finish-summary.json
+  git commit -q -m "Track runtime evidence"
+  printf '%s\n' 'changed evidence' > .agent/runs/one/finish-summary.json
+  tracked_runtime_log="$tmp_root/tracked-runtime.log"
+  if bash "$repo_root/templates/scripts/check-scope.sh" >"$tracked_runtime_log" 2>&1; then
+    echo "ERROR: expected tracked runtime evidence scope failure"
+    exit 1
+  fi
+  assert_contains "$tracked_runtime_log" ".agent/runs/one/finish-summary.json is outside allowed_paths"
+  assert_contains "$tracked_runtime_log" "Scope check failed."
+)
+pass "scope still enforces tracked runtime evidence"

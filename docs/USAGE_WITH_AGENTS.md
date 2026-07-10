@@ -101,6 +101,17 @@ and Git Bash. Native PowerShell support is not currently a goal.
 shapes. When a repository declares project-specific verification commands in
 `.agent/harness.yml`, those commands are the source of truth.
 
+Use `verification.profiles` to centralize commands for bootstrap, feature, or
+release stages, then select one with `task.verification_profile`. The selected
+profile replaces `verification.required`. Repo-defined commands are
+authoritative; language heuristics run only when no configured command set
+exists.
+
+`.agent/runs/`, `.agent/audits/`, `.agent/command-runs/`, and
+`.agent/sandbox-runs/` are generated local evidence. Do not add them to task
+`allowed_paths` merely to satisfy scope. Tracked files in those directories
+remain scope-controlled.
+
 Scope and policy gates are process guardrails, not security boundaries. They
 inspect Git changes and repo-local policy patterns; they do not isolate the
 filesystem, network, secrets, or command side effects, and do not guarantee

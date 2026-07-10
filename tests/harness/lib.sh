@@ -62,6 +62,7 @@ review_required_missing_root="$tmp_root/review-required-missing"
 review_missing_concerns_root="$tmp_root/review-missing-concerns"
 review_null_concerns_root="$tmp_root/review-null-concerns"
 review_scalar_concerns_root="$tmp_root/review-scalar-concerns"
+verification_lifecycle_root="$tmp_root/verification-lifecycle"
 
 cleanup() {
   rm -rf "$tmp_root"

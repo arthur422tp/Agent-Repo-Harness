@@ -84,12 +84,16 @@ verification:
     completion.
   evidence_dir: .agent/runs
   evidence_summary: finish-summary.md
-  # Optional repo-defined verification commands run before heuristic checks.
+  # Repo-defined commands are authoritative. When required or a selected
+  # profile resolves commands, language heuristics are skipped.
   # required:
   #   - name: lint
   #     command: npm run lint
-  #   - name: tests
-  #     command: npm test
+  # profiles:
+  #   bootstrap:
+  #     required:
+  #       - name: package-import
+  #         command: python3 -c 'import package_name'
   allow_unverified_completion: false
 
 evidence:

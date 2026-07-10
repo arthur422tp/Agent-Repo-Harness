@@ -215,3 +215,104 @@ mkdir -p "$command_ledger_task_bad_root/.agent" "$command_ledger_task_bad_root/s
   assert_contains task-command-ledger-bad.log "TASK_VALIDATION_RESULT=fail"
 )
 pass "task validation command ledger flag type failure"
+
+echo
+echo "== Task validation accepts known verification profile =="
+verification_profile_task_root="$tmp_root/task-verification-profile"
+rm -rf "$verification_profile_task_root"
+mkdir -p "$verification_profile_task_root/.agent" "$verification_profile_task_root/scripts/lib"
+(
+  cd "$verification_profile_task_root"
+  cp "$repo_root/templates/scripts/validate-task.sh" scripts/validate-task.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  cp "$repo_root/tests/fixtures/validate-harness/verification-profiles.yml" .agent/harness.yml
+  printf '%s\n' \
+    'task:' \
+    '  status: "in_progress"' \
+    '  goal: "Build package baseline"' \
+    '  verification_profile: "bootstrap"' \
+    '  allowed_paths: []' \
+    '  forbidden_paths: []' \
+    '  completion: {}' \
+    > .agent/task.yml
+  bash scripts/validate-task.sh > validate.log 2>&1
+  assert_contains validate.log "OK: .agent/task.yml task.verification_profile selects bootstrap"
+  assert_contains validate.log "TASK_VALIDATION_RESULT=pass"
+)
+pass "task validation accepts known verification profile"
+
+echo
+echo "== Task validation rejects unknown verification profile =="
+(
+  cd "$verification_profile_task_root"
+  sed 's/verification_profile: "bootstrap"/verification_profile: "missing"/' \
+    .agent/task.yml > .agent/task-unknown.yml
+  if bash scripts/validate-task.sh .agent/task-unknown.yml .agent/harness.yml \
+    > unknown.log 2>&1; then
+    echo "ERROR: expected unknown verification profile failure"
+    exit 1
+  fi
+  assert_contains unknown.log "task.verification_profile names unknown profile: missing"
+  assert_contains unknown.log "TASK_VALIDATION_RESULT=fail"
+)
+pass "task validation rejects unknown verification profile"
+
+echo
+echo "== Task validation rejects malformed verification profile name =="
+(
+  cd "$verification_profile_task_root"
+  sed 's/verification_profile: "bootstrap"/verification_profile: "bad.profile"/' \
+    .agent/task.yml > .agent/task-malformed-profile.yml
+  if bash scripts/validate-task.sh .agent/task-malformed-profile.yml .agent/harness.yml \
+    > malformed-profile.log 2>&1; then
+    echo "ERROR: expected malformed verification profile failure"
+    exit 1
+  fi
+  assert_contains malformed-profile.log "must match [A-Za-z0-9][A-Za-z0-9_-]*"
+)
+pass "task validation rejects malformed verification profile name"
+
+echo
+echo "== Config validation rejects empty verification profile commands =="
+verification_profile_bad_config_root="$tmp_root/verification-profile-bad-config"
+rm -rf "$verification_profile_bad_config_root"
+mkdir -p "$verification_profile_bad_config_root/.agent" \
+  "$verification_profile_bad_config_root/scripts/lib"
+(
+  cd "$verification_profile_bad_config_root"
+  cp "$repo_root/templates/scripts/validate-config.sh" scripts/validate-config.sh
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  printf '%s\n' \
+    'name: Bad Profiles' \
+    'version: 1' \
+    'mode: lightweight' \
+    'paths:' \
+    '  agent_map: agent.md' \
+    '  handoff: handoff.md' \
+    '  task_state: .agent/task.yml' \
+    'scripts:' \
+    '  preflight: scripts/agent-preflight.sh' \
+    '  finish: scripts/agent-finish.sh' \
+    '  verify: scripts/agent-verify.sh' \
+    '  check_policy: scripts/check-policy.sh' \
+    '  check_scope: scripts/check-scope.sh' \
+    'verification:' \
+    '  final_gate_command: scripts/agent-finish.sh' \
+    '  profiles:' \
+    '    bootstrap:' \
+    '      required: []' \
+    > .agent/harness.yml
+  printf '%s\n' \
+    'version: 1' \
+    'default_mode: warn' \
+    'risk_files: {}' \
+    'rules: []' \
+    > .agent/policy.yml
+  if bash scripts/validate-config.sh > invalid-profile-config.log 2>&1; then
+    echo "ERROR: expected empty verification profile failure"
+    exit 1
+  fi
+  assert_contains invalid-profile-config.log "verification profiles are invalid"
+  assert_contains invalid-profile-config.log "CONFIG_VALIDATION_RESULT=fail"
+)
+pass "config validation rejects empty verification profile commands"

@@ -8,6 +8,24 @@ finish time.
 `scripts/agent-task-profile.sh` rewrites the output task file. Use `--dry-run`
 before applying when preserving custom task fields matters.
 
+## Verification Profiles
+
+The repository owns commands in `.agent/harness.yml`. A task may select one
+named command set without copying commands into `.agent/task.yml`:
+
+```bash
+bash scripts/agent-task-profile.sh standard \
+  --goal "Build package baseline" \
+  --verification-profile bootstrap \
+  --allowed "src/**"
+```
+
+When `task.verification_profile` is absent, the harness uses
+`verification.required`. When present, it replaces the default list with
+`verification.profiles.<name>.required`. Profile commands must reference only
+artifacts that exist during that task. Repo-defined commands are authoritative;
+language heuristics are fallback behavior only.
+
 ## Minimal Profile
 
 Use for small, low-risk maintenance work.

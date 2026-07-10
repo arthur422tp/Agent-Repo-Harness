@@ -3,6 +3,29 @@
   "$id": "https://agent-repo-harness.local/schemas/harness.schema.json",
   "title": "Agent-Repo-Harness configuration",
   "type": "object",
+  "$defs": {
+    "verificationCommand": {
+      "type": "object",
+      "required": ["name", "command"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "command": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "verificationProfile": {
+      "type": "object",
+      "required": ["required"],
+      "properties": {
+        "required": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/verificationCommand" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
   "required": ["name", "version", "mode", "paths", "scripts", "verification"],
   "properties": {
     "name": { "type": "string" },
@@ -31,15 +54,12 @@
         "allow_unverified_completion": { "type": "boolean" },
         "required": {
           "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["name", "command"],
-            "properties": {
-              "name": { "type": "string" },
-              "command": { "type": "string" }
-            },
-            "additionalProperties": false
-          }
+          "items": { "$ref": "#/$defs/verificationCommand" }
+        },
+        "profiles": {
+          "type": "object",
+          "propertyNames": { "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$" },
+          "additionalProperties": { "$ref": "#/$defs/verificationProfile" }
         }
       },
       "additionalProperties": true

@@ -3,10 +3,11 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: validate-task.sh [TASK_FILE]
+Usage: validate-task.sh [TASK_FILE] [HARNESS_FILE]
 
-Default:
+Defaults:
   TASK_FILE  .agent/task.yml
+  HARNESS_FILE  .agent/harness.yml
 
 Performs dependency-light structural checks through scripts/lib/read-yaml.py.
 If ruby is available, also checks YAML syntax.
@@ -14,6 +15,7 @@ EOF
 }
 
 task_file="${1:-.agent/task.yml}"
+harness_file="${2:-.agent/harness.yml}"
 
 case "${1:-}" in
   -h|--help)
@@ -141,11 +143,57 @@ check_optional_boolean() {
   esac
 }
 
+check_optional_verification_profile() {
+  local profile
+  local required_entries
+
+  profile="$("$python_bin" "$reader" "$task_file" task.verification_profile --optional 2>&1)" || return 0
+  if [ -z "$profile" ]; then
+    return 0
+  fi
+
+  case "$profile" in
+    [A-Za-z0-9]*)
+      case "$profile" in
+        *[!A-Za-z0-9_-]*)
+          fail "$task_file task.verification_profile must match [A-Za-z0-9][A-Za-z0-9_-]*"
+          return 0
+          ;;
+      esac
+      ;;
+    *)
+      fail "$task_file task.verification_profile must match [A-Za-z0-9][A-Za-z0-9_-]*"
+      return 0
+      ;;
+  esac
+
+  if [ ! -f "$harness_file" ]; then
+    fail "cannot validate task.verification_profile without $harness_file"
+    return 0
+  fi
+
+  required_entries="$("$python_bin" "$reader" "$harness_file" \
+    "verification.profiles.$profile.required" --optional 2>&1)" || {
+      fail "$harness_file could not read verification profile: $profile"
+      return 0
+    }
+  if [ -z "$required_entries" ]; then
+    fail "$task_file task.verification_profile names unknown profile: $profile"
+    return 0
+  fi
+
+  case "$required_entries" in
+    \[* ) echo "OK: $task_file task.verification_profile selects $profile" ;;
+    *) fail "$harness_file verification.profiles.$profile.required must be an array" ;;
+  esac
+}
+
 check_task_types() {
   check_status_enum
   check_array_or_null "task.allowed_paths"
   check_array_or_null "task.forbidden_paths"
   check_map "task.completion"
+  check_optional_verification_profile
 
   for flag in \
     requires_tdd_evidence \

@@ -52,11 +52,15 @@ if [ ! -f "$task_file" ]; then
   exit 0
 fi
 
-list_changed_files() {
-  {
-    git diff --name-only HEAD 2>/dev/null || true
-    git ls-files --others --exclude-standard 2>/dev/null || true
-  } | awk 'NF' | sort -u
+is_harness_runtime_path() {
+  case "$1" in
+    .agent/runs/*|.agent/audits/*|.agent/command-runs/*|.agent/sandbox-runs/*)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
 }
 
 count_untracked_lines() {
@@ -158,7 +162,28 @@ for item in value:
   exit 1
 }
 
-changed_files="$(list_changed_files)"
+tracked_changed_files="$(git diff --name-only HEAD 2>/dev/null || true)"
+untracked_changed_files="$(git ls-files --others --exclude-standard 2>/dev/null || true)"
+included_untracked_files=""
+ignored_runtime_files=""
+
+while IFS= read -r file; do
+  [ -n "$file" ] || continue
+  if is_harness_runtime_path "$file"; then
+    ignored_runtime_files="${ignored_runtime_files}${ignored_runtime_files:+
+}$file"
+  else
+    included_untracked_files="${included_untracked_files}${included_untracked_files:+
+}$file"
+  fi
+done <<EOF
+$untracked_changed_files
+EOF
+
+changed_files="$({
+  printf '%s\n' "$tracked_changed_files"
+  printf '%s\n' "$included_untracked_files"
+} | awk 'NF' | sort -u)"
 changed_count=0
 violations=0
 
@@ -169,6 +194,10 @@ fi
 echo "== Scope Gate =="
 echo "Task file: $task_file"
 echo "Mode: $mode"
+if [ -n "$ignored_runtime_files" ]; then
+  echo "Ignored untracked harness runtime files:"
+  printf '%s\n' "$ignored_runtime_files" | sed 's/^/- /'
+fi
 echo "Changed file count: $changed_count"
 
 if [ -z "$changed_files" ]; then

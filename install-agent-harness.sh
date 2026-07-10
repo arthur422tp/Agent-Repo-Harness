@@ -95,6 +95,38 @@ copy_path() {
   echo "COPIED: $destination"
 }
 
+ensure_runtime_ignores() {
+  local ignore_file="$target/.gitignore"
+  local entry
+  local missing=""
+
+  for entry in \
+    ".agent/runs/" \
+    ".agent/audits/" \
+    ".agent/command-runs/" \
+    ".agent/sandbox-runs/"
+  do
+    if [ ! -f "$ignore_file" ] || ! grep -Fqx -- "$entry" "$ignore_file"; then
+      missing="${missing}${missing:+
+}$entry"
+    fi
+  done
+  if [ -z "$missing" ]; then
+    echo "UNCHANGED: $ignore_file already ignores harness runtime evidence"
+    return 0
+  fi
+  if [ "$dry_run" -eq 1 ]; then
+    printf '%s\n' "$missing" | sed "s|^|DRY-RUN append to $ignore_file: |"
+    return 0
+  fi
+  if [ -f "$ignore_file" ] && [ -s "$ignore_file" ]; then
+    printf '\n' >> "$ignore_file"
+  fi
+  printf '%s\n' "# Agent-Repo-Harness runtime evidence" >> "$ignore_file"
+  printf '%s\n' "$missing" >> "$ignore_file"
+  echo "UPDATED: $ignore_file"
+}
+
 echo "Installing Agent-Repo-Harness templates into $target"
 
 while IFS= read -r -d '' path; do
@@ -117,6 +149,18 @@ if [ -f "$schema_root/architecture.schema.json" ]; then
   copy_path \
     "$schema_root/architecture.schema.json" \
     "$target/schemas/architecture.schema.json"
+fi
+
+if [ -f "$schema_root/harness.schema.json" ]; then
+  copy_path \
+    "$schema_root/harness.schema.json" \
+    "$target/schemas/harness.schema.json"
+fi
+
+if [ -f "$schema_root/task.schema.json" ]; then
+  copy_path \
+    "$schema_root/task.schema.json" \
+    "$target/schemas/task.schema.json"
 fi
 
 if [ -f "$schema_root/evidence-ref.schema.json" ]; then
@@ -142,6 +186,8 @@ if [ -f "$schema_root/interventions.schema.json" ]; then
     "$schema_root/interventions.schema.json" \
     "$target/schemas/interventions.schema.json"
 fi
+
+ensure_runtime_ignores
 
 if [ -d "$target/scripts" ] && \
   find "$target/scripts" -type f -name "*.sh" | grep -q .

@@ -57,6 +57,25 @@ setup_profile_root "$task_profile_standard_root"
 pass "standard task profile"
 
 echo
+echo "== Task profile selects verification stage =="
+task_profile_verification_root="$tmp_root/task-profile-verification"
+setup_profile_root "$task_profile_verification_root"
+(
+  cd "$task_profile_verification_root"
+  bash scripts/agent-task-profile.sh standard \
+    --goal "Build package baseline." \
+    --current-task "Create package import." \
+    --verification-profile bootstrap \
+    --allowed "src/**" > profile.log 2>&1
+  assert_contains .agent/task.yml 'verification_profile: "bootstrap"'
+  assert_contains profile.log "Verification profile: bootstrap"
+  cp "$repo_root/tests/fixtures/validate-harness/verification-profiles.yml" .agent/harness.yml
+  bash scripts/validate-task.sh .agent/task.yml .agent/harness.yml > validate.log 2>&1
+  assert_contains validate.log "TASK_VALIDATION_RESULT=pass"
+)
+pass "task profile selects verification stage"
+
+echo
 echo "== High-risk selected gates =="
 setup_profile_root "$task_profile_high_risk_root"
 (

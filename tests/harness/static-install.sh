@@ -174,6 +174,7 @@ echo "== Fresh install target =="
 target_root="$tmp_root/install target"
 mkdir -p "$target_root"
 git init -q "$target_root"
+printf '%s\n' 'dist/' > "$target_root/.gitignore"
 
 dry_run_log="$tmp_root/install-dry-run.log"
 bash install-agent-harness.sh --dry-run "$target_root" >"$dry_run_log" 2>&1
@@ -190,6 +191,25 @@ if ! bash install-agent-harness.sh "$target_root" >"$install_log" 2>&1; then
 fi
 assert_installer_completion_block "$install_log" "$target_root"
 pass "installer copy"
+assert_contains "$target_root/.gitignore" "dist/"
+assert_contains "$target_root/.gitignore" ".agent/runs/"
+assert_contains "$target_root/.gitignore" ".agent/audits/"
+assert_contains "$target_root/.gitignore" ".agent/command-runs/"
+assert_contains "$target_root/.gitignore" ".agent/sandbox-runs/"
+
+bash "$repo_root/install-agent-harness.sh" "$target_root" >"$tmp_root/reinstall.log" 2>&1
+for entry in \
+  ".agent/runs/" \
+  ".agent/audits/" \
+  ".agent/command-runs/" \
+  ".agent/sandbox-runs/"
+do
+  count="$(grep -Fxc -- "$entry" "$target_root/.gitignore" || true)"
+  if [ "$count" -ne 1 ]; then
+    echo "ERROR: expected one .gitignore entry for $entry, got $count"
+    exit 1
+  fi
+done
 
 echo
 echo "== Installed target checks =="
@@ -282,6 +302,15 @@ pass "installed default sandbox verification gate is opt-in"
 
 assert_contains "$target_root/.agent/task.yml" "requires_command_ledger: false"
 pass "installed default command ledger gate is opt-in"
+
+assert_contains "$target_root/.agent/task.yml" "verification_profile: bootstrap"
+assert_contains "$target_root/.agent/harness.yml" "profiles:"
+assert_contains "$target_root/scripts/agent-task-profile.sh" "--verification-profile"
+assert_contains "$target_root/scripts/agent-verify.sh" "resolve_verification_path"
+assert_contains "$target_root/scripts/agent-verify.sh" "repo-defined verification commands are authoritative"
+assert_contains "$target_root/schemas/task.schema.json" '"verification_profile"'
+assert_contains "$target_root/schemas/harness.schema.json" '"verificationProfile"'
+pass "installed verification profile contract is present"
 
 assert_not_exists "$target_root/adapters/hooks/README.md"
 assert_not_exists "$target_root/adapters/hooks/git/pre-commit"

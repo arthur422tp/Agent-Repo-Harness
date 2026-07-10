@@ -21,6 +21,8 @@ agents may rely on.
 - `scripts/agent-task-profile.sh` CLI
 - `scripts/agent-evidence-bind.sh` CLI
 - `scripts/check-evidence-refs.py` CLI
+- `task.verification_profile`
+- `.agent/harness.yml` `verification.profiles`
 - `finish-summary.json` core fields: `overall_result`, `mode`, `run_dir`,
   `gates`, `changed_files`, `diff_stat`, and `elapsed_seconds`
 - `evidence_refs` MVP fields: `type`, `path`, `command`, `gate`,

@@ -6,3 +6,4 @@ plan.md
 *.bak
 *.swp
 .DS_Store
+.superpowers/

@@ -100,8 +100,33 @@ run_check() {
   fi
 }
 
+resolve_verification_path() {
+  local task_file=".agent/task.yml"
+  local script_dir
+  local reader
+  local python_bin
+  local profile=""
+
+  script_dir="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
+  reader="$script_dir/lib/read-yaml.py"
+  if ! python_bin="$(find_python)"; then
+    echo "ERROR: python is required to read verification configuration" >&2
+    return 1
+  fi
+  if [ -f "$task_file" ]; then
+    profile="$("$python_bin" "$reader" "$task_file" \
+      task.verification_profile --optional)" || return 1
+  fi
+  if [ -n "$profile" ]; then
+    printf '%s\n' "verification.profiles.$profile.required"
+    return 0
+  fi
+  printf '%s\n' "verification.required"
+}
+
 extract_required_verification_entries() {
   local config_file="$1"
+  local verification_path="$2"
   local script_dir
   local reader
   local python_bin
@@ -120,22 +145,40 @@ extract_required_verification_entries() {
   fi
 
   # JSON lines preserve multiline command values; tab-separated rows do not.
-  "$python_bin" "$reader" "$config_file" verification.required \
+  "$python_bin" "$reader" "$config_file" "$verification_path" \
     --optional --list-fields-jsonl name command
 }
 
 run_configured_verification_checks() {
   local config_file="$1"
+  local verification_path
+  local selected_profile
   local entries
   local entry_json
   local label
   local command_string
   local python_bin
 
-  if ! entries="$(extract_required_verification_entries "$config_file")"; then
+  if ! verification_path="$(resolve_verification_path)"; then
     echo
     echo "FAIL: repo-defined verification config"
-    echo "Reason: could not read verification.required from $config_file"
+    echo "Reason: could not resolve verification command path"
+    failures=$((failures + 1))
+    return 0
+  fi
+  if ! entries="$(extract_required_verification_entries "$config_file" "$verification_path")"; then
+    echo
+    echo "FAIL: repo-defined verification config"
+    echo "Reason: could not read $verification_path from $config_file"
+    failures=$((failures + 1))
+    return 0
+  fi
+  if [ -z "$entries" ] && [ "$verification_path" != "verification.required" ]; then
+    selected_profile="${verification_path#verification.profiles.}"
+    selected_profile="${selected_profile%.required}"
+    echo
+    echo "FAIL: repo-defined verification config"
+    echo "Reason: selected verification profile has no commands: $selected_profile"
     failures=$((failures + 1))
     return 0
   fi
@@ -148,6 +191,13 @@ run_configured_verification_checks() {
   echo "== Repo-defined verification commands =="
   echo "Config: $config_file"
   echo "Repo-defined verification commands found."
+  case "$verification_path" in
+    verification.profiles.*.required)
+      selected_profile="${verification_path#verification.profiles.}"
+      selected_profile="${selected_profile%.required}"
+      echo "Selected verification profile: $selected_profile"
+      ;;
+  esac
 
   if ! python_bin="$(find_python)"; then
     echo "FAIL: repo-defined verification config"
@@ -236,56 +286,61 @@ if [ -d scripts ] && find scripts -maxdepth 1 -type f -name "*.sh" | grep -q .; 
   run_check "bash -n scripts/*.sh" run_shell_syntax_checks
 fi
 
-if [ -f package.json ]; then
-  echo "Detected Node project"
-  if have_cmd npm; then
-    run_check "npm run lint --if-present" npm run lint --if-present
-    run_check "npm run build --if-present" npm run build --if-present
-    run_check "npm test --if-present" npm test --if-present
-  else
-    handle_missing_tool "npm project checks"
-  fi
-fi
-
-if [ -f go.mod ]; then
-  echo "Detected Go project"
-  if have_cmd go; then
-    run_check "gofmt -l ." run_gofmt_check
-    run_check "go test ./..." go test ./...
-  else
-    handle_missing_tool "go project checks"
-  fi
-fi
-
-if [ -f pyproject.toml ] || [ -f requirements.txt ]; then
-  echo "Detected Python project"
-  if have_cmd python3; then
-    run_check "python3 -m compileall ." python3 -m compileall .
-  elif have_cmd python; then
-    run_check "python -m compileall ." python -m compileall .
-  else
-    handle_missing_tool "python compile check"
+if [ "$repo_defined_checks_found" -eq 1 ]; then
+  echo
+  echo "SKIP: language heuristics because repo-defined verification commands are authoritative"
+else
+  if [ -f package.json ]; then
+    echo "Detected Node project"
+    if have_cmd npm; then
+      run_check "npm run lint --if-present" npm run lint --if-present
+      run_check "npm run build --if-present" npm run build --if-present
+      run_check "npm test --if-present" npm test --if-present
+    else
+      handle_missing_tool "npm project checks"
+    fi
   fi
 
-  if have_cmd pytest; then
-    run_check "pytest" pytest
-  else
-    handle_missing_tool "pytest"
+  if [ -f go.mod ]; then
+    echo "Detected Go project"
+    if have_cmd go; then
+      run_check "gofmt -l ." run_gofmt_check
+      run_check "go test ./..." go test ./...
+    else
+      handle_missing_tool "go project checks"
+    fi
   fi
 
-  if have_cmd ruff; then
-    run_check "ruff check ." ruff check .
-  else
-    handle_missing_tool "ruff"
-  fi
-fi
+  if [ -f pyproject.toml ] || [ -f requirements.txt ]; then
+    echo "Detected Python project"
+    if have_cmd python3; then
+      run_check "python3 -m compileall ." python3 -m compileall .
+    elif have_cmd python; then
+      run_check "python -m compileall ." python -m compileall .
+    else
+      handle_missing_tool "python compile check"
+    fi
 
-if [ -f docker-compose.yml ] || [ -f compose.yml ]; then
-  echo "Detected Docker Compose config"
-  if have_cmd docker; then
-    run_check "docker compose config" docker compose config
-  else
-    handle_missing_tool "docker compose config"
+    if have_cmd pytest; then
+      run_check "pytest" pytest
+    else
+      handle_missing_tool "pytest"
+    fi
+
+    if have_cmd ruff; then
+      run_check "ruff check ." ruff check .
+    else
+      handle_missing_tool "ruff"
+    fi
+  fi
+
+  if [ -f docker-compose.yml ] || [ -f compose.yml ]; then
+    echo "Detected Docker Compose config"
+    if have_cmd docker; then
+      run_check "docker compose config" docker compose config
+    else
+      handle_missing_tool "docker compose config"
+    fi
   fi
 fi
 

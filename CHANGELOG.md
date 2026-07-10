@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Changed
+
+- Add optional named verification profiles selected through
+  `task.verification_profile`.
+- Repo-defined configured verification commands now suppress language heuristics; repositories that need those checks must list them explicitly in
+  `verification.required` or the selected profile.
+- Ignore untracked harness runtime evidence in scope checks while continuing to
+  enforce tracked evidence changes.
+
 ## v0.2.0 - Agent-facing productization polish
 
 - Ensure `check-acceptance.sh` emits exactly one final

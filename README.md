@@ -108,8 +108,31 @@ verification:
       command: "uv run ruff check ."
 ```
 
-When project-specific tooling differs from the default heuristics, the
-repo-defined verification commands are the source of truth.
+In this model, repo-defined commands are authoritative. When `verification.required` or a
+selected named profile contains commands, `scripts/agent-verify.sh` runs that
+command set and skips Node, Go, Python, and Docker Compose heuristics. Projects
+without repo-defined commands keep heuristic fallback behavior.
+
+Use `task.verification_profile` when a task must verify only artifacts that
+exist at its current delivery stage:
+
+```yaml
+# .agent/harness.yml
+verification:
+  profiles:
+    bootstrap:
+      required:
+        - name: package-import
+          command: uv run python -c "import package_name"
+
+# .agent/task.yml
+task:
+  verification_profile: bootstrap
+```
+
+The selected profile replaces `verification.required`; it does not merge with
+the default commands. Use a final or release profile only after its tests,
+CLI, build, and lint targets exist.
 
 ## Choose A Gate Profile
 

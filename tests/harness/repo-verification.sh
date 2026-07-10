@@ -106,6 +106,88 @@ git init -q "$verify_bad_config_root"
 pass "repo-defined malformed verification config"
 
 echo
+echo "== Selected verification profile replaces default commands =="
+verify_profile_root="$tmp_root/verify-profile"
+rm -rf "$verify_profile_root"
+mkdir -p "$verify_profile_root/.agent" "$verify_profile_root/scripts/lib"
+git init -q "$verify_profile_root"
+(
+  cd "$verify_profile_root"
+  cp "$repo_root/tests/fixtures/validate-harness/verification-profiles.yml" .agent/harness.yml
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  printf '%s\n' 'task:' '  verification_profile: "bootstrap"' > .agent/task.yml
+  bash "$repo_root/templates/scripts/agent-verify.sh" > profile.log 2>&1
+  assert_contains profile.log "Selected verification profile: bootstrap"
+  assert_contains profile.log "BOOTSTRAP_PROFILE_RAN"
+  assert_not_contains profile.log "DEFAULT_SUITE_RAN"
+  assert_not_contains profile.log "FEATURE_PROFILE_RAN"
+  assert_contains profile.log "HARNESS_VERIFY_RESULT=pass"
+)
+pass "selected verification profile replaces default commands"
+
+echo
+echo "== Missing selected verification profile fails =="
+(
+  cd "$verify_profile_root"
+  printf '%s\n' 'task:' '  verification_profile: "missing"' > .agent/task.yml
+  if bash "$repo_root/templates/scripts/agent-verify.sh" > missing-profile.log 2>&1; then
+    echo "ERROR: expected missing selected profile failure"
+    exit 1
+  fi
+  assert_contains missing-profile.log "selected verification profile has no commands: missing"
+  assert_contains missing-profile.log "HARNESS_VERIFY_RESULT=fail"
+)
+pass "missing selected verification profile fails"
+
+echo
+echo "== Repo-defined commands suppress Python heuristics =="
+verify_authoritative_root="$tmp_root/verify-authoritative"
+rm -rf "$verify_authoritative_root"
+mkdir -p "$verify_authoritative_root/.agent" \
+  "$verify_authoritative_root/scripts/lib" "$verify_authoritative_root/bin"
+git init -q "$verify_authoritative_root"
+(
+  cd "$verify_authoritative_root"
+  cp "$repo_root/tests/fixtures/validate-harness/verification-profiles.yml" .agent/harness.yml
+  cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
+  printf '%s\n' '[project]' 'name = "fixture"' 'version = "0.1.0"' > pyproject.toml
+  printf '%s\n' '#!/usr/bin/env bash' 'echo PYTEST_HEURISTIC_RAN' 'exit 9' > bin/pytest
+  printf '%s\n' '#!/usr/bin/env bash' 'echo RUFF_HEURISTIC_RAN' 'exit 9' > bin/ruff
+  chmod +x bin/pytest bin/ruff
+  PATH="$verify_authoritative_root/bin:$PATH" \
+    bash "$repo_root/templates/scripts/agent-verify.sh" > authoritative.log 2>&1
+  assert_contains authoritative.log "DEFAULT_SUITE_RAN"
+  assert_contains authoritative.log "SKIP: language heuristics because repo-defined verification commands are authoritative"
+  assert_not_contains authoritative.log "PYTEST_HEURISTIC_RAN"
+  assert_not_contains authoritative.log "RUFF_HEURISTIC_RAN"
+  assert_contains authoritative.log "HARNESS_VERIFY_RESULT=pass"
+)
+pass "repo-defined commands suppress Python heuristics"
+
+echo
+echo "== Missing repo-defined commands retain heuristic fallback =="
+verify_fallback_root="$tmp_root/verify-fallback"
+rm -rf "$verify_fallback_root"
+mkdir -p "$verify_fallback_root/bin"
+git init -q "$verify_fallback_root"
+(
+  cd "$verify_fallback_root"
+  printf '%s\n' '[project]' 'name = "fixture"' 'version = "0.1.0"' > pyproject.toml
+  printf '%s\n' '#!/usr/bin/env bash' 'echo PYTEST_HEURISTIC_RAN' 'exit 9' > bin/pytest
+  printf '%s\n' '#!/usr/bin/env bash' 'echo RUFF_HEURISTIC_RAN' 'exit 9' > bin/ruff
+  chmod +x bin/pytest bin/ruff
+  if PATH="$verify_fallback_root/bin:$PATH" \
+    bash "$repo_root/templates/scripts/agent-verify.sh" > fallback.log 2>&1; then
+    echo "ERROR: expected fake heuristic failures"
+    exit 1
+  fi
+  assert_contains fallback.log "PYTEST_HEURISTIC_RAN"
+  assert_contains fallback.log "RUFF_HEURISTIC_RAN"
+  assert_contains fallback.log "HARNESS_VERIFY_RESULT=fail"
+)
+pass "missing repo-defined commands retain heuristic fallback"
+
+echo
 echo "== Context collection modes =="
 context_root="$tmp_root/context-collection"
 mkdir -p "$context_root/.agent" "$context_root/docs/agent" "$context_root/scripts/lib"

@@ -15,6 +15,10 @@
         "goal": { "type": "string" },
         "source_plan": { "type": "string" },
         "current_task": { "type": "string" },
+        "verification_profile": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+        },
         "allowed_paths": {
           "type": ["array", "null"],
           "items": { "type": "string" }

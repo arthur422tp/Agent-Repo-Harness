@@ -66,6 +66,48 @@ require_key() {
   echo "OK: $file contains $key"
 }
 
+validate_verification_profiles() {
+  local profiles_json
+
+  profiles_json="$("$python_bin" "$yaml_reader" "$harness_file" \
+    verification.profiles --optional 2>&1)" || {
+      echo "FAIL: $harness_file could not read verification.profiles"
+      failures=$((failures + 1))
+      return 0
+    }
+  if [ -z "$profiles_json" ]; then
+    return 0
+  fi
+  if printf '%s\n' "$profiles_json" | "$python_bin" -c '
+import json
+import re
+import sys
+profiles = json.load(sys.stdin)
+if not isinstance(profiles, dict):
+    raise SystemExit("verification.profiles must be a map")
+for name, profile in profiles.items():
+    if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]*", name) is None:
+        raise SystemExit(f"invalid verification profile name: {name}")
+    if not isinstance(profile, dict):
+        raise SystemExit(f"verification profile {name} must be a map")
+    required = profile.get("required")
+    if not isinstance(required, list) or not required:
+        raise SystemExit(f"verification profile {name}.required must be a non-empty list")
+    for entry in required:
+        if not isinstance(entry, dict):
+            raise SystemExit(f"verification profile {name} entry must be a map")
+        if not isinstance(entry.get("name"), str) or not entry["name"]:
+            raise SystemExit(f"verification profile {name} entry name must be non-empty")
+        if not isinstance(entry.get("command"), str) or not entry["command"]:
+            raise SystemExit(f"verification profile {name} entry command must be non-empty")
+'; then
+    echo "OK: $harness_file verification profiles are valid"
+  else
+    echo "FAIL: $harness_file verification profiles are invalid"
+    failures=$((failures + 1))
+  fi
+}
+
 echo "== Harness Config Validation =="
 
 if [ ! -f "$yaml_reader" ]; then
@@ -85,6 +127,7 @@ if [ -f "$harness_file" ] && [ -n "$python_bin" ] && [ -f "$yaml_reader" ]; then
   require_key "$harness_file" "paths"
   require_key "$harness_file" "scripts"
   require_key "$harness_file" "verification"
+  validate_verification_profiles
 fi
 
 if [ -f "$policy_file" ] && [ -n "$python_bin" ] && [ -f "$yaml_reader" ]; then

@@ -54,7 +54,10 @@ from pathlib import Path
 python_bin = sys.argv[1]
 path = Path(".agent/harness.yml")
 text = path.read_text(encoding="utf-8")
-marker = "  # Optional repo-defined verification commands run before heuristic checks.\n"
+marker = (
+    "  # Repo-defined commands are authoritative. When required or a selected\n"
+    "  # profile resolves commands, language heuristics are skipped.\n"
+)
 required = (
     "  required:\n"
     "    - name: \"contract RAG unit tests\"\n"

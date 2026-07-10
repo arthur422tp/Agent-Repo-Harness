@@ -20,6 +20,7 @@ assert_exists "$repo_root/templates/docs/agent/gate-guide.md"
 assert_files_match \
   "$repo_root/docs/agent/gate-guide.md" \
   "$repo_root/templates/docs/agent/gate-guide.md"
+assert_contains "$repo_root/templates/docs/agent/gate-guide.md" "## Verification Profiles"
 
 assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/task.yml` for task scope'
 assert_contains "$repo_root/templates/AGENTS.md" 'Read `.agent/policy.yml` only for policy rules that apply'
@@ -85,6 +86,7 @@ assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 'command: "bash scripts/agent-finish.sh --strict"'
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 'network: "disabled"'
 assert_contains "$repo_root/examples/universal-minimal-repo/.agent/harness.yml" 'timeout_seconds: 600'
+assert_contains "$repo_root/templates/scripts/agent-verify.sh" "verification.profiles."
 assert_exists "$repo_root/examples/universal-minimal-repo/scripts/agent-audit.sh"
 assert_exists "$repo_root/examples/universal-minimal-repo/scripts/agent-sandbox-run.sh"
 assert_exists "$repo_root/examples/universal-minimal-repo/scripts/check-sandbox-evidence.sh"
@@ -129,4 +131,5 @@ assert_contains "$target_root/CLAUDE.md" "docs/agent/gate-guide.md"
 assert_not_contains "$target_root/CLAUDE.md" "## Context Loading Policy"
 assert_not_contains "$target_root/CLAUDE.md" '3. Read `.agent/policy.yml`.'
 assert_contains "$target_root/.agent/architecture.yml" 'status: not_reviewed'
+assert_contains "$target_root/docs/agent/gate-guide.md" "## Verification Profiles"
 pass "templates, examples, and installed entrypoints stay aligned"

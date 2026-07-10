@@ -3,6 +3,8 @@ task:
   goal: ""
   source_plan: "docs/superpowers/plans/YYYY-MM-DD-feature.md"
   current_task: "Task N: short task name"
+  # Optional: select verification.profiles.<name>.required from harness.yml.
+  # verification_profile: bootstrap
   allowed_paths:
     # - "src/example/**"
     # - "tests/example/**"

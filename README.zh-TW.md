@@ -103,8 +103,32 @@ verification:
       command: "uv run ruff check ."
 ```
 
-當專案特定工具與預設啟發式檢查不同時，以 repository 定義的驗證命令
-為準。
+repo-defined commands 是具權威性的驗證來源。當
+`verification.required` 或選定的 named profile 包含 commands 時，
+`scripts/agent-verify.sh` 只執行該 command set，並略過 Node、Go、Python
+與 Docker Compose heuristics。沒有 repo-defined commands 的專案仍會使用
+heuristic fallback。
+
+當 task 只能驗證目前交付階段已存在的 artifacts 時，使用
+`task.verification_profile`：
+
+```yaml
+# .agent/harness.yml
+verification:
+  profiles:
+    bootstrap:
+      required:
+        - name: package-import
+          command: uv run python -c "import package_name"
+
+# .agent/task.yml
+task:
+  verification_profile: bootstrap
+```
+
+選定的 profile 會取代 `verification.required`，不會與預設 commands 合併。
+只有在 tests、CLI、build 與 lint targets 已存在後，才選擇 final 或 release
+profile。
 
 ## 選擇 Gate Profile
 
