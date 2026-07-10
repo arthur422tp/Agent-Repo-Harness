@@ -39,7 +39,9 @@ git init -q "$resource_disabled_root"
   bash scripts/agent-finish.sh --best-effort >"$finish_log" 2>&1
   assert_contains "$finish_log" "AGENT_FINISH_RESULT=pass"
   assert_file_contains "$resource_disabled_root" "resource-envelope-result.txt" "Resource envelope is disabled."
+  assert_finish_summary_contract "$resource_disabled_root" "pass"
   assert_finish_json_contract "$resource_disabled_root" "pass"
+  assert_finish_gate_order "$resource_disabled_root"
 )
 pass "resource envelope disabled by default"
 
@@ -107,6 +109,8 @@ git init -q "$resource_changed_files_root"
   assert_contains "$finish_log" "Resource envelope failed."
   assert_contains "$finish_log" "AGENT_FINISH_RESULT=fail"
   assert_file_contains "$resource_changed_files_root" "resource-envelope-result.txt" "changed files 2 exceeds limit 1"
+  assert_finish_summary_contract "$resource_changed_files_root" "fail"
   assert_finish_json_contract "$resource_changed_files_root" "fail"
+  assert_finish_gate_order "$resource_changed_files_root"
 )
 pass "resource envelope fails changed-file limit"
