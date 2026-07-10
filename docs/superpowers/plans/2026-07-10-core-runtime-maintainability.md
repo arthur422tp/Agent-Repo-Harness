@@ -324,7 +324,7 @@ Verification observed:
 - Produces: `finish_write_markdown_summary(overall_result)`, `finish_write_json_summary(overall_result)`, and `finish_write_episode_summary(overall_result)`.
 - Consumes: the current entrypoint globals for timestamps, paths, mode, scalar gate statuses, Python interpreter, elapsed time, and resource status.
 
-- [ ] **Step 1: Write failing extraction assertions**
+- [x] **Step 1: Write failing extraction assertions**
 
 Add:
 
@@ -343,13 +343,13 @@ assert_contains "$repo_root/templates/scripts/lib/finish-summary.sh" \
 
 Also assert `finish-summary.sh` exists in the temporary installed target.
 
-- [ ] **Step 2: Run the red phase**
+- [x] **Step 2: Run the red phase**
 
 Run: `bash validate-harness.sh`
 
 Expected: FAIL because `finish-summary.sh` does not exist.
 
-- [ ] **Step 3: Move the existing renderers without changing their payloads**
+- [x] **Step 3: Move the existing renderers without changing their payloads**
 
 Create `finish-summary.sh` with the three renamed functions. Move the complete
 current bodies of `write_summary`, `write_json_summary`, and
@@ -371,7 +371,7 @@ pointing their existing destination environment variables at temporary files.
 For Python JSON writers, set the environment destination to the temporary path,
 then atomically replace it only after Python exits 0.
 
-- [ ] **Step 4: Source and call the new renderer API**
+- [x] **Step 4: Source and call the new renderer API**
 
 Require and source `finish-summary.sh` after `harness-common.sh`. Replace calls:
 
@@ -383,7 +383,7 @@ finish_write_episode_summary "fail"
 
 and the corresponding `pass` calls. Keep gate execution hard-coded in this task.
 
-- [ ] **Step 5: Verify JSON write failures remain blocking**
+- [x] **Step 5: Verify JSON write failures remain blocking**
 
 Add a subshell test that sources both modules, points every evidence variable at
 one valid run directory, and replaces the Python command with `false`:
@@ -441,7 +441,7 @@ one valid run directory, and replaces the Python command with `false`:
 )
 ```
 
-- [ ] **Step 6: Update fixture copies, run green, and commit**
+- [x] **Step 6: Update fixture copies, run green, and commit**
 
 Copy `finish-summary.sh` beside `harness-common.sh` in manual finish fixtures.
 
@@ -457,6 +457,13 @@ git add templates/scripts/lib/finish-summary.sh templates/scripts/agent-finish.s
   docs/superpowers/plans/2026-07-10-core-runtime-maintainability.md
 git commit -m "refactor: extract finish summary rendering"
 ```
+
+Verification observed:
+- Red: `bash validate-harness.sh` exited 1 because the installed target did not
+  contain `scripts/lib/finish-summary.sh`.
+- Green: `bash validate-harness.sh` exited 0, preserving Markdown rows, JSON
+  keys, evidence paths, and blocking behavior on JSON write failures.
+- Commit SHA: pending Task 3 commit.
 
 ---
 
