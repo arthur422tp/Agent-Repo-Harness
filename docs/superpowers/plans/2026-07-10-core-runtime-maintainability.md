@@ -305,8 +305,7 @@ Verification observed:
   not contain `scripts/lib/harness-common.sh`.
 - Green: `bash validate-harness.sh` exited 0, including the common-helper
   atomic replacement contract.
-- Commit SHA: recorded in `.superpowers/sdd/task-2-report.md` after this atomic
-  task commit.
+- Commit SHA: `f544778` (`refactor: share finish runtime shell helpers`).
 
 ---
 
