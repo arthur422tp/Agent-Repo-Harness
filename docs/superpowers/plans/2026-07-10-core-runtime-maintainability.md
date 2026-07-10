@@ -463,7 +463,7 @@ Verification observed:
   contain `scripts/lib/finish-summary.sh`.
 - Green: `bash validate-harness.sh` exited 0, preserving Markdown rows, JSON
   keys, evidence paths, and blocking behavior on JSON write failures.
-- Commit SHA: pending Task 3 commit.
+- Commit SHA: `9e1fa68` (`refactor: extract finish summary rendering`).
 
 ---
 
