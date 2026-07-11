@@ -29,6 +29,13 @@ agents may rely on.
   `expected_exit_status`, `overall_result`, `must_contain`, and
   `must_not_contain`
 
+## Internal Implementation Details
+
+Files under `scripts/lib/` are internal implementation details. Downstream
+repositories should invoke public scripts rather than source internal libraries.
+Internal library functions may change within a minor release when the stable and
+intended-stable public contracts remain compatible.
+
 ## Experimental Interfaces
 
 - Entropy audit reports

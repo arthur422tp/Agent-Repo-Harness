@@ -217,6 +217,7 @@ assert_exists "$target_root/scripts/lib/harness-common.sh"
 assert_exists "$target_root/scripts/lib/finish-summary.sh"
 assert_exists "$target_root/scripts/lib/gate-registry.sh"
 assert_exists "$target_root/scripts/lib/finish-runner.sh"
+pass "installed runtime libraries are present"
 for required_path in \
   AGENTS.md \
   CLAUDE.md \

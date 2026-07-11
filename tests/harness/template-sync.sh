@@ -104,6 +104,17 @@ assert_files_match \
 assert_files_match \
   "$repo_root/templates/scripts/check-command-ledger.sh" \
   "$repo_root/examples/universal-minimal-repo/scripts/check-command-ledger.sh"
+assert_contains "$repo_root/docs/stability-contract.md" \
+  'Files under `scripts/lib/` are internal implementation details'
+assert_contains "$repo_root/docs/stability-contract.md" \
+  'repositories should invoke public scripts rather than source internal libraries.'
+# The universal-minimal example intentionally stays a small smoke fixture rather
+# than a byte-for-byte installed-runtime mirror of the production finish flow.
+assert_contains "$repo_root/examples/universal-minimal-repo/scripts/agent-finish.sh" \
+  "Mode: best-effort example"
+assert_not_contains "$repo_root/examples/universal-minimal-repo/scripts/agent-finish.sh" \
+  'source "$script_dir/lib/harness-common.sh"'
+assert_not_exists "$repo_root/examples/universal-minimal-repo/scripts/lib"
 
 assert_contains "$repo_root/examples/universal-minimal-repo/AGENTS.md" 'Read `.agent/task.yml` for scope'
 assert_contains "$repo_root/examples/universal-minimal-repo/AGENTS.md" 'applicable `.agent/policy.yml`'
