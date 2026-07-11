@@ -1,10 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+finish_gate_status_value() {
+  local index="$1"
+
+  if [ -n "${FINISH_GATE_STATUSES[$index]:-}" ]; then
+    printf '%s\n' "${FINISH_GATE_STATUSES[$index]}"
+  else
+    printf '%s\n' 0
+  fi
+}
+
+finish_gate_evidence_path() {
+  local index="$1"
+
+  printf '%s\n' "$run_dir/${FINISH_GATE_RESULT_NAMES[$index]}"
+}
+
 finish_write_markdown_summary() {
   local overall_result="$1"
   local next_action
   local temp_summary
+  local group
+  local index
+  local gate_status
+  local gate_evidence
 
   if [ "$overall_result" = "pass" ]; then
     next_action="Update handoff.md with the run directory path, changed files, verification result, and the next action for the human or next agent."
@@ -24,35 +44,23 @@ finish_write_markdown_summary() {
     echo
     echo "## Gate Results"
     echo
-    echo "### Core Guardrails"
-    echo
-    echo "| Check | Exit status | Evidence |"
-    echo "| --- | ---: | --- |"
-    echo "| check-agent-md | $agent_md_status | $check_agent_md_result_file |"
-    echo "| check-scope | $scope_status | $scope_result_file |"
-    echo "| check-policy | $policy_status | $policy_result_file |"
-    echo
-    echo "### Optional Evidence"
-    echo
-    echo "| Check | Exit status | Evidence |"
-    echo "| --- | ---: | --- |"
-    echo "| check-tdd-evidence | $tdd_evidence_status | $tdd_evidence_result_file |"
-    echo "| check-acceptance | $acceptance_status | $acceptance_result_file |"
-    echo "| check-review-evidence | $review_status | $review_result_file |"
-    echo "| check-architecture-evidence | $architecture_status | $architecture_result_file |"
-    echo "| check-failure-attribution | $failure_attribution_status | $failure_attribution_result_file |"
-    echo "| check-interventions | $interventions_status | $interventions_result_file |"
-    echo "| check-command-ledger | $command_ledger_status | $command_ledger_result_file |"
-    echo "| check-sandbox-evidence | $sandbox_evidence_status | $sandbox_evidence_result_file |"
-    echo "| check-subagent-evidence | $subagent_evidence_status | $subagent_evidence_result_file |"
-    echo
-    echo "### Verification And Limits"
-    echo
-    echo "| Check | Exit status | Evidence |"
-    echo "| --- | ---: | --- |"
-    echo "| validate-episode | $episode_status | $episode_result_file |"
-    echo "| agent-verify | $verify_status | $verify_result_file |"
-    echo "| resource-envelope | $resource_status | $resource_result_file |"
+    for group in \
+      "Core Guardrails" \
+      "Optional Evidence" \
+      "Verification And Limits"
+    do
+      echo "### $group"
+      echo
+      echo "| Check | Exit status | Evidence |"
+      echo "| --- | ---: | --- |"
+      for index in "${!FINISH_GATE_IDS[@]}"; do
+        [ "${FINISH_GATE_GROUPS[$index]}" = "$group" ] || continue
+        gate_status="$(finish_gate_status_value "$index")"
+        gate_evidence="$(finish_gate_evidence_path "$index")"
+        echo "| ${FINISH_GATE_IDS[$index]} | $gate_status | $gate_evidence |"
+      done
+      echo
+    done
     echo
     echo "## Changed Files"
     echo
@@ -85,10 +93,25 @@ finish_write_json_summary() {
   local overall_result="$1"
   local end_epoch
   local temp_summary_json
+  local index
+  local gate_names=""
+  local gate_statuses=""
+  local gate_evidence=""
+  local status_value
 
   end_epoch="$(date -u +%s)"
   elapsed_seconds=$((end_epoch - start_epoch))
   temp_summary_json="$(harness_make_temp_file "$run_dir" finish-summary-json)"
+
+  for index in "${!FINISH_GATE_IDS[@]}"; do
+    status_value="$(finish_gate_status_value "$index")"
+    gate_names="${gate_names}${gate_names:+
+}${FINISH_GATE_IDS[$index]}"
+    gate_statuses="${gate_statuses}${gate_statuses:+
+}$status_value"
+    gate_evidence="${gate_evidence}${gate_evidence:+
+}$(finish_gate_evidence_path "$index")"
+  done
 
   if ! SUMMARY_JSON_FILE="$temp_summary_json" \
     AGENT_FINISH_TIMESTAMP="$timestamp" \
@@ -98,35 +121,9 @@ finish_write_json_summary() {
     AGENT_FINISH_OVERALL_RESULT="$overall_result" \
     AGENT_FINISH_ELAPSED_SECONDS="$elapsed_seconds" \
     AGENT_FINISH_RESOURCE_STATUS="${resource_status:-0}" \
-    AGENT_FINISH_CHECK_AGENT_MD_STATUS="${agent_md_status:-0}" \
-    AGENT_FINISH_SCOPE_STATUS="${scope_status:-0}" \
-    AGENT_FINISH_POLICY_STATUS="${policy_status:-0}" \
-    AGENT_FINISH_TDD_EVIDENCE_STATUS="${tdd_evidence_status:-0}" \
-    AGENT_FINISH_ACCEPTANCE_STATUS="${acceptance_status:-0}" \
-    AGENT_FINISH_REVIEW_STATUS="${review_status:-0}" \
-    AGENT_FINISH_ARCHITECTURE_STATUS="${architecture_status:-0}" \
-    AGENT_FINISH_FAILURE_ATTRIBUTION_STATUS="${failure_attribution_status:-0}" \
-    AGENT_FINISH_INTERVENTIONS_STATUS="${interventions_status:-0}" \
-    AGENT_FINISH_COMMAND_LEDGER_STATUS="${command_ledger_status:-0}" \
-    AGENT_FINISH_SANDBOX_EVIDENCE_STATUS="${sandbox_evidence_status:-0}" \
-    AGENT_FINISH_SUBAGENT_EVIDENCE_STATUS="${subagent_evidence_status:-0}" \
-    AGENT_FINISH_EPISODE_STATUS="${episode_status:-0}" \
-    AGENT_FINISH_VERIFY_STATUS="${verify_status:-0}" \
-    AGENT_FINISH_CHECK_AGENT_MD_EVIDENCE="$check_agent_md_result_file" \
-    AGENT_FINISH_SCOPE_EVIDENCE="$scope_result_file" \
-    AGENT_FINISH_POLICY_EVIDENCE="$policy_result_file" \
-    AGENT_FINISH_TDD_EVIDENCE="$tdd_evidence_result_file" \
-    AGENT_FINISH_ACCEPTANCE_EVIDENCE="$acceptance_result_file" \
-    AGENT_FINISH_REVIEW_EVIDENCE="$review_result_file" \
-    AGENT_FINISH_ARCHITECTURE_EVIDENCE="$architecture_result_file" \
-    AGENT_FINISH_FAILURE_ATTRIBUTION_EVIDENCE="$failure_attribution_result_file" \
-    AGENT_FINISH_INTERVENTIONS_EVIDENCE="$interventions_result_file" \
-    AGENT_FINISH_COMMAND_LEDGER_EVIDENCE="$command_ledger_result_file" \
-    AGENT_FINISH_SANDBOX_EVIDENCE="$sandbox_evidence_result_file" \
-    AGENT_FINISH_SUBAGENT_EVIDENCE="$subagent_evidence_result_file" \
-    AGENT_FINISH_EPISODE_EVIDENCE="$episode_result_file" \
-    AGENT_FINISH_VERIFY_EVIDENCE="$verify_result_file" \
-    AGENT_FINISH_RESOURCE_EVIDENCE="$resource_result_file" \
+    AGENT_FINISH_GATE_NAMES="$gate_names" \
+    AGENT_FINISH_GATE_STATUSES="$gate_statuses" \
+    AGENT_FINISH_GATE_EVIDENCE="$gate_evidence" \
     AGENT_FINISH_MARKDOWN_SUMMARY="$summary_file" \
     AGENT_FINISH_CHANGED_FILES="$changed_files_file" \
     AGENT_FINISH_DIFF_STAT="$diff_stat_file" \
@@ -136,6 +133,9 @@ import os
 from pathlib import Path
 
 env = os.environ
+gate_names = env["AGENT_FINISH_GATE_NAMES"].splitlines()
+gate_statuses = env["AGENT_FINISH_GATE_STATUSES"].splitlines()
+gate_evidence = env["AGENT_FINISH_GATE_EVIDENCE"].splitlines()
 
 data = {
     "timestamp": env["AGENT_FINISH_TIMESTAMP"],
@@ -147,80 +147,11 @@ data = {
     "resource_envelope_status": int(env["AGENT_FINISH_RESOURCE_STATUS"]),
     "gates": [
         {
-            "name": "check-agent-md",
-            "exit_status": int(env["AGENT_FINISH_CHECK_AGENT_MD_STATUS"]),
-            "evidence": env["AGENT_FINISH_CHECK_AGENT_MD_EVIDENCE"],
-        },
-        {
-            "name": "check-scope",
-            "exit_status": int(env["AGENT_FINISH_SCOPE_STATUS"]),
-            "evidence": env["AGENT_FINISH_SCOPE_EVIDENCE"],
-        },
-        {
-            "name": "check-policy",
-            "exit_status": int(env["AGENT_FINISH_POLICY_STATUS"]),
-            "evidence": env["AGENT_FINISH_POLICY_EVIDENCE"],
-        },
-        {
-            "name": "check-tdd-evidence",
-            "exit_status": int(env["AGENT_FINISH_TDD_EVIDENCE_STATUS"]),
-            "evidence": env["AGENT_FINISH_TDD_EVIDENCE"],
-        },
-        {
-            "name": "check-acceptance",
-            "exit_status": int(env["AGENT_FINISH_ACCEPTANCE_STATUS"]),
-            "evidence": env["AGENT_FINISH_ACCEPTANCE_EVIDENCE"],
-        },
-        {
-            "name": "check-review-evidence",
-            "exit_status": int(env["AGENT_FINISH_REVIEW_STATUS"]),
-            "evidence": env["AGENT_FINISH_REVIEW_EVIDENCE"],
-        },
-        {
-            "name": "check-architecture-evidence",
-            "exit_status": int(env["AGENT_FINISH_ARCHITECTURE_STATUS"]),
-            "evidence": env["AGENT_FINISH_ARCHITECTURE_EVIDENCE"],
-        },
-        {
-            "name": "check-failure-attribution",
-            "exit_status": int(env["AGENT_FINISH_FAILURE_ATTRIBUTION_STATUS"]),
-            "evidence": env["AGENT_FINISH_FAILURE_ATTRIBUTION_EVIDENCE"],
-        },
-        {
-            "name": "check-interventions",
-            "exit_status": int(env["AGENT_FINISH_INTERVENTIONS_STATUS"]),
-            "evidence": env["AGENT_FINISH_INTERVENTIONS_EVIDENCE"],
-        },
-        {
-            "name": "check-command-ledger",
-            "exit_status": int(env["AGENT_FINISH_COMMAND_LEDGER_STATUS"]),
-            "evidence": env["AGENT_FINISH_COMMAND_LEDGER_EVIDENCE"],
-        },
-        {
-            "name": "check-sandbox-evidence",
-            "exit_status": int(env["AGENT_FINISH_SANDBOX_EVIDENCE_STATUS"]),
-            "evidence": env["AGENT_FINISH_SANDBOX_EVIDENCE"],
-        },
-        {
-            "name": "check-subagent-evidence",
-            "exit_status": int(env["AGENT_FINISH_SUBAGENT_EVIDENCE_STATUS"]),
-            "evidence": env["AGENT_FINISH_SUBAGENT_EVIDENCE"],
-        },
-        {
-            "name": "validate-episode",
-            "exit_status": int(env["AGENT_FINISH_EPISODE_STATUS"]),
-            "evidence": env["AGENT_FINISH_EPISODE_EVIDENCE"],
-        },
-        {
-            "name": "agent-verify",
-            "exit_status": int(env["AGENT_FINISH_VERIFY_STATUS"]),
-            "evidence": env["AGENT_FINISH_VERIFY_EVIDENCE"],
-        },
-        {
-            "name": "resource-envelope",
-            "exit_status": int(env["AGENT_FINISH_RESOURCE_STATUS"]),
-            "evidence": env["AGENT_FINISH_RESOURCE_EVIDENCE"],
-        },
+            "name": name,
+            "exit_status": int(status),
+            "evidence": evidence,
+        }
+        for name, status, evidence in zip(gate_names, gate_statuses, gate_evidence)
     ],
     "evidence": {
         "markdown_summary": env["AGENT_FINISH_MARKDOWN_SUMMARY"],

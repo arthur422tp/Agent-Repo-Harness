@@ -14,6 +14,18 @@ if [ ! -f "$summary_lib" ]; then
   exit 1
 fi
 source "$script_dir/lib/finish-summary.sh"
+registry_lib="$script_dir/lib/gate-registry.sh"
+if [ ! -f "$registry_lib" ]; then
+  echo "ERROR: required internal library not found: $registry_lib" >&2
+  exit 1
+fi
+source "$script_dir/lib/gate-registry.sh"
+runner_lib="$script_dir/lib/finish-runner.sh"
+if [ ! -f "$runner_lib" ]; then
+  echo "ERROR: required internal library not found: $runner_lib" >&2
+  exit 1
+fi
+source "$script_dir/lib/finish-runner.sh"
 
 usage() {
   cat <<'EOF'
@@ -60,40 +72,10 @@ start_epoch="$(date -u +%s)"
 elapsed_seconds=0
 resource_status="0"
 resource_result_file="$run_dir/resource-envelope-result.txt"
-check_agent_md_result_file="$run_dir/check-agent-md-result.txt"
-scope_result_file="$run_dir/scope-result.txt"
-policy_result_file="$run_dir/policy-result.txt"
-tdd_evidence_result_file="$run_dir/tdd-evidence-result.txt"
-acceptance_result_file="$run_dir/acceptance-result.txt"
-review_result_file="$run_dir/review-result.txt"
-architecture_result_file="$run_dir/architecture-evidence-result.txt"
-failure_attribution_result_file="$run_dir/failure-attribution-result.txt"
-interventions_result_file="$run_dir/interventions-result.txt"
-command_ledger_result_file="$run_dir/command-ledger-result.txt"
-sandbox_evidence_result_file="$run_dir/sandbox-evidence-result.txt"
-subagent_evidence_result_file="$run_dir/subagent-evidence-result.txt"
-episode_result_file="$run_dir/episode-result.txt"
-verify_result_file="$run_dir/verify-result.txt"
 episode_summary_json_file="$run_dir/episode-summary.json"
 changed_files_file="$run_dir/changed-files.txt"
 diff_stat_file="$run_dir/git-diff-stat.txt"
 failures=0
-last_status=0
-
-agent_md_status=""
-scope_status=""
-policy_status=""
-tdd_evidence_status=""
-acceptance_status=""
-review_status=""
-architecture_status=""
-failure_attribution_status=""
-interventions_status=""
-command_ledger_status=""
-sandbox_evidence_status=""
-subagent_evidence_status=""
-episode_status=""
-verify_status=""
 
 mkdir -p "$run_dir"
 
@@ -235,105 +217,18 @@ check_resource_envelope() {
   return 0
 }
 
-run_gate() {
-  local label="$1"
-  local result_file="$2"
-  local output_file="$result_file.output"
-  shift
-  shift
-
-  echo
-  echo "RUN: $label"
-
-  set +e
-  "$@" >"$output_file" 2>&1
-  last_status=$?
-  set -e
-
-  {
-    echo "Check: $label"
-    echo "Command: $*"
-    echo "Exit status: $last_status"
-    echo
-    echo "Output:"
-    cat "$output_file"
-  } >"$result_file"
-
-  cat "$output_file"
-  rm -f "$output_file"
-
-  if [ "$last_status" -ne 0 ]; then
-    failures=$((failures + 1))
-  fi
-}
-
 echo "== Agent Finish Gate =="
 echo "Mode: $mode"
 echo "Run directory: $run_dir"
 
-if [ "$mode" = "strict" ]; then
-  run_gate "check-agent-md" "$check_agent_md_result_file" bash scripts/check-agent-md.sh agent.md
-  agent_md_status="$last_status"
-  run_gate "check-scope" "$scope_result_file" bash scripts/check-scope.sh --strict
-  scope_status="$last_status"
-  run_gate "check-policy" "$policy_result_file" bash scripts/check-policy.sh --strict
-  policy_status="$last_status"
-  run_gate "check-tdd-evidence" "$tdd_evidence_result_file" bash scripts/check-tdd-evidence.sh
-  tdd_evidence_status="$last_status"
-  run_gate "check-acceptance" "$acceptance_result_file" bash scripts/check-acceptance.sh
-  acceptance_status="$last_status"
-  run_gate "check-review-evidence" "$review_result_file" bash scripts/check-review-evidence.sh
-  review_status="$last_status"
-  run_gate "check-architecture-evidence" "$architecture_result_file" bash scripts/check-architecture-evidence.sh
-  architecture_status="$last_status"
-  run_gate "check-failure-attribution" "$failure_attribution_result_file" bash scripts/check-failure-attribution.sh
-  failure_attribution_status="$last_status"
-  run_gate "check-interventions" "$interventions_result_file" bash scripts/check-interventions.sh
-  interventions_status="$last_status"
-  run_gate "check-command-ledger" "$command_ledger_result_file" bash scripts/check-command-ledger.sh
-  command_ledger_status="$last_status"
-  run_gate "check-sandbox-evidence" "$sandbox_evidence_result_file" bash scripts/check-sandbox-evidence.sh
-  sandbox_evidence_status="$last_status"
-  run_gate "check-subagent-evidence" "$subagent_evidence_result_file" bash scripts/check-subagent-evidence.sh
-  subagent_evidence_status="$last_status"
-  run_gate "validate-episode" "$episode_result_file" bash scripts/validate-episode.sh
-  episode_status="$last_status"
-  run_gate "agent-verify" "$verify_result_file" bash scripts/agent-verify.sh --strict
-  verify_status="$last_status"
-else
-  run_gate "check-agent-md" "$check_agent_md_result_file" bash scripts/check-agent-md.sh agent.md
-  agent_md_status="$last_status"
-  run_gate "check-scope" "$scope_result_file" bash scripts/check-scope.sh --warn
-  scope_status="$last_status"
-  run_gate "check-policy" "$policy_result_file" bash scripts/check-policy.sh --warn
-  policy_status="$last_status"
-  run_gate "check-tdd-evidence" "$tdd_evidence_result_file" bash scripts/check-tdd-evidence.sh
-  tdd_evidence_status="$last_status"
-  run_gate "check-acceptance" "$acceptance_result_file" bash scripts/check-acceptance.sh
-  acceptance_status="$last_status"
-  run_gate "check-review-evidence" "$review_result_file" bash scripts/check-review-evidence.sh
-  review_status="$last_status"
-  run_gate "check-architecture-evidence" "$architecture_result_file" bash scripts/check-architecture-evidence.sh
-  architecture_status="$last_status"
-  run_gate "check-failure-attribution" "$failure_attribution_result_file" bash scripts/check-failure-attribution.sh
-  failure_attribution_status="$last_status"
-  run_gate "check-interventions" "$interventions_result_file" bash scripts/check-interventions.sh
-  interventions_status="$last_status"
-  run_gate "check-command-ledger" "$command_ledger_result_file" bash scripts/check-command-ledger.sh
-  command_ledger_status="$last_status"
-  run_gate "check-sandbox-evidence" "$sandbox_evidence_result_file" bash scripts/check-sandbox-evidence.sh
-  sandbox_evidence_status="$last_status"
-  run_gate "check-subagent-evidence" "$subagent_evidence_result_file" bash scripts/check-subagent-evidence.sh
-  subagent_evidence_status="$last_status"
-  run_gate "validate-episode" "$episode_result_file" bash scripts/validate-episode.sh
-  episode_status="$last_status"
-  run_gate "agent-verify" "$verify_result_file" bash scripts/agent-verify.sh --best-effort
-  verify_status="$last_status"
-fi
+finish_init_gate_registry
+finish_validate_gate_registry
+finish_run_registered_gates "$mode" "$run_dir" || true
 
 write_git_evidence
 elapsed_seconds=$(($(date -u +%s) - start_epoch))
 check_resource_envelope || true
+finish_set_gate_status resource-envelope "$resource_status"
 
 if [ "$failures" -gt 0 ]; then
   finish_write_markdown_summary "fail"

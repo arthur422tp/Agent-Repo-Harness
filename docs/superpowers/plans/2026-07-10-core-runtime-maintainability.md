@@ -485,7 +485,7 @@ Verification observed:
 - Produces `finish_init_gate_registry()`, `finish_validate_gate_registry()`, `finish_run_registered_gates(mode, run_dir)`, `finish_gate_index(id)`, and `finish_set_gate_status(id, status)`.
 - Consumes `harness_make_temp_file` and `harness_atomic_replace`.
 
-- [ ] **Step 1: Write failing registry and architecture tests**
+- [x] **Step 1: Write failing registry and architecture tests**
 
 Add exact assertions:
 
@@ -536,13 +536,13 @@ Add malformed-registry coverage using isolated subshells:
 )
 ```
 
-- [ ] **Step 2: Run the red phase**
+- [x] **Step 2: Run the red phase**
 
 Run: `bash validate-harness.sh`
 
 Expected: FAIL because the registry and runner files do not exist.
 
-- [ ] **Step 3: Implement the registry API**
+- [x] **Step 3: Implement the registry API**
 
 Use Bash 3.2 indexed arrays and this registration signature:
 
@@ -586,7 +586,7 @@ Implement validation for equal lengths, unique IDs, unique result names,
 allowed kinds and groups, non-empty command scripts for command gates, and an
 empty script for computed gates.
 
-- [ ] **Step 4: Implement the runner API**
+- [x] **Step 4: Implement the runner API**
 
 For each command gate, build a Bash indexed command array:
 
@@ -675,14 +675,14 @@ Add evidence-write failure coverage in a separate subshell:
 )
 ```
 
-- [ ] **Step 5: Adapt summary rendering to registry arrays**
+- [x] **Step 5: Adapt summary rendering to registry arrays**
 
 Render Markdown groups by iterating registry order and selecting matching group.
 Build the JSON `gates` array from registry IDs, integer statuses, and
 `$run_dir/${FINISH_GATE_RESULT_NAMES[$index]}`. Keep `resource_envelope_status`
 as the existing top-level field as well as its gate entry.
 
-- [ ] **Step 6: Replace hard-coded gate execution in the entrypoint**
+- [x] **Step 6: Replace hard-coded gate execution in the entrypoint**
 
 Source registry and runner, then use:
 
@@ -696,7 +696,7 @@ Remove scalar gate result-file and status variables after summary rendering no
 longer consumes them. Preserve Git evidence, resource evaluation, overall
 failure handling, messaging, and exit behavior.
 
-- [ ] **Step 7: Update fixture copies, run green, and commit**
+- [x] **Step 7: Update fixture copies, run green, and commit**
 
 Copy both new modules into every manual finish fixture and assert they appear in
 temporary installed targets.
@@ -715,6 +715,11 @@ git add templates/scripts/lib/gate-registry.sh \
   docs/superpowers/plans/2026-07-10-core-runtime-maintainability.md
 git commit -m "refactor: centralize finish gate execution"
 ```
+
+Verification observed:
+- Red: `bash validate-harness.sh` exited 1 because `templates/scripts/lib/gate-registry.sh` did not exist.
+- Green: `bash validate-harness.sh` exited 0, preserving gate order, summary contract, strict failures, best-effort behavior, and resource-envelope behavior.
+- Commit SHA: pending Task 4 commit.
 
 ---
 

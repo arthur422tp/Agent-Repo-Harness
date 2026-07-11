@@ -28,6 +28,8 @@ git init -q "$resource_disabled_root"
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
   cp "$repo_root/templates/scripts/lib/harness-common.sh" scripts/lib/harness-common.sh
   cp "$repo_root/templates/scripts/lib/finish-summary.sh" scripts/lib/finish-summary.sh
+  cp "$repo_root/templates/scripts/lib/gate-registry.sh" scripts/lib/gate-registry.sh
+  cp "$repo_root/templates/scripts/lib/finish-runner.sh" scripts/lib/finish-runner.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
   cp "$repo_root/templates/scripts/lib/policy-approval.sh" scripts/lib/policy-approval.sh
   chmod +x scripts/*.sh
@@ -73,6 +75,8 @@ git init -q "$resource_changed_files_root"
   cp "$repo_root/templates/scripts/agent-finish.sh" scripts/agent-finish.sh
   cp "$repo_root/templates/scripts/lib/harness-common.sh" scripts/lib/harness-common.sh
   cp "$repo_root/templates/scripts/lib/finish-summary.sh" scripts/lib/finish-summary.sh
+  cp "$repo_root/templates/scripts/lib/gate-registry.sh" scripts/lib/gate-registry.sh
+  cp "$repo_root/templates/scripts/lib/finish-runner.sh" scripts/lib/finish-runner.sh
   cp "$repo_root/templates/scripts/lib/read-yaml.py" scripts/lib/read-yaml.py
   cp "$repo_root/templates/scripts/lib/policy-approval.sh" scripts/lib/policy-approval.sh
   chmod +x scripts/*.sh
