@@ -719,7 +719,7 @@ git commit -m "refactor: centralize finish gate execution"
 Verification observed:
 - Red: `bash validate-harness.sh` exited 1 because `templates/scripts/lib/gate-registry.sh` did not exist.
 - Green: `bash validate-harness.sh` exited 0, preserving gate order, summary contract, strict failures, best-effort behavior, and resource-envelope behavior.
-- Commit SHA: pending Task 4 commit.
+- Commit SHA: `2692106` (`refactor: centralize finish gate execution`).
 
 ---
 
