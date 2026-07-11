@@ -736,7 +736,7 @@ Verification observed:
 - Consumes: all four internal modules and public entrypoints from Tasks 2-4.
 - Produces: explicit internal-library stability classification and installed-target proof.
 
-- [ ] **Step 1: Write failing stability and parity assertions**
+- [x] **Step 1: Write failing stability and parity assertions**
 
 Add:
 
@@ -754,13 +754,16 @@ and its four internal libraries. If its finish script is intentionally minimal,
 add an explicit assertion documenting that it is not a full installed-runtime
 mirror and do not copy the production modules into that example.
 
-- [ ] **Step 2: Run the red phase**
+- [x] **Step 2: Run the red phase**
 
 Run: `bash validate-harness.sh`
 
 Expected: FAIL because the stability contract does not yet classify internal libraries.
+Observed on resume: the interrupted partial implementation already satisfied the
+new stability assertions, so `bash validate-harness.sh` exited 0 instead of
+reproducing the original red failure.
 
-- [ ] **Step 3: Document the stability boundary**
+- [x] **Step 3: Document the stability boundary**
 
 Add an `Internal Implementation Details` subsection to
 `docs/stability-contract.md` containing exactly:
@@ -774,7 +777,7 @@ Internal library functions may change within a minor release when the stable and
 intended-stable public contracts remain compatible.
 ```
 
-- [ ] **Step 4: Run source and installed-target verification**
+- [x] **Step 4: Run source and installed-target verification**
 
 Run:
 
@@ -802,7 +805,7 @@ produce a run directory and summary; strict may report task-configured gate
 failure only if the installed default explicitly requires missing evidence. If
 that occurs, inspect the default contract rather than weakening strict mode.
 
-- [ ] **Step 5: Mark the plan complete and commit**
+- [x] **Step 5: Mark the plan complete and commit**
 
 Record observed command results and commit SHAs under each completed task, then
 mark checkboxes complete only after fresh verification.
@@ -815,3 +818,14 @@ git commit -m "chore: finalize core runtime maintainability rollout"
 ```
 
 Do not stage `.agent/` and do not push without explicit authorization.
+
+Verification observed:
+- `git diff --check` exited 0.
+- `bash templates/scripts/check-doc-links.sh .` exited 0 (`DOC_LINKS_RESULT=pass`).
+- `bash validate-harness.sh` exited 0.
+- Installed target: `bash install-agent-harness.sh --force "$target"` completed,
+  then `(cd "$target" && bash scripts/agent-finish.sh --best-effort)` and
+  `(cd "$target" && bash scripts/agent-finish.sh --strict)` both exited 0 and
+  produced fresh `.agent/runs/20260711-124607/finish-summary.md` and
+  `.agent/runs/20260711-124608/finish-summary.md` in the temporary repo.
+- Implementation commit SHA: `09d2545` (`chore: finalize core runtime maintainability rollout`).
