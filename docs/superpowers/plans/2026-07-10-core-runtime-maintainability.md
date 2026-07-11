@@ -828,4 +828,4 @@ Verification observed:
   `(cd "$target" && bash scripts/agent-finish.sh --strict)` both exited 0 and
   produced fresh `.agent/runs/20260711-124607/finish-summary.md` and
   `.agent/runs/20260711-124608/finish-summary.md` in the temporary repo.
-- Implementation commit SHA: `09d2545` (`chore: finalize core runtime maintainability rollout`).
+- Implementation commit SHA: `468b465` (`chore: finalize core runtime maintainability rollout`).
