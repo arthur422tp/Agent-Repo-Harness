@@ -32,8 +32,8 @@ agents may rely on.
 ## Public Packaging
 
 Every direct `schemas/*.schema.json` file is a public install artifact.
-Downstream repositories may rely on those files being present after a fresh
-install. A minor version may add a new public schema.
+Downstream repositories may rely on those files being present after a fresh install.
+A minor version may add a new public schema.
 
 This packaging promise covers file presence. Compatibility of fields within a
 schema remains governed by the Stable, Intended-Stable, Experimental, and
