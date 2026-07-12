@@ -9,6 +9,34 @@ fail() {
   exit 1
 }
 
+count_matches() {
+  local pattern="$1"
+  local file="$2"
+
+  if command -v rg >/dev/null 2>&1; then
+    rg -c "$pattern" "$file"
+    return
+  fi
+
+  grep -Ec -- "$pattern" "$file" || true
+}
+
+print_matches() {
+  local pattern="$1"
+  shift
+
+  if command -v rg >/dev/null 2>&1; then
+    rg -n "$pattern" "$@"
+    return
+  fi
+
+  if grep -En -- "$pattern" "$@"; then
+    return 0
+  fi
+
+  return 1
+}
+
 assert_exists "$repo_root/templates/scripts/lib/harness-common.sh"
 assert_exists "$repo_root/templates/scripts/lib/finish-summary.sh"
 assert_exists "$repo_root/templates/scripts/lib/gate-registry.sh"
@@ -41,12 +69,12 @@ assert_contains "$repo_root/templates/scripts/lib/finish-summary.sh" \
 assert_contains "$repo_root/templates/scripts/lib/finish-summary.sh" \
   'finish_write_json_summary() {'
 
-registration_count="$(rg -c '^  finish_register_gate ' \
+registration_count="$(count_matches '^  finish_register_gate ' \
   "$repo_root/templates/scripts/lib/gate-registry.sh")"
 [ "$registration_count" -eq 15 ] || \
   fail "expected 15 registered finish gates, got $registration_count"
 
-if rg -n 'declare -A|local -n|mapfile' \
+if print_matches 'declare -A|local -n|mapfile' \
   "$repo_root/templates/scripts/agent-finish.sh" \
   "$repo_root/templates/scripts/agent-verify.sh"
 then
