@@ -95,6 +95,12 @@ done <"$source_schema_names"
 This loop must cover all source basenames rather than repeat a hand-maintained
 list.
 
+Also create a copied source package with
+`schemas/internal/private.schema.json`, then assert its dry-run and real
+install output omit that nested path and the target does not contain it. This
+prevents both source and target inventories from silently excluding a recursive
+installer regression.
+
 - [x] **Step 3: Assert exact fresh-install set equality**
 
 After the real installer copy succeeds and before reinstalling into the same
@@ -201,7 +207,7 @@ for package_case in missing empty; do
     exit 1
   fi
   assert_not_contains "$package_log" "Install complete."
-  assert_not_exists "$package_target/AGENTS.md"
+  assert_target_has_no_writes "$package_target"
 done
 
 assert_contains "$tmp_root/missing-schema-package.log" \
@@ -210,6 +216,10 @@ assert_contains "$tmp_root/empty-schema-package.log" \
   "ERROR: no public schema files found in:"
 pass "invalid schema source packages fail before target writes"
 ```
+
+`assert_target_has_no_writes` must reject every path under the target except
+the pre-existing `.git` directory and its contents. Checking only `AGENTS.md`
+does not prove schema validation occurred before template writes.
 
 - [x] **Step 6: Run the red phase and record the failure**
 

@@ -191,6 +191,49 @@ assert_schema_sets_equal() {
   fi
 }
 
+assert_target_has_no_writes() {
+  local target_path="$1"
+  local unexpected_path
+
+  unexpected_path="$(find "$target_path" -mindepth 1 \
+    ! -path "$target_path/.git" \
+    ! -path "$target_path/.git/*" \
+    -print -quit)"
+  if [ -n "$unexpected_path" ]; then
+    echo "ERROR: schema validation wrote target path: $unexpected_path"
+    exit 1
+  fi
+}
+
+echo
+echo "== Nested schema source behavior =="
+nested_package_root="$tmp_root/nested schema package"
+nested_target_root="$tmp_root/nested schema target"
+nested_dry_run_log="$tmp_root/nested-schema-dry-run.log"
+nested_install_log="$tmp_root/nested-schema-install.log"
+nested_schema_rel="schemas/internal/private.schema.json"
+mkdir -p "$nested_package_root" "$nested_target_root"
+git init -q "$nested_target_root"
+cp "$repo_root/install-agent-harness.sh" "$nested_package_root/"
+cp -R "$repo_root/templates" "$nested_package_root/"
+cp -R "$repo_root/schemas" "$nested_package_root/"
+mkdir -p "$nested_package_root/schemas/internal"
+printf '%s\n' '{"private": true}' \
+  >"$nested_package_root/$nested_schema_rel"
+
+bash "$nested_package_root/install-agent-harness.sh" --dry-run "$nested_target_root" \
+  >"$nested_dry_run_log" 2>&1
+assert_not_contains "$nested_dry_run_log" \
+  "$nested_package_root/$nested_schema_rel"
+assert_not_exists "$nested_target_root/$nested_schema_rel"
+
+bash "$nested_package_root/install-agent-harness.sh" "$nested_target_root" \
+  >"$nested_install_log" 2>&1
+assert_not_contains "$nested_install_log" \
+  "$nested_target_root/$nested_schema_rel"
+assert_not_exists "$nested_target_root/$nested_schema_rel"
+pass "nested source schemas are not installed"
+
 echo
 echo "== Fresh install target =="
 target_root="$tmp_root/install target"
@@ -433,7 +476,7 @@ for package_case in missing empty; do
     exit 1
   fi
   assert_not_contains "$package_log" "Install complete."
-  assert_not_exists "$package_target/AGENTS.md"
+  assert_target_has_no_writes "$package_target"
 done
 
 assert_contains "$tmp_root/missing-schema-package.log" \
