@@ -321,7 +321,7 @@ Expected: both commands exit 0. The full validation must include:
 - `PASS: existing and target-only schema behavior`;
 - `PASS: invalid schema source packages fail before target writes`.
 
-- [ ] **Step 4: Commit the installer repair**
+- [x] **Step 4: Commit the installer repair**
 
 ```bash
 git add install-agent-harness.sh \
@@ -353,7 +353,7 @@ committing.
 - Produces: a documented `schemas/*.schema.json` public packaging promise.
 - Consumes: the existing stability classifications for each schema's field compatibility.
 
-- [ ] **Step 1: Add executable documentation assertions first**
+- [x] **Step 1: Add executable documentation assertions first**
 
 In the `== Stability contract ==` section of
 `tests/harness/productization-examples.sh`, add:
@@ -377,7 +377,7 @@ bash validate-harness.sh
 Expected: nonzero because `docs/stability-contract.md` does not yet contain the
 `Public Packaging` section.
 
-- [ ] **Step 2: Document the public packaging boundary**
+- [x] **Step 2: Document the public packaging boundary**
 
 Insert this section after `## Intended-Stable Interfaces` and before
 `## Internal Implementation Details` in `docs/stability-contract.md`:
@@ -397,7 +397,7 @@ root public schema set.
 
 Do not add these packaging internals to either README.
 
-- [ ] **Step 3: Run canonical repository verification**
+- [x] **Step 3: Run canonical repository verification**
 
 Run each command independently and record its exit status:
 
@@ -410,7 +410,7 @@ bash validate-harness.sh
 Expected: all exit 0, including `DOC_LINKS_RESULT=pass` and the complete harness
 validation trailer.
 
-- [ ] **Step 4: Capture a real fresh-install schema inventory**
+- [x] **Step 4: Capture a real fresh-install schema inventory**
 
 Run:
 
@@ -445,7 +445,7 @@ task.schema.json
 Record this exact observed inventory under Task 3. The temporary directory may
 be removed only after the listing succeeds.
 
-- [ ] **Step 5: Review scope and repository status**
+- [x] **Step 5: Review scope and repository status**
 
 Run:
 
@@ -458,7 +458,7 @@ Expected: only the four implementation files and this plan differ across the
 cycle; `.agent/` remains untracked and unstaged. Confirm that neither README,
 any schema content, nor unrelated runtime code changed.
 
-- [ ] **Step 6: Commit documentation and final evidence**
+- [x] **Step 6: Commit documentation and final evidence**
 
 ```bash
 git add docs/stability-contract.md \
@@ -477,10 +477,11 @@ Fill this section during implementation; do not mark the plan complete from
 expected output alone.
 
 - Red phase command, exit status, and first relevant failure: `bash validate-harness.sh` exited `1`; first relevant failure was `ERROR: expected output to contain: DRY-RUN copy: /Users/arthuryu/Desktop/Agent-Repo-Harness/schemas/acceptance.schema.json -> /var/folders/b5/cv7z2j955pl498ymk8khz0880000gn/T//agent-harness-validate.ggnuN1/install target/schemas/acceptance.schema.json`.
-- Task 2 focused/full verification and exit statuses:
-- Documentation red phase and first relevant failure:
-- Final `git diff --check` result:
-- Final doc-link result:
-- Final full validation result:
-- Fresh-install schema inventory:
-- Final commit hashes:
+- Task 2 focused/full verification and exit statuses: `bash -n install-agent-harness.sh tests/harness/static-install.sh` exited `0`; `bash validate-harness.sh` exited `0`, including the four Task 2 schema-install pass markers recorded above.
+- Documentation red phase and first relevant failure: `bash validate-harness.sh` exited `1`; first relevant failure was `ERROR: expected output to contain: ## Public Packaging` for `docs/stability-contract.md`.
+- Final `git diff --check` result: exited `0`.
+- Final doc-link result: `bash templates/scripts/check-doc-links.sh .` exited `0` with `DOC_LINKS_RESULT=pass`.
+- Final full validation result: `bash validate-harness.sh` exited `0` with the complete harness suite passing.
+- Fresh-install schema inventory: `acceptance.schema.json`, `architecture.schema.json`, `episode.schema.json`, `evidence-ref.schema.json`, `failure-attribution.schema.json`, `handoff.schema.json`, `harness.schema.json`, `interventions.schema.json`, `policy.schema.json`, `review.schema.json`, `task.schema.json`.
+- Scope review: `git diff --stat HEAD~2` exited `0` and listed only `install-agent-harness.sh`, `tests/harness/static-install.sh`, `docs/stability-contract.md`, `tests/harness/productization-examples.sh`, and this plan; `git status --short --branch` exited `0`, with only the Task 3 files modified and `.agent/` untracked. Neither README, schema contents, nor unrelated runtime code changed.
+- Final commit hashes: Task 1 `f03a08e`, `ab19300`; Task 2 `7e564e9`; Task 3 is committed with `docs: define public schema packaging contract`.

@@ -79,4 +79,11 @@ assert_contains "$repo_root/docs/stability-contract.md" "Agent-facing helper scr
 assert_contains "$repo_root/docs/stability-contract.md" "finish-summary.json"
 assert_contains "$repo_root/docs/stability-contract.md" "Experimental Interfaces"
 assert_contains "$repo_root/docs/stability-contract.md" "Deprecation Policy"
+assert_contains "$repo_root/docs/stability-contract.md" "## Public Packaging"
+assert_contains "$repo_root/docs/stability-contract.md" \
+  'Every direct `schemas/*.schema.json` file is a public install artifact.'
+assert_contains "$repo_root/docs/stability-contract.md" \
+  "Downstream repositories may rely on those files being present after a fresh install."
+assert_contains "$repo_root/docs/stability-contract.md" \
+  "A minor version may add a new public schema."
 pass "productization examples and stability contract"

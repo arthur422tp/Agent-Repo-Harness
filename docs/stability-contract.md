@@ -29,6 +29,17 @@ agents may rely on.
   `expected_exit_status`, `overall_result`, `must_contain`, and
   `must_not_contain`
 
+## Public Packaging
+
+Every direct `schemas/*.schema.json` file is a public install artifact.
+Downstream repositories may rely on those files being present after a fresh
+install. A minor version may add a new public schema.
+
+This packaging promise covers file presence. Compatibility of fields within a
+schema remains governed by the Stable, Intended-Stable, Experimental, and
+versioning rules in this document. Internal-only schemas must live outside the
+root public schema set.
+
 ## Internal Implementation Details
 
 Files under `scripts/lib/` are internal implementation details. Downstream
