@@ -484,4 +484,4 @@ expected output alone.
 - Final full validation result: `bash validate-harness.sh` exited `0` with the complete harness suite passing, including `PASS: productization examples and stability contract`.
 - Fresh-install schema inventory: `acceptance.schema.json`, `architecture.schema.json`, `episode.schema.json`, `evidence-ref.schema.json`, `failure-attribution.schema.json`, `handoff.schema.json`, `harness.schema.json`, `interventions.schema.json`, `policy.schema.json`, `review.schema.json`, `task.schema.json`.
 - Scope review: `git diff --stat HEAD~2` exited `0` and listed only `install-agent-harness.sh`, `tests/harness/static-install.sh`, `docs/stability-contract.md`, `tests/harness/productization-examples.sh`, and this plan; `git status --short --branch` exited `0`, with only the Task 3 files modified and `.agent/` untracked. Neither README, schema contents, nor unrelated runtime code changed.
-- Final commit hashes: Task 1 `f03a08e`, `ab19300`; Task 2 `7e564e9`; Task 3 initial commit `aadf785`; corrective commit records the assertion-formatting fix.
+- Final commit hashes: Task 1 `f03a08e`, `ab19300`; Task 2 `7e564e9`; Task 3 `aadf785`, `b159b8b`.
