@@ -169,6 +169,28 @@ EOF
   fi
 }
 
+write_public_schema_basenames() {
+  local schema_dir="$1"
+  local output_file="$2"
+
+  find "$schema_dir" \
+    -type f \
+    -name "*.schema.json" \
+    ! -path "$schema_dir/*/*" \
+    -exec basename {} \; | LC_ALL=C sort >"$output_file"
+}
+
+assert_schema_sets_equal() {
+  local expected_file="$1"
+  local actual_file="$2"
+
+  if ! cmp -s "$expected_file" "$actual_file"; then
+    echo "ERROR: installed public schema set does not match source"
+    diff -u "$expected_file" "$actual_file" || true
+    exit 1
+  fi
+}
+
 echo
 echo "== Fresh install target =="
 target_root="$tmp_root/install target"
@@ -177,9 +199,16 @@ git init -q "$target_root"
 printf '%s\n' 'dist/' > "$target_root/.gitignore"
 
 dry_run_log="$tmp_root/install-dry-run.log"
+source_schema_names="$tmp_root/source-schema-names.txt"
+write_public_schema_basenames "$repo_root/schemas" "$source_schema_names"
 bash install-agent-harness.sh --dry-run "$target_root" >"$dry_run_log" 2>&1
 assert_contains "$dry_run_log" "DRY-RUN copy:"
 assert_installer_completion_block "$dry_run_log" "$target_root"
+while IFS= read -r schema_name; do
+  assert_contains "$dry_run_log" \
+    "DRY-RUN copy: $repo_root/schemas/$schema_name -> $target_root/schemas/$schema_name"
+  assert_not_exists "$target_root/schemas/$schema_name"
+done <"$source_schema_names"
 pass "installer dry run"
 
 install_log="$tmp_root/install.log"
@@ -196,6 +225,19 @@ assert_contains "$target_root/.gitignore" ".agent/runs/"
 assert_contains "$target_root/.gitignore" ".agent/audits/"
 assert_contains "$target_root/.gitignore" ".agent/command-runs/"
 assert_contains "$target_root/.gitignore" ".agent/sandbox-runs/"
+
+installed_schema_names="$tmp_root/installed-schema-names.txt"
+write_public_schema_basenames \
+  "$target_root/schemas" \
+  "$installed_schema_names"
+assert_schema_sets_equal "$source_schema_names" "$installed_schema_names"
+
+schema_count="$(wc -l <"$installed_schema_names" | tr -d ' ')"
+if [ "$schema_count" -ne 11 ]; then
+  echo "ERROR: expected 11 current public schemas, got $schema_count"
+  exit 1
+fi
+pass "fresh install public schema set matches source"
 
 bash "$repo_root/install-agent-harness.sh" "$target_root" >"$tmp_root/reinstall.log" 2>&1
 for entry in \
@@ -282,11 +324,17 @@ for required_path in \
   scripts/validate-handoff.sh \
   scripts/validate-subagent-packet.sh \
   scripts/validate-subagent-run.sh \
+  schemas/acceptance.schema.json \
   schemas/architecture.schema.json \
-  schemas/evidence-ref.schema.json \
   schemas/episode.schema.json \
+  schemas/evidence-ref.schema.json \
   schemas/failure-attribution.schema.json \
-  schemas/interventions.schema.json
+  schemas/handoff.schema.json \
+  schemas/harness.schema.json \
+  schemas/interventions.schema.json \
+  schemas/policy.schema.json \
+  schemas/review.schema.json \
+  schemas/task.schema.json
 do
   assert_exists "$target_root/$required_path"
 done
@@ -327,6 +375,72 @@ assert_not_exists "$target_root/adapters/hooks/git/pre-push"
 assert_not_exists "$target_root/.git/hooks/pre-commit"
 assert_not_exists "$target_root/.git/hooks/pre-push"
 pass "hook adapters are not installed automatically"
+
+echo
+echo "== Existing schema install behavior =="
+existing_target="$tmp_root/existing schema target"
+mkdir -p "$existing_target/schemas"
+git init -q "$existing_target"
+printf '%s\n' "sentinel policy" \
+  >"$existing_target/schemas/policy.schema.json"
+printf '%s\n' "target-owned custom schema" \
+  >"$existing_target/schemas/custom.schema.json"
+
+existing_skip_log="$tmp_root/existing-schema-skip.log"
+bash "$repo_root/install-agent-harness.sh" "$existing_target" \
+  >"$existing_skip_log" 2>&1
+assert_contains "$existing_skip_log" \
+  "SKIP existing: $existing_target/schemas/policy.schema.json"
+assert_contains "$existing_target/schemas/policy.schema.json" "sentinel policy"
+assert_contains "$existing_target/schemas/custom.schema.json" \
+  "target-owned custom schema"
+
+existing_force_log="$tmp_root/existing-schema-force.log"
+bash "$repo_root/install-agent-harness.sh" --force --backup "$existing_target" \
+  >"$existing_force_log" 2>&1
+assert_contains "$existing_force_log" \
+  "BACKUP: $existing_target/schemas/policy.schema.json.bak"
+cmp -s \
+  "$repo_root/schemas/policy.schema.json" \
+  "$existing_target/schemas/policy.schema.json" || {
+  echo "ERROR: --force did not install the source policy schema"
+  exit 1
+}
+assert_contains "$existing_target/schemas/policy.schema.json.bak" \
+  "sentinel policy"
+assert_contains "$existing_target/schemas/custom.schema.json" \
+  "target-owned custom schema"
+pass "existing and target-only schema behavior"
+
+echo
+echo "== Invalid schema source packages =="
+for package_case in missing empty; do
+  package_root="$tmp_root/$package_case schema package"
+  package_target="$tmp_root/$package_case schema target"
+  package_log="$tmp_root/$package_case-schema-package.log"
+  mkdir -p "$package_root" "$package_target"
+  git init -q "$package_target"
+  cp "$repo_root/install-agent-harness.sh" "$package_root/"
+  cp -R "$repo_root/templates" "$package_root/"
+  if [ "$package_case" = "empty" ]; then
+    mkdir -p "$package_root/schemas"
+  fi
+
+  if bash "$package_root/install-agent-harness.sh" "$package_target" \
+    >"$package_log" 2>&1
+  then
+    echo "ERROR: installer accepted $package_case public schema source"
+    exit 1
+  fi
+  assert_not_contains "$package_log" "Install complete."
+  assert_not_exists "$package_target/AGENTS.md"
+done
+
+assert_contains "$tmp_root/missing-schema-package.log" \
+  "ERROR: schema directory not found:"
+assert_contains "$tmp_root/empty-schema-package.log" \
+  "ERROR: no public schema files found in:"
+pass "invalid schema source packages fail before target writes"
 
 (
   cd "$target_root"
