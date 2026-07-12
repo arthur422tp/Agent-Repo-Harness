@@ -479,9 +479,9 @@ expected output alone.
 - Red phase command, exit status, and first relevant failure: `bash validate-harness.sh` exited `1`; first relevant failure was `ERROR: expected output to contain: DRY-RUN copy: /Users/arthuryu/Desktop/Agent-Repo-Harness/schemas/acceptance.schema.json -> /var/folders/b5/cv7z2j955pl498ymk8khz0880000gn/T//agent-harness-validate.ggnuN1/install target/schemas/acceptance.schema.json`.
 - Task 2 focused/full verification and exit statuses: `bash -n install-agent-harness.sh tests/harness/static-install.sh` exited `0`; `bash validate-harness.sh` exited `0`, including the four Task 2 schema-install pass markers recorded above.
 - Documentation red phase and first relevant failure: `bash validate-harness.sh` exited `1`; first relevant failure was `ERROR: expected output to contain: ## Public Packaging` for `docs/stability-contract.md`.
-- Final `git diff --check` result: exited `0`.
+- Final `git diff --check` result: exited `0` at final head `7ae579d`.
 - Final doc-link result: `bash templates/scripts/check-doc-links.sh .` exited `0` with `DOC_LINKS_RESULT=pass`.
-- Final full validation result: `bash validate-harness.sh` exited `0` with the complete harness suite passing, including `PASS: productization examples and stability contract`.
+- Final full validation result: `bash validate-harness.sh` exited `0` at final head `7ae579d` with the complete harness suite passing, including `PASS: productization examples and stability contract`.
 - Fresh-install schema inventory: `acceptance.schema.json`, `architecture.schema.json`, `episode.schema.json`, `evidence-ref.schema.json`, `failure-attribution.schema.json`, `handoff.schema.json`, `harness.schema.json`, `interventions.schema.json`, `policy.schema.json`, `review.schema.json`, `task.schema.json`.
-- Scope review: `git diff --stat HEAD~2` exited `0` and listed only `install-agent-harness.sh`, `tests/harness/static-install.sh`, `docs/stability-contract.md`, `tests/harness/productization-examples.sh`, and this plan; `git status --short --branch` exited `0`, with only the Task 3 files modified and `.agent/` untracked. Neither README, schema contents, nor unrelated runtime code changed.
-- Final commit hashes: Task 1 `f03a08e`, `ab19300`; Task 2 `7e564e9`; Task 3 `aadf785`, `b159b8b`.
+- Scope review: `git diff --stat 7e564e9..b159b8b` exited `0` and listed only `docs/stability-contract.md`, `tests/harness/productization-examples.sh`, and this plan; `git status --short --branch` exited `0` before the Task 3 commits, with only the Task 3 files modified and `.agent/` untracked. Neither README, schema contents, nor unrelated runtime code changed.
+- Final commit hashes: Task 1 `f03a08e`, `ab19300`; Task 2 `7e564e9`; Task 3 `aadf785`, `b159b8b`, `7ae579d`.
