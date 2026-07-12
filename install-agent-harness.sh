@@ -72,6 +72,27 @@ if [ ! -d "$template_root" ]; then
   exit 1
 fi
 
+if [ ! -d "$schema_root" ]; then
+  echo "ERROR: schema directory not found: $schema_root"
+  exit 1
+fi
+
+schema_paths=()
+while IFS= read -r -d '' schema_path; do
+  schema_paths[${#schema_paths[@]}]="$schema_path"
+done < <(
+  find "$schema_root" \
+    -type f \
+    -name "*.schema.json" \
+    ! -path "$schema_root/*/*" \
+    -print0 | LC_ALL=C sort -z
+)
+
+if [ "${#schema_paths[@]}" -eq 0 ]; then
+  echo "ERROR: no public schema files found in: $schema_root"
+  exit 1
+fi
+
 copy_path() {
   local source="$1"
   local destination="$2"
@@ -145,47 +166,10 @@ while IFS= read -r -d '' path; do
   copy_path "$path" "$dest"
 done < <(find "$template_root" -mindepth 1 -print0 | sort -z)
 
-if [ -f "$schema_root/architecture.schema.json" ]; then
-  copy_path \
-    "$schema_root/architecture.schema.json" \
-    "$target/schemas/architecture.schema.json"
-fi
-
-if [ -f "$schema_root/harness.schema.json" ]; then
-  copy_path \
-    "$schema_root/harness.schema.json" \
-    "$target/schemas/harness.schema.json"
-fi
-
-if [ -f "$schema_root/task.schema.json" ]; then
-  copy_path \
-    "$schema_root/task.schema.json" \
-    "$target/schemas/task.schema.json"
-fi
-
-if [ -f "$schema_root/evidence-ref.schema.json" ]; then
-  copy_path \
-    "$schema_root/evidence-ref.schema.json" \
-    "$target/schemas/evidence-ref.schema.json"
-fi
-
-if [ -f "$schema_root/episode.schema.json" ]; then
-  copy_path \
-    "$schema_root/episode.schema.json" \
-    "$target/schemas/episode.schema.json"
-fi
-
-if [ -f "$schema_root/failure-attribution.schema.json" ]; then
-  copy_path \
-    "$schema_root/failure-attribution.schema.json" \
-    "$target/schemas/failure-attribution.schema.json"
-fi
-
-if [ -f "$schema_root/interventions.schema.json" ]; then
-  copy_path \
-    "$schema_root/interventions.schema.json" \
-    "$target/schemas/interventions.schema.json"
-fi
+for schema_path in "${schema_paths[@]}"; do
+  schema_name="$(basename "$schema_path")"
+  copy_path "$schema_path" "$target/schemas/$schema_name"
+done
 
 ensure_runtime_ignores
 

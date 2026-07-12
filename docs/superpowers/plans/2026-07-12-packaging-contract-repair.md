@@ -257,7 +257,7 @@ Task 1 before committing.
 - Produces: a sorted Bash indexed array named `schema_paths`, validated before installation writes.
 - Consumes: the existing `copy_path(source, destination)` function for all schema installation policy.
 
-- [ ] **Step 1: Validate and collect public schemas before defining copy behavior**
+- [x] **Step 1: Validate and collect public schemas before defining copy behavior**
 
 Immediately after the existing `template_root` validation block in
 `install-agent-harness.sh`, add:
@@ -289,7 +289,7 @@ This validation intentionally occurs before the installer prints its start
 message or calls `copy_path`, so missing and empty schema packages cannot leave
 a partially installed target.
 
-- [ ] **Step 2: Replace all manual schema copy blocks with one loop**
+- [x] **Step 2: Replace all manual schema copy blocks with one loop**
 
 Delete the seven existing basename-specific schema `if` blocks, from
 `architecture.schema.json` through `interventions.schema.json`. In the same
@@ -305,7 +305,7 @@ done
 Do not add basename-specific exceptions. A future direct root schema must be
 installed without changing this loop.
 
-- [ ] **Step 3: Verify syntax and the focused static-install contract**
+- [x] **Step 3: Verify syntax and the focused static-install contract**
 
 Run:
 
@@ -331,6 +331,14 @@ git commit -m "fix: install complete public schema set"
 
 Record the successful commands and exit statuses under Task 2 before
 committing.
+
+**Task 2 verification evidence (2026-07-12):**
+
+- `bash -n install-agent-harness.sh tests/harness/static-install.sh` exited 0.
+- `bash validate-harness.sh` exited 0; it reported `PASS: installer dry run`,
+  `PASS: fresh install public schema set matches source`,
+  `PASS: existing and target-only schema behavior`, and
+  `PASS: invalid schema source packages fail before target writes`.
 
 ---
 
