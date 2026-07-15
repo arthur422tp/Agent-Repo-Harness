@@ -478,9 +478,13 @@ git -C "$fixture_repo" commit -q -m "current release"
 
 echo
 echo "== Release upgrade smoke accepts a synthetic prior tag =="
-bash "$fixture_repo/ci/release-upgrade-smoke.sh" \
+if ! bash "$fixture_repo/ci/release-upgrade-smoke.sh" \
   --repo-root "$fixture_repo" --from-tag v0.1.0 \
   >"$release_upgrade_root/pass.log" 2>&1
+then
+  cat "$release_upgrade_root/pass.log"
+  exit 1
+fi
 assert_contains "$release_upgrade_root/pass.log" \
   "PASS: default reinstall preserves managed sentinels"
 assert_contains "$release_upgrade_root/pass.log" \
@@ -554,13 +558,13 @@ git add tests/harness/release-upgrade.sh validate-harness.sh \
 git commit -m "test: define prior release upgrade contract"
 ```
 
-- [ ] **Step 5: Implement the prior-release upgrade smoke**
+- [x] **Step 5: Implement the prior-release upgrade smoke**
 
 Create `ci/release-upgrade-smoke.sh`:
 
 ```bash
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 from_tag=""
@@ -703,14 +707,13 @@ cmp -s "$work_root/target-owned.before" \
   die "forced upgrade changed target-owned schema"
 printf '%s\n' "PASS: forced upgrade preserves backups and target-owned files"
 
-while IFS= read -r -d '' schema_path; do
+find "$repo_root/schemas" -type f -name '*.schema.json' \
+  ! -path "$repo_root/schemas/*/*" -print | LC_ALL=C sort |
+while IFS= read -r schema_path; do
   schema_name="$(basename "$schema_path")"
   cmp -s "$schema_path" "$target/schemas/$schema_name" || \
     die "current public schema missing or stale after upgrade: $schema_name"
-done < <(
-  find "$repo_root/schemas" -type f -name '*.schema.json' \
-    ! -path "$repo_root/schemas/*/*" -print0 | LC_ALL=C sort -z
-)
+done
 printf '%s\n' "PASS: current public schema set is installed"
 
 (
@@ -719,7 +722,7 @@ printf '%s\n' "PASS: current public schema set is installed"
   bash scripts/agent-verify.sh --best-effort >"$work_root/verify.log" 2>&1
   bash scripts/agent-finish.sh --best-effort >"$work_root/finish.log" 2>&1
 ) || die "installed upgrade lifecycle command failed"
-assert_contains "$work_root/preflight.log" "CONFIG_VALIDATION_RESULT=pass"
+assert_contains "$work_root/preflight.log" "PREFLIGHT_RESULT=pass"
 assert_contains "$work_root/verify.log" "HARNESS_VERIFY_RESULT=pass"
 assert_contains "$work_root/finish.log" "AGENT_FINISH_RESULT=pass"
 printf '%s\n' "PASS: installed upgrade lifecycle"
@@ -734,7 +737,7 @@ Make it executable:
 chmod +x ci/release-upgrade-smoke.sh
 ```
 
-- [ ] **Step 6: Run focused green verification**
+- [x] **Step 6: Run focused green verification**
 
 ```bash
 bash tests/harness/release-upgrade.sh
@@ -744,7 +747,16 @@ bash -n ci/release-upgrade-smoke.sh tests/harness/release-upgrade.sh
 Expected: synthetic upgrade passes; missing-tag and shallow-history cases fail
 for their asserted reasons while the suite exits 0.
 
-- [ ] **Step 7: Commit the passing upgrade proof**
+Recorded 2026-07-16:
+
+- `bash tests/harness/release-upgrade.sh`: exit `0`; synthetic upgrade,
+  missing-tag rejection, and shallow-history rejection all passed.
+- The implementation asserts the public `PREFLIGHT_RESULT=pass` marker used by
+  `agent-preflight.sh`, rather than the lower-level config validator marker.
+- Schema enumeration uses portable newline-delimited `find | sort` over
+  repository-controlled schema filenames; it does not require GNU `sort -z`.
+
+- [x] **Step 7: Commit the passing upgrade proof**
 
 ```bash
 git add ci/release-upgrade-smoke.sh \

@@ -52,9 +52,13 @@ git -C "$fixture_repo" commit -q -m "current release"
 
 echo
 echo "== Release upgrade smoke accepts a synthetic prior tag =="
-bash "$fixture_repo/ci/release-upgrade-smoke.sh" \
+if ! bash "$fixture_repo/ci/release-upgrade-smoke.sh" \
   --repo-root "$fixture_repo" --from-tag v0.1.0 \
   >"$release_upgrade_root/pass.log" 2>&1
+then
+  cat "$release_upgrade_root/pass.log"
+  exit 1
+fi
 assert_contains "$release_upgrade_root/pass.log" \
   "PASS: default reinstall preserves managed sentinels"
 assert_contains "$release_upgrade_root/pass.log" \
