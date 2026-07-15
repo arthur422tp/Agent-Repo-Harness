@@ -201,3 +201,97 @@ assert_contains "$unreleased_root/result.log" \
 assert_marker_once "$unreleased_root/result.log" \
   "RELEASE_INTEGRITY_RESULT=fail"
 pass "strict tag mode rejects unreleased notes"
+
+make_readiness_repo() {
+  local root="$1"
+
+  rm -rf "$root"
+  mkdir -p "$root/ci" "$root/docs"
+  cp "$repo_root/ci/check-release-integrity.sh" \
+    "$root/ci/check-release-integrity.sh"
+  cp "$repo_root/ci/release-readiness.sh" \
+    "$root/ci/release-readiness.sh"
+  chmod +x "$root/ci/"*.sh
+  printf '%s\n' '1.2.2' >"$root/VERSION"
+  printf '%s\n' '# Changelog' '' '## Unreleased' '' \
+    '## v1.2.2 - Previous' >"$root/CHANGELOG.md"
+  printf '%s\n' '# Public Packaging' '' \
+    '## v1.2.2 release checklist' >"$root/docs/public-packaging.md"
+  git -C "$root" init -q
+  git -C "$root" config user.name "Harness Test"
+  git -C "$root" config user.email "harness-test@example.invalid"
+  git -C "$root" add .
+  git -C "$root" commit -q -m "previous release"
+  git -C "$root" tag v1.2.2
+
+  printf '%s\n' '1.2.3' >"$root/VERSION"
+  printf '%s\n' '# Changelog' '' '## Unreleased' '' \
+    '## v1.2.3 - Current' '' '## v1.2.2 - Previous' \
+    >"$root/CHANGELOG.md"
+  printf '%s\n' '# Public Packaging' '' \
+    '## v1.2.3 release checklist' >"$root/docs/public-packaging.md"
+  cat >"$root/validate-harness.sh" <<'SH'
+#!/usr/bin/env bash
+printf '%s\n' 'VALIDATE_FIXTURE=pass'
+SH
+  cat >"$root/ci/release-upgrade-smoke.sh" <<'SH'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >"${READINESS_FIXTURE_ROOT:?}/upgrade-args.txt"
+printf '%s\n' 'RELEASE_UPGRADE_RESULT=pass'
+SH
+  cat >"$root/ci/sandbox-smoke.sh" <<'SH'
+#!/usr/bin/env bash
+printf '%s\n' 'SANDBOX_CI_SMOKE_RESULT=skip'
+SH
+  chmod +x "$root/validate-harness.sh" "$root/ci/"*.sh
+  git -C "$root" add .
+  git -C "$root" commit -q -m "current development"
+}
+
+echo
+echo "== Release readiness composes development checks =="
+readiness_root="$release_integrity_root/readiness"
+make_readiness_repo "$readiness_root"
+READINESS_FIXTURE_ROOT="$readiness_root" \
+  bash "$readiness_root/ci/release-readiness.sh" \
+    --repo-root "$readiness_root" \
+    >"$readiness_root/result.log" 2>&1
+assert_contains "$readiness_root/result.log" "VALIDATE_FIXTURE=pass"
+assert_contains "$readiness_root/result.log" "SANDBOX_CI_SMOKE_RESULT=skip"
+assert_contains "$readiness_root/upgrade-args.txt" "--from-tag v1.2.2"
+assert_marker_once "$readiness_root/result.log" \
+  "RELEASE_READINESS_RESULT=pass"
+pass "release readiness composes development checks"
+
+echo
+echo "== Release readiness composes strict tag checks =="
+git -C "$readiness_root" tag v1.2.3
+READINESS_FIXTURE_ROOT="$readiness_root" \
+  bash "$readiness_root/ci/release-readiness.sh" \
+    --repo-root "$readiness_root" --tag v1.2.3 \
+    >"$readiness_root/strict.log" 2>&1
+assert_contains "$readiness_root/strict.log" "Release mode: strict tag v1.2.3"
+assert_marker_once "$readiness_root/strict.log" \
+  "RELEASE_READINESS_RESULT=pass"
+pass "release readiness composes strict tag checks"
+
+echo
+echo "== Release readiness propagates child failure =="
+cat >"$readiness_root/validate-harness.sh" <<'SH'
+#!/usr/bin/env bash
+printf '%s\n' 'VALIDATE_FIXTURE=fail'
+exit 1
+SH
+chmod +x "$readiness_root/validate-harness.sh"
+if READINESS_FIXTURE_ROOT="$readiness_root" \
+  bash "$readiness_root/ci/release-readiness.sh" \
+    --repo-root "$readiness_root" \
+    >"$readiness_root/fail.log" 2>&1
+then
+  echo "ERROR: child validation failure passed"
+  exit 1
+fi
+assert_contains "$readiness_root/fail.log" "canonical validation failed"
+assert_marker_once "$readiness_root/fail.log" \
+  "RELEASE_READINESS_RESULT=fail"
+pass "release readiness propagates child failure"

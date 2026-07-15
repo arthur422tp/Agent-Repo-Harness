@@ -780,7 +780,7 @@ git commit -m "feat: prove prior release upgrades"
 - Consumes: Task 1 integrity checker and Task 2 upgrade smoke, plus `validate-harness.sh` and `ci/sandbox-smoke.sh`.
 - Tag discovery: newest stable tag numerically lower than `VERSION`; prerelease and equal/higher tags are excluded.
 
-- [ ] **Step 1: Extend the integrity suite with hermetic orchestration cases**
+- [x] **Step 1: Extend the integrity suite with hermetic orchestration cases**
 
 Append this block to `tests/harness/release-integrity.sh`:
 
@@ -880,7 +880,7 @@ assert_marker_once "$readiness_root/fail.log" \
 pass "release readiness propagates child failure"
 ```
 
-- [ ] **Step 2: Run and record the orchestration red phase**
+- [x] **Step 2: Run and record the orchestration red phase**
 
 Run:
 
@@ -891,7 +891,11 @@ bash tests/harness/release-integrity.sh
 Expected: existing integrity cases pass, then readiness fixture setup fails
 because `ci/release-readiness.sh` does not exist. Record the first failure.
 
-- [ ] **Step 3: Commit the red orchestration contract**
+Recorded 2026-07-16: the nine integrity cases passed, then
+`bash tests/harness/release-integrity.sh` exited `1` at
+`cp: /Users/arthuryu/Desktop/Agent-Repo-Harness/ci/release-readiness.sh: No such file or directory`.
+
+- [x] **Step 3: Commit the red orchestration contract**
 
 ```bash
 git add tests/harness/release-integrity.sh \
