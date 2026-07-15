@@ -60,7 +60,7 @@ No installed template, schema, public runtime script, adapter, or README file ch
 - Consumes: `VERSION`, `CHANGELOG.md`, `docs/public-packaging.md`, and Git tags at HEAD.
 - Mode contract: no `--tag` means development mode; `--tag` means strict tag mode.
 
-- [ ] **Step 1: Add the hermetic release-integrity suite**
+- [x] **Step 1: Add the hermetic release-integrity suite**
 
 Create `tests/harness/release-integrity.sh` with this independently runnable
 test harness and initial cases:
@@ -208,7 +208,7 @@ assert_marker_once "$unreleased_root/result.log" \
 pass "strict tag mode rejects unreleased notes"
 ```
 
-- [ ] **Step 2: Source the suite from canonical validation**
+- [x] **Step 2: Source the suite from canonical validation**
 
 Add this line in `validate-harness.sh` immediately after
 `sandbox-ci-smoke.sh` and before application fixtures:
@@ -217,7 +217,7 @@ Add this line in `validate-harness.sh` immediately after
 source "$repo_root/tests/harness/release-integrity.sh"
 ```
 
-- [ ] **Step 3: Run the red phase and record the expected missing-script failure**
+- [x] **Step 3: Run the red phase and record the expected missing-script failure**
 
 Run:
 
@@ -229,7 +229,14 @@ Expected: nonzero. The first case must fail because
 `ci/check-release-integrity.sh` does not exist. Record the command, exit status,
 and first relevant failure immediately below this step before checking it off.
 
-- [ ] **Step 4: Commit the red release-integrity contract**
+Recorded 2026-07-16:
+
+- Command: `bash tests/harness/release-integrity.sh`
+- Exit status: `1`
+- First relevant failure:
+  `cp: /Users/arthuryu/Desktop/Agent-Repo-Harness/ci/check-release-integrity.sh: No such file or directory`
+
+- [x] **Step 4: Commit the red release-integrity contract**
 
 ```bash
 git add tests/harness/release-integrity.sh validate-harness.sh \
