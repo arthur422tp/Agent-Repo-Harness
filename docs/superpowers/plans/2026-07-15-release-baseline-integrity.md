@@ -1406,7 +1406,7 @@ git add tests/harness/release-integrity.sh docs/versioning.md \
 git commit -m "docs: record release baseline readiness"
 ```
 
-- [ ] **Step 12: Verify the committed result**
+- [x] **Step 12: Verify the committed result**
 
 ```bash
 bash templates/scripts/check-doc-links.sh .
@@ -1421,18 +1421,36 @@ Expected: all verification commands exit 0; status shows only untracked
 `.agent/`; commit history shows the task-scoped red/green commits plus design
 and plan commits; no tag, push, or GitHub Release action has occurred.
 
+Recorded 2026-07-16 against committed Task 4 result `b604901`:
+
+- doc links and `git diff --check`: exit `0`;
+- canonical validation: exit `0`;
+- real `v0.1.1` readiness: exit `0` with integrity `pass`, upgrade `pass`,
+  sandbox `skip`, and readiness `pass`;
+- status contained only untracked `.agent/`; no tag, push, or GitHub Release
+  action occurred.
+
 ---
 
 ## Completion Evidence
 
-Do not fill this section from expectation. During execution, record:
+Recorded 2026-07-16:
 
-- each red-phase command, exit status, and first relevant failure;
-- each focused green command and result marker;
-- the exact real prior tag used;
-- canonical validation exit status;
-- real release-readiness markers, including the sandbox pass or skip state;
-- final branch diff and status;
+- Task 1 red: exit `1`, missing `ci/check-release-integrity.sh`; focused green
+  passed nine metadata and tag-state cases.
+- Task 2 red: exit `1`, missing `ci/release-upgrade-smoke.sh`; focused green
+  passed synthetic upgrade, missing-tag, and shallow-history cases.
+- Task 3 red: exit `1`, missing `ci/release-readiness.sh`; focused green passed
+  development, strict-tag, and child-failure orchestration cases.
+- Task 4 red: exit `1`, missing the readiness command in `docs/versioning.md`;
+  the executable documentation contract then passed.
+- Exact real prior tag: `v0.1.1`.
+- Canonical validation: exit `0` before and after the Task 4 evidence commit.
+- Real markers: `RELEASE_INTEGRITY_RESULT=pass`,
+  `RELEASE_UPGRADE_RESULT=pass`, `SANDBOX_CI_SMOKE_RESULT=skip`, and
+  `RELEASE_READINESS_RESULT=pass`.
+- Branch audit: approved repository-maintenance, test, and documentation paths
+  only; no installed runtime surface changed; `.agent/` remains untracked.
 - commit hashes for each task boundary.
 
 The plan is complete only when every checkbox is checked from current evidence,
