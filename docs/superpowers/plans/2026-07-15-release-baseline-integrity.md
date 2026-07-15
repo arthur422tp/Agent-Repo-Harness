@@ -244,13 +244,13 @@ git add tests/harness/release-integrity.sh validate-harness.sh \
 git commit -m "test: define release integrity contract"
 ```
 
-- [ ] **Step 5: Implement the repository integrity checker**
+- [x] **Step 5: Implement the repository integrity checker**
 
 Create `ci/check-release-integrity.sh`:
 
 ```bash
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 requested_tag=""
@@ -375,7 +375,7 @@ Make it executable:
 chmod +x ci/check-release-integrity.sh
 ```
 
-- [ ] **Step 6: Run focused green verification**
+- [x] **Step 6: Run focused green verification**
 
 Run:
 
@@ -386,7 +386,16 @@ bash -n ci/check-release-integrity.sh tests/harness/release-integrity.sh
 
 Expected: all release-integrity cases print `PASS`, and shell syntax exits 0.
 
-- [ ] **Step 7: Commit the passing integrity checker**
+Recorded 2026-07-16:
+
+- `bash tests/harness/release-integrity.sh`: exit `0`, nine contract cases
+  passed.
+- `bash -n ci/check-release-integrity.sh tests/harness/release-integrity.sh`:
+  exit `0`.
+- `bash ci/check-release-integrity.sh`: exit `0` with
+  `RELEASE_INTEGRITY_RESULT=pass` in development mode.
+
+- [x] **Step 7: Commit the passing integrity checker**
 
 ```bash
 git add ci/check-release-integrity.sh \
