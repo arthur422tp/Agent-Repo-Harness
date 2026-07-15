@@ -3,6 +3,12 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      from_tag:
+        description: Stable prior release tag, for example v0.1.1
+        required: false
+        type: string
 
 jobs:
   validate:
@@ -25,3 +31,25 @@ jobs:
           test -f schemas/policy.schema.json
           test -f schemas/task.schema.json
           test -f schemas/handoff.schema.json
+
+  release-readiness:
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run release readiness
+        env:
+          INPUT_FROM_TAG: ${{ inputs.from_tag }}
+        run: |
+          args=()
+          if [ -n "$INPUT_FROM_TAG" ]; then
+            args+=(--from-tag "$INPUT_FROM_TAG")
+          fi
+          case "$GITHUB_REF" in
+            refs/tags/*)
+              args+=(--tag "${GITHUB_REF#refs/tags/}")
+              ;;
+          esac
+          bash ci/release-readiness.sh "${args[@]}"

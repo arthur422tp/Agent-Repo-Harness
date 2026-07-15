@@ -903,13 +903,13 @@ git add tests/harness/release-integrity.sh \
 git commit -m "test: define release readiness orchestration"
 ```
 
-- [ ] **Step 4: Implement the readiness orchestrator**
+- [x] **Step 4: Implement the readiness orchestrator**
 
 Create `ci/release-readiness.sh`:
 
 ```bash
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 from_tag=""
@@ -1034,7 +1034,7 @@ Make it executable:
 chmod +x ci/release-readiness.sh
 ```
 
-- [ ] **Step 5: Run focused orchestration verification**
+- [x] **Step 5: Run focused orchestration verification**
 
 ```bash
 bash tests/harness/release-integrity.sh
@@ -1044,7 +1044,7 @@ bash -n ci/release-readiness.sh tests/harness/release-integrity.sh
 Expected: development composition, strict tag composition, and child failure
 propagation cases all print `PASS`.
 
-- [ ] **Step 6: Add explicit tag/manual release readiness to GitHub Actions**
+- [x] **Step 6: Add explicit tag/manual release readiness to GitHub Actions**
 
 Replace `.github/workflows/ci.yml` with:
 
@@ -1106,7 +1106,7 @@ jobs:
           bash ci/release-readiness.sh "${args[@]}"
 ```
 
-- [ ] **Step 7: Verify workflow syntax and focused suites**
+- [x] **Step 7: Verify workflow syntax and focused suites**
 
 ```bash
 bash -n ci/check-release-integrity.sh \
@@ -1120,7 +1120,16 @@ bash validate-harness.sh
 Expected: shell syntax exits 0; focused suites pass; canonical validation ends
 with `PASS: productization examples and stability contract` and exit 0.
 
-- [ ] **Step 8: Commit orchestration and CI wiring**
+Recorded 2026-07-16:
+
+- `bash -n ci/check-release-integrity.sh ci/release-upgrade-smoke.sh ci/release-readiness.sh tests/harness/release-integrity.sh`: exit `0`.
+- `bash tests/harness/release-integrity.sh`: exit `0`, including development,
+  strict-tag, and child-failure orchestration cases.
+- `bash tests/harness/release-upgrade.sh`: exit `0`.
+- `bash validate-harness.sh`: exit `0`, ending with
+  `PASS: productization examples and stability contract`.
+
+- [x] **Step 8: Commit orchestration and CI wiring**
 
 ```bash
 git add ci/release-readiness.sh tests/harness/release-integrity.sh \
