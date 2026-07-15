@@ -295,3 +295,19 @@ assert_contains "$readiness_root/fail.log" "canonical validation failed"
 assert_marker_once "$readiness_root/fail.log" \
   "RELEASE_READINESS_RESULT=fail"
 pass "release readiness propagates child failure"
+
+echo
+echo "== Release documentation distinguishes local and external state =="
+assert_contains "$repo_root/docs/versioning.md" \
+  "bash ci/release-readiness.sh --from-tag v0.1.1"
+assert_contains "$repo_root/docs/versioning.md" \
+  "--force --backup"
+assert_contains "$repo_root/docs/public-packaging.md" \
+  "### Locally Verifiable Readiness"
+assert_contains "$repo_root/docs/public-packaging.md" \
+  "### External Publishing Actions"
+assert_contains "$repo_root/docs/public-packaging.md" \
+  "RELEASE_READINESS_RESULT=pass"
+assert_contains "$repo_root/CHANGELOG.md" \
+  "Add repository-only release integrity and prior-release upgrade checks."
+pass "release documentation distinguishes local and external state"

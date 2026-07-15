@@ -1155,7 +1155,7 @@ git commit -m "ci: add release readiness workflow"
 - Produces: truthful local-versus-external release documentation and exact rollout evidence.
 - Final real-history command: `bash ci/release-readiness.sh --from-tag v0.1.1`.
 
-- [ ] **Step 1: Add executable documentation assertions**
+- [x] **Step 1: Add executable documentation assertions**
 
 Append these assertions to `tests/harness/release-integrity.sh`:
 
@@ -1177,7 +1177,7 @@ assert_contains "$repo_root/CHANGELOG.md" \
 pass "release documentation distinguishes local and external state"
 ```
 
-- [ ] **Step 2: Run and record the documentation red phase**
+- [x] **Step 2: Run and record the documentation red phase**
 
 ```bash
 bash tests/harness/release-integrity.sh
@@ -1186,7 +1186,11 @@ bash tests/harness/release-integrity.sh
 Expected: nonzero at the first missing new documentation phrase. Record the
 failure and do not weaken the assertion.
 
-- [ ] **Step 3: Commit the red documentation contract**
+Recorded 2026-07-16: `bash tests/harness/release-integrity.sh` exited `1`
+after all behavioral cases passed; the first missing phrase was
+`bash ci/release-readiness.sh --from-tag v0.1.1` in `docs/versioning.md`.
+
+- [x] **Step 3: Commit the red documentation contract**
 
 ```bash
 git add tests/harness/release-integrity.sh \
