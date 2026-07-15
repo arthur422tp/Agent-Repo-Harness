@@ -419,7 +419,7 @@ git commit -m "feat: validate release metadata integrity"
 - Consumes: a full Git checkout, the prior tag's installer package, and the current installer package.
 - Guarantees: default reinstall preservation, forced backup replacement, target-owned preservation, public schema completeness, and installed preflight/verify/finish success.
 
-- [ ] **Step 1: Add the synthetic cross-release test repository**
+- [x] **Step 1: Add the synthetic cross-release test repository**
 
 Create `tests/harness/release-upgrade.sh`:
 
@@ -524,7 +524,7 @@ assert_contains "$release_upgrade_root/shallow.log" \
 pass "release upgrade smoke rejects shallow history"
 ```
 
-- [ ] **Step 2: Source the upgrade suite from canonical validation**
+- [x] **Step 2: Source the upgrade suite from canonical validation**
 
 Add immediately after the release-integrity suite in `validate-harness.sh`:
 
@@ -532,7 +532,7 @@ Add immediately after the release-integrity suite in `validate-harness.sh`:
 source "$repo_root/tests/harness/release-upgrade.sh"
 ```
 
-- [ ] **Step 3: Run and record the red phase**
+- [x] **Step 3: Run and record the red phase**
 
 Run:
 
@@ -543,7 +543,10 @@ bash tests/harness/release-upgrade.sh
 Expected: nonzero because `ci/release-upgrade-smoke.sh` does not exist. Record
 the exact exit status and first relevant failure under this step.
 
-- [ ] **Step 4: Commit the red upgrade contract**
+Recorded 2026-07-16: `bash tests/harness/release-upgrade.sh` exited `1` at
+`cp: /Users/arthuryu/Desktop/Agent-Repo-Harness/ci/release-upgrade-smoke.sh: No such file or directory`.
+
+- [x] **Step 4: Commit the red upgrade contract**
 
 ```bash
 git add tests/harness/release-upgrade.sh validate-harness.sh \
