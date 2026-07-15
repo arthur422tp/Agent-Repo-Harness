@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Add repository-only release integrity and prior-release upgrade checks.
 - Add optional named verification profiles selected through
   `task.verification_profile`.
 - Repo-defined configured verification commands now suppress language heuristics; repositories that need those checks must list them explicitly in

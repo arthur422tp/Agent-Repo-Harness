@@ -1198,7 +1198,7 @@ git add tests/harness/release-integrity.sh \
 git commit -m "test: define release documentation contract"
 ```
 
-- [ ] **Step 4: Expand versioning and upgrade guidance**
+- [x] **Step 4: Expand versioning and upgrade guidance**
 
 Replace `docs/versioning.md` with:
 
@@ -1238,7 +1238,7 @@ conventions as the harness matures. Backward compatibility is best-effort
 before v1.0 and follows `docs/stability-contract.md`.
 ```
 
-- [ ] **Step 5: Separate local readiness from external publishing actions**
+- [x] **Step 5: Separate local readiness from external publishing actions**
 
 Keep the existing `## v0.2.0 release checklist` heading in
 `docs/public-packaging.md`. Replace its checklist and `Before Publishing`
@@ -1267,7 +1267,7 @@ section with:
 
 Do not change any external checkbox to checked from local evidence.
 
-- [ ] **Step 6: Record the user-visible maintenance change**
+- [x] **Step 6: Record the user-visible maintenance change**
 
 Add this bullet under `CHANGELOG.md` → `Unreleased` → `Changed`:
 
@@ -1275,7 +1275,7 @@ Add this bullet under `CHANGELOG.md` → `Unreleased` → `Changed`:
 - Add repository-only release integrity and prior-release upgrade checks.
 ```
 
-- [ ] **Step 7: Run the real prior-release readiness proof**
+- [x] **Step 7: Run the real prior-release readiness proof**
 
 Run:
 
@@ -1299,7 +1299,12 @@ Expected:
 If the command fails, stop and fix the failing contract before editing
 `handoff.md` or checking the local readiness item.
 
-- [ ] **Step 8: Update handoff with exact evidence**
+Recorded 2026-07-16: exit `0` with
+`RELEASE_INTEGRITY_RESULT=pass`, `RELEASE_UPGRADE_RESULT=pass`,
+`SANDBOX_CI_SMOKE_RESULT=skip`, and `RELEASE_READINESS_RESULT=pass`.
+The sandbox marker is an explicit skip because Docker or Podman is unavailable.
+
+- [x] **Step 8: Update handoff with exact evidence**
 
 Replace `handoff.md` with this structure, substituting only the actual sandbox
 marker captured in Step 7:
@@ -1344,7 +1349,7 @@ or continue with the next scoped stability sub-project.
 The final handoff must contain the actual sandbox marker, not the literal
 `pass|skip` alternatives.
 
-- [ ] **Step 9: Run the complete verification matrix**
+- [x] **Step 9: Run the complete verification matrix**
 
 ```bash
 bash tests/harness/release-integrity.sh
@@ -1361,7 +1366,12 @@ lines; doc links emit `DOC_LINKS_RESULT=pass`; canonical validation passes;
 real readiness emits `RELEASE_READINESS_RESULT=pass`; Git status lists only
 the files in this task plus untracked `.agent/` before commit.
 
-- [ ] **Step 10: Audit the approved boundary**
+Recorded 2026-07-16: both focused suites, doc links, `git diff --check`,
+canonical validation, and real `v0.1.1` readiness exited `0`. Final readiness
+again emitted integrity `pass`, upgrade `pass`, sandbox `skip`, and readiness
+`pass`; pre-commit status contained only Task 4 files and untracked `.agent/`.
+
+- [x] **Step 10: Audit the approved boundary**
 
 Run:
 
@@ -1381,7 +1391,13 @@ Review the full branch diff and prove:
 If any condition is false, remove the out-of-scope change or request a separate
 design approval before continuing.
 
-- [ ] **Step 11: Commit documentation and final evidence**
+Recorded 2026-07-16: the complete `main` diff contains only `.github/`, `ci/`,
+release tests, canonical test wiring, approved documentation, and this design
+and plan. No template, schema, installed runtime, adapter, or README path
+changed; HEAD has no release tag; external publishing boxes remain unchecked;
+`.agent/` remains untracked.
+
+- [x] **Step 11: Commit documentation and final evidence**
 
 ```bash
 git add tests/harness/release-integrity.sh docs/versioning.md \

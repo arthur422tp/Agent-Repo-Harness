@@ -2,23 +2,33 @@
 
 ## Current State
 
-Verification profiles, authoritative configured commands, and runtime artifact
-hygiene are implemented and validated.
+Release metadata integrity, prior-release upgrade behavior, and release
+readiness orchestration are implemented as repository-maintenance checks.
+Installed harness runtime contracts are unchanged.
 
 ## Verification
 
-- `bash tests/harness/verification-lifecycle.sh`: PASS
+- `bash tests/harness/release-integrity.sh`: PASS
+- `bash tests/harness/release-upgrade.sh`: PASS
 - `bash templates/scripts/check-doc-links.sh .`: `DOC_LINKS_RESULT=pass`
-- `bash validate-harness.sh`: PASS
 - `git diff --check`: PASS
+- `bash validate-harness.sh`: PASS
+- `bash ci/release-readiness.sh --from-tag v0.1.1`: `RELEASE_READINESS_RESULT=pass`
+- Prior release: `v0.1.1`
+- Sandbox smoke: `SANDBOX_CI_SMOKE_RESULT=skip` because Docker or Podman is unavailable.
 
 ## Compatibility
 
-- Existing `verification.required` remains the default command set.
-- Configured projects no longer receive implicit language heuristics.
-- Projects without configured commands retain heuristic fallback behavior.
+- New release scripts stay under `ci/` and are not installed into targets.
+- Installer default skip, `--force`, `--backup`, and target-owned preservation remain compatible.
+- Stable finish CLI, gate order, and evidence JSON contracts are unchanged.
+
+## External State
+
+- No tag or GitHub Release was created.
+- Default-branch CI and GitHub repository metadata remain externally verified actions.
 
 ## Next Action
 
-Dogfood bootstrap and release profiles in a second non-Python repository before
-expanding profile semantics.
+Review the release-baseline commits, then decide separately whether to publish
+or continue with the next scoped stability sub-project.

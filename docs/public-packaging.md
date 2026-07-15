@@ -20,27 +20,30 @@ Repo-local completion gate for AI coding agents.
 
 ## v0.2.0 release checklist
 
-- [ ] CI is passing on the published default branch.
+### Locally Verifiable Readiness
+
 - [x] `VERSION` is `0.2.0`.
 - [x] `CHANGELOG.md` has a `v0.2.0` entry.
 - [x] `README.md` has a CI badge, Quick Start, What It Is Not, Platform Support, Verification Strategy, Evidence vs Handoff, and Guardrails section.
-- [x] `docs/handoff.md` explains `.agent/runs/<timestamp>/`, `handoff.md`, and optional `.agent/handoff.yml`.
 - [x] `install-agent-harness.sh` prints the short 3-step next path.
 - [x] The default TDD evidence is opt-in.
 - [x] `bash validate-harness.sh` passes locally.
-- [x] Acceptance, task-profile, architecture evidence refs, failed-run repair examples, and helper CLI stability are covered by `bash validate-harness.sh`.
+- [x] Public schema installation matches the current source schema set.
+- [x] Runtime boundaries and intended-stable interfaces are documented.
 - [x] Sandbox smoke is wired into CI and reports `SANDBOX_CI_SMOKE_RESULT=pass|skip|fail`.
-- [x] `docs/stability-contract.md` defines stable, intended-stable, and experimental interfaces.
-- [x] Agent-facing helper CLIs (`scripts/agent-task-profile.sh`, `scripts/agent-evidence-bind.sh`, and `scripts/check-evidence-refs.py`) are classified as intended-stable v0.x interfaces.
-- [x] GitHub release notes are copied or summarized from `CHANGELOG.md`.
+- [x] Repository-only release integrity and prior-release upgrade checks are wired into canonical validation.
+- [x] `bash ci/release-readiness.sh --from-tag v0.1.1` emits `RELEASE_READINESS_RESULT=pass`; preserve its explicit sandbox pass or skip marker in handoff evidence.
 
-## Before Publishing
+### External Publishing Actions
 
+- [ ] CI is passing on the published default branch.
 - [ ] Set the GitHub description.
 - [ ] Set the GitHub topics.
 - [ ] Create the GitHub release tag `v0.2.0`.
+  Only create it from a strict-tag-ready commit.
 - [ ] Verify the README renders correctly on GitHub.
 - [ ] Verify the CI badge points to `.github/workflows/ci.yml`.
+- [ ] Create GitHub release notes from the matching `CHANGELOG.md` section.
 
 ## Production-harness follow-up checklist
 
